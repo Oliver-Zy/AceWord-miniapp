@@ -1,0 +1,67 @@
+.container {
+  box-sizing: border-box;
+  padding-left: 16px;
+  width: 100%;
+  height: 100%;
+  background: #F6F7F8;
+}
+
+scroll-view {
+  width: 100%;
+  height: 100%;
+  background: #F6F7F8;
+}
+
+.wordBookCategory {
+  height: 88px;
+  margin: 16px 16px 0 0;
+  background: #FFFFFF;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.bookCover-img {
+  width: 48px;
+  height: 60px;
+  padding: 0 12px;
+}
+
+.right-wordBookCategory {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.right-wordBookCategory text:nth-child(1) {
+  font-family: var(--simHei);
+  font-size: 18px;
+  font-weight: 600;
+  color: #303344;
+}
+
+.right-wordBookCategory text:nth-child(3) {
+  font-family: var(--simHei);
+  font-size: 14px;
+  color: #929499;
+}
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: #1D1E30;
+    color:white;
+  }
+
+  scroll-view {
+    width: 100%;
+    height: 100%;
+    background: #1D1E30;
+  }
+
+  .wordBookCategory {
+    background: #27283A;
+  }
+
+  .right-wordBookCategory text:nth-child(1){
+    color:white;
+  }
+}

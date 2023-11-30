@@ -1,0 +1,120 @@
+.header {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-text {
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 16px;
+  color: #2F3236;
+}
+
+.header-text-color {
+  font-family: var(--simHei);
+  font-weight: 600;
+  color: #4C34F0;
+}
+
+.header-text-red {
+  font-family: var(--simHei);
+  font-weight: 600;
+  color: #F99234;
+}
+
+.header-text-blue {
+  font-family: var(--simHei);
+  font-weight: 600;
+  color: #4C34F0;
+}
+
+.btn {
+  width: 58px;
+  height: 22px;
+  background: #FFFFFF;
+  border: 1px solid #F2F3F5;
+  border-radius: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-text {
+  font-family: var(--simHei);
+  font-size: 11px;
+  color: #4E5969;
+}
+
+.btn-img {
+  width: 16px;
+  height: 16px;
+  padding-right: 2px;
+}
+
+.selected-btn {
+  width: 58px;
+  height: 22px;
+  background: #424BFF;
+  border: 1px solid #F2F3F5;
+  border-radius: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.selected-btn-text {
+  font-family: var(--simHei);
+  font-size: 11px;
+  color: #FFFFFF;
+}
+
+@media (prefers-color-scheme: dark) {
+  /* DarkMode 下的样式 start */
+  .header-text {
+    font-family: var(--simHei);
+    font-weight: 600;
+    font-size: 16px;
+    color: #D5D9E0;
+  }
+  
+  .btn {
+    width: 58px;
+    height: 22px;
+    background: #303344;
+    border: 1px solid #303344;
+    border-radius: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .btn-text {
+    font-family: var(--simHei);
+    font-size: 11px;
+    color: #9598A9;
+  }
+
+  .header-text-color {
+    font-family: var(--simHei);
+    font-weight: 600;
+    color: #C7C6FF;
+  }
+
+  .header-text-blue {
+    font-family: var(--simHei);
+    font-weight: 600;
+    color: #C7C6FF;
+  }
+
+  .header-text-red {
+    font-family: var(--simHei);
+    font-weight: 600;
+    color: #ffc59c;
+  }
+
+  /* DarkMode 下的样式 end */
+}

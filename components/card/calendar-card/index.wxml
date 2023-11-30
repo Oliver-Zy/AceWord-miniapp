@@ -1,0 +1,70 @@
+<wxs module="tools" src="./index.wxs"></wxs>
+<!-- wxs -->
+
+<!-- S container -->
+<view wx:if="{{!isCalendarCardLoading}}" class="container">
+  <view class="header">
+    <text>{{tools.toMonth(dateInfo.monthIndex)}} {{dateInfo.year}}</text>
+    <view>
+      <image src="/images/icons/{{isDarkMode ? 'arrow-left-square-dark' : 'arrow-left-square'}}.png" catch:tap="onPrevMonth"></image>
+      <image src="/images/icons/{{isDarkMode ? 'arrow-right-square-dark' : 'arrow-right-square'}}.png" catch:tap="onNextMonth"></image>
+    </view>
+  </view>
+
+  <!-- S inner-container -->
+  <view class="inner-container">
+    <view class="header-inner-container">
+      <block wx:for="{{daysOfWeek}}">
+        <view>
+          <text>{{item}}</text>
+        </view>
+      </block>
+    </view>
+
+    <!-- S grid-container -->
+    <view class="grid-container">
+      <block wx:for="{{calendarInfoList}}" wx:key="day">
+        <view class="calendar-group" bind:tap="onBlock" data-index="{{index}}">
+          <view class="text-group" style="border-radius:50%;background-color:{{chosenDay == index ? isDarkMode ? '#C7C6FF' : 'rgb(51, 47, 235, 0.12)' : ''}};">
+            <text style="color: {{tools.toTextColor(chosenDay, todayDay, index, isDarkMode)}};">{{item.date != undefined ? tools.dateToDay(item.date) : ''}}</text>
+          </view>
+          <view class="dot-group">
+            <view class="blue-dot" wx:if="{{(calendarInfoList[index].practiceWordCardNum != 0)}}"></view>
+            <view class="red-dot" wx:if="{{calendarInfoList[index].actualTodayCardNum > 0 ? true : false}}"></view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+  <!-- E grid-container -->
+
+  <!-- S footer -->
+  <view class="footer">
+    <view class="left-footer">
+      <view class="up-left-footer">
+        <view class="left-dot"></view>
+        <text>当日练习{{calendarInfoList[chosenDay].practiceWordCardNum}}张卡片</text>
+      </view>
+      <!-- <view class="progress-group">
+        <view class="left-progress" style="width:{{calendarInfoList[chosenDay].actualReviewCardNum == 0 ? '0%' : '100%'}};"></view>
+      </view> -->
+    </view>
+    <view>
+      <view class="up-left-footer">
+        <view class="right-dot"></view>
+        <text>当日新学{{calendarInfoList[chosenDay].actualTodayCardNum}}张卡片</text>
+      </view>
+      <!-- <view class="progress-group">
+        <view class="right-progress" style="max-width: 100%;width:{{(calendarInfoList[chosenDay].actualTodayCardNum / calendarInfoList[chosenDay].dailyTargetNum) * 100 + '%'}};"></view>
+      </view> -->
+    </view>
+  </view>
+  <!-- E footer -->
+
+</view>
+
+<!-- S container ifLoading == true -->
+<view wx:if="{{isCalendarCardLoading}}" class="loader-container">
+  <view class="loader"></view>
+</view>
+<!-- E container ifLoading == true -->

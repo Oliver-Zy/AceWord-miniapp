@@ -1,0 +1,88 @@
+.container {
+  box-sizing: border-box;
+  padding: 24px 16px 16px 16px;
+  margin: 0 16px;
+  background: #FFFFFF;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title-text {
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  color: #181A1D;
+}
+
+.notif-btn {
+  width: 56px;
+  height: 18px;
+  border: 1px solid #C9CDD4;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cancal-text {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 10px;
+  color: #86909C;
+}
+
+.content-text {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #4E5969;
+}
+
+.inner-container{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.down-inner-container {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 16px 20px 0 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.excel-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.excel-container image {
+  width: 200px;
+  height: 136px;
+  margin-bottom: 12px;
+  border: 1px solid #A7A9AE;
+  border-radius: 12px;
+}
+
+.excel-container text {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 17px;
+  color: #86909C;
+}

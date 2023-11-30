@@ -1,0 +1,39 @@
+module.exports = {
+  toChinese: function (english) {
+    if (english == undefined) return
+    switch (english) {
+      case 'followSystem':
+        return '跟随系统'
+      case 'light':
+        return '浅色模式'
+      case 'dark':
+        return '深色模式'
+      case 'US':
+        return '美式发音'
+      case 'UK':
+        return '英式发音'
+      case 'normal':
+        return '常规'
+      case 'tense':
+        return '紧凑'
+      case 'relax':
+        return '松弛'
+      case 'inter-medium':
+        return 'Inter'
+      case 'poppins-medium':
+        return 'Poppins'
+      case 'zillaslab-medium':
+        return 'Zilla Slab'
+      case 'livvic-medium':
+        return 'Livvic'
+      case 'gelasio-medium':
+        return 'Gelasio'
+        case 'ibmplexmono-medium':
+          return 'IBM Plex Mono'
+        case 'mali-medium':
+          return 'Mali'
+        case 'mplus1p-medium':
+          return 'M Plus 1P'
+    }
+  },
+}

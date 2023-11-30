@@ -1,0 +1,11 @@
+{
+  "usingComponents": {
+    "ace-navi-bar": "../../components/ace/navibar/index",
+    "ace-header": "../../components/ace/header/index",
+    "van-action-sheet": "@vant/weapp/action-sheet/index",
+    "van-toast": "../../miniprogram_npm/@vant/weapp/toast/index",
+    "dic-card": "../../components/card/dic-card/index",
+    "van-overlay": "../../miniprogram_npm/@vant/weapp/overlay/index"
+
+  }
+}

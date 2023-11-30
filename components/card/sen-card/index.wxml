@@ -1,0 +1,45 @@
+<wxs module="tools" src="./index.wxs"></wxs>
+<!-- wxs -->
+
+<!-- S container senCard.english != undefined -->
+<view wx:if="{{senCard.english != undefined}}" class="container">
+
+  <text wx:if="{{route == 'sentence'}}" class="english-text-grey">{{tools.formatCreateDate(senCard.date)}}</text>
+  <view wx:if="{{route == 'sentence'}}" style="height:6px;"></view>
+  <view style="display:inline-flex;flex-wrap:wrap;">
+    <block wx:for="{{tools.englishHandler(senCard.english)}}">
+      <text class="english-text" decode="true" data-index="{{index}}" bind:tap="onEnglish" wx:key="index">{{item}}</text>
+    </block>
+  </view>
+
+  <view style="height:8px;"></view>
+  <text class="chinese-text">{{tools.chineseHandler(senCard.chinese)}}</text>
+
+  <!-- S footer -->
+  <view class="footer">
+    <text class="title-text">——{{tools.titleHandler(senCard.title)}}</text>
+
+    <!-- S right-footer -->
+    <view class="right-footer">
+      <view class="icon-group" bind:tap="onLike">
+        <image src="/images/icons/{{senCard.isLike ? 'like-fill' : isDarkMode ? 'like-dark' : 'like'}}.png"></image>
+        <text class="icon-group-text">{{senCard.likeNum}}</text>
+      </view>
+      <view class="icon-group" bind:tap="onShare">
+        <image src="/images/icons/{{isDarkMode ? 'share-dark' : 'share'}}.png"></image>
+        <text class="icon-group-text">{{senCard.shareNum}}</text>
+      </view>
+    </view>
+    <!-- E right-footer -->
+
+  </view>
+  <!-- E footer -->
+
+</view>
+<!-- E container senCard.english != undefined -->
+
+<!-- S container senCard.english == undefined -->
+<view wx:if="{{senCard.english == undefined}}" class="loader-container">
+  <view class="loader"></view>
+</view>
+<!-- E container senCard.english == undefined -->

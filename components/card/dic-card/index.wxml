@@ -1,0 +1,91 @@
+<wxs module="tools" src="./index.wxs"></wxs>
+<!-- wxs -->
+
+<!-- S container -->
+<view class="container" style="width:{{dicCardWidth}}px;">
+
+  <!-- S header -->
+  <view class="header">
+
+    <!-- S down-header -->
+    <view class="up-header">
+      <view class="left-up-header">
+        <text class="word-text" bind:tap="onCopyWord">{{wordInfo.word}}</text>
+        <view class="ipa-container" bind:tap="onPronounce">
+          <image src="/images/icons/{{isDarkMode ? 'sound-dark' : 'sound'}}.png"></image>
+          <text>{{pronType == 'US' ? '美' : '英'}} {{pronType == 'US' ? tools.ipaHandler(wordInfo.ipaUS) : tools.ipaHandler(wordInfo.ipaUK)}}</text>
+        </view>
+      </view>
+      <view wx:if="{{!hiddenCollectBtn}}" class="collect-container" catch:tap="onCollect" catch:longpress="onWordGroup" style="border:{{wordInfo.isCollected ? '1px solid rgba(255, 154, 46, 0.1)' : isDarkMode ? '1px solid #C9CDD4' : '1px solid rgba(29, 33, 41, 0.04)'}};background:{{wordInfo.isCollected ? 'rgba(255, 154, 46, 0.04)' : ''}};">
+        <image src="/images/icons/{{wordInfo.isCollected ? 'star-fill' : 'star-grey'}}.png" class="star-img"></image>
+      </view>
+    </view>
+    <!-- E down-header -->
+
+    <!-- S up-header -->
+    <view class="down-header">
+      <text>{{wordInfo.selfDef == undefined ? wordInfo.wordCN : wordInfo.selfDef}}</text>
+      <view class="edit-btn" bind:tap="onSelfDef">
+        <image src="../../../images/icons/{{isDarkMode ? 'edit-dark' : 'edit'}}.png"></image>
+        <text>自定义编辑</text>
+      </view>
+    </view>
+    <!-- E up-header -->
+
+  </view>
+  <!-- S header -->
+
+  <!-- S inner-container -->
+  <view class="inner-container">
+    <view class="content">
+      <text class="title">简明释义</text>
+      <view style="height:4px;"></view>
+      <text class="brief-explaination-text">{{wordInfo.shortDef}}</text>
+    </view>
+
+    <!-- S content -->
+    <view class="content">
+      <text class="title">英英释义</text>
+      <view class="block-group">
+        <block wx:if="{{wordInfo.defList.length != 0}}" wx:for="{{wordInfo.defList}}" wx:key="english">
+          <view wx:if="{{index < 6}}" class="{{defListIndex == index ? 'block-chosen' : 'block-unchosen' }}" catch:tap="onSwitchDefinition" data-index="{{index}}">
+            <text>{{tools.prsToCh(item.prs)}}. {{tools.prsToEn(item.prs)}}</text>
+          </view>
+        </block>
+      </view>
+      <view wx:if="{{wordInfo.defList.length != 0}}" style="height:6px;"></view>
+      <text wx:if="{{wordInfo.defList.length != 0}}" class="english">{{wordInfo.defList[defListIndex].english}}</text>
+      <text wx:if="{{wordInfo.defList.length == 0}}" class="english">Currently no definition.</text>
+      <view style="height:6px;"></view>
+      <text wx:if="{{wordInfo.defList.length != 0}}" class="chinese">{{wordInfo.defList[defListIndex].chinese}}</text>
+      <text wx:if="{{wordInfo.defList.length == 0}}" class="chinese">当前暂无释义。</text>
+    </view>
+    <!-- E content -->
+
+    <view class="content">
+      <text class="title">例句</text>
+      <view style="height:4px;"></view>
+      <text wx:if="{{wordInfo.exampleList.length != 0 && wordInfo.exampleList[defListIndex].english != null}}" class="english">{{wordInfo.exampleList[defListIndex].english}}</text>
+      <text wx:if="{{wordInfo.exampleList.length == 0 || wordInfo.exampleList[defListIndex].english == null}}" class="english">Currently no example.</text>
+      <view style="height:6px;"></view>
+      <text wx:if="{{wordInfo.exampleList.length != 0 && wordInfo.exampleList[defListIndex].chinese != null}}" class="chinese">{{wordInfo.exampleList[defListIndex].chinese}}</text>
+      <text wx:if="{{wordInfo.exampleList.length == 0 || wordInfo.exampleList[defListIndex].chinese == null}}" class="chinese">当前暂无例句。</text>
+    </view>
+    <!-- content -->
+
+  </view>
+  <!-- E inner-container -->
+
+  <!-- S btn-group -->
+  <view class="btns-group">
+    <view wx:if="{{showStyleBtn}}" class="left-btn" style="width:{{showReplaceBtn ? '45%' : '100%'}};" catch:tap="onShowStyleCard">
+      <text>添加标记</text>
+    </view>
+    <view wx:if="{{showReplaceBtn}}" class="right-btn" catch:tap="onReplace">
+      <text>换一个词</text>
+    </view>
+  </view>
+  <!-- E btn-group -->
+
+</view>
+<!-- E container -->

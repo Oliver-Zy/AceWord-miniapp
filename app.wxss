@@ -1,0 +1,35 @@
+page {
+  width: 100%;
+  height: 100%;
+
+  /* 全局字体变量 */
+  --simHei: -apple-system, "Noto Sans", "Helvetica Neue", Helvetica, "Nimbus Sans L", Arial, "Liberation Sans", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN", "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti", SimHei, "WenQuanYi Zen Hei Sharp", sans-serif;
+  --poppins-italic: "poppins-italic";
+  --poppins-medium: "poppins-medium";
+  --poppins-bold: "poppins-bold";
+  --poppins: "poppins";
+  --sfpro-heavy-italic: "sfpro-heavy-italic";
+  --sfpro-bold: "sfpro-bold";
+
+  --inter-medium: "inter-medium";
+  /* --barlow-medium: "barlow-medium"; */
+  --cormorantgaramond-medium: "cormorantgaramond-medium";
+  /* --dmsans-medium: "dmsans-medium"; */
+  /* --koho-medium: "koho-medium"; */
+  --livvic-medium: "livvic-medium";
+  /* --prompt-medium: "prompt-medium"; */
+  --zillaslab-medium: "zillaslab-medium";
+  --gelasio-medium: "gelasio-medium";
+  --ibmplexmono-medium: "ibmplexmono-medium";
+  --mali-medium: "mali-medium";
+  /* --roboto-medium: "roboto-medium"; */
+  --mplus1p-medium: "mplus1p-medium";
+  /* --spectral-medium: "spectral-medium"; */
+}
+.van-swipe-cell__right{
+  background-color: red;
+  color:white;
+  line-height: 78px;
+  text-align: center;
+  width: 65px;
+}

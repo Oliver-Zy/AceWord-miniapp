@@ -1,0 +1,60 @@
+<wxs module="tools" src="./index.wxs"></wxs>
+<!-- wxs -->
+
+<!-- S container -->
+<view wx:if="{{wordCard._type != 'loading' && wordCard._type != 'blank'}}" class="container">
+
+  <!-- S header -->
+  <view class="header" wx:if="{{!noHeader}}">
+    <view class="header-left">
+      <view>
+        <text>练习{{wordCard.realPracticeNum}}次</text>
+        <text> / {{wordCard.wordBookName}}</text>
+      </view>
+      <view style="height: 2px;"></view>
+      <text>创建于{{tools.formatCreateDate(wordCard.createDate)}}</text>
+    </view>
+    <view class="countDown-btn{{ (!isDeleted && nextPracticeTime == '现在') ? '-deleted' : ''}}" bind:tap="onDelete">
+      <text>{{isDeleted ? '卡片已删除' : wordCard.wordBookName == '示例词书' ? '点此可删除卡片' : effectivePracticeNum > 8 ? '已完成推荐练习' : '推荐' + nextPracticeTime + '复习' }}</text>
+    </view>
+  </view>
+  <!-- E header -->
+
+  <!-- S inner-container -->
+  <view class="inner-container">
+    <block wx:for="{{wordInfoList}}" wx:key="name">
+      <text id="block-{{index+1}}" bind:tap="onWord" data-index="{{index}}" style="position:absolute;left:{{item.left}}px;top:{{item.top}}px;background:{{tools.bgColorHandler(item.bgColor, isDarkMode)}};color:rgba({{isDarkMode ? 238 : 29 }}, {{isDarkMode ? 241 : 33 }}, {{isDarkMode ? 247 : 41 }}, {{0.01 * item.opacity}});font-family:{{wordCardFontFamily}};">{{item.wordName}}</text>
+    </block>
+  </view>
+  <!-- E inner-container -->
+
+  <!-- S footer -->
+  <view class="footer">
+    <image class="{{ifOpacity ? 'refresh-img-opacity' : 'refresh-img'}}" src="./images/{{isDarkMode ? 'refresh-dark' : 'refresh'}}.png" bind:touchstart="onRefreshTouchstart" bind:touchend="onRefreshTouchend"></image>
+    <!-- <image class="check-img" src="./images/{{isChecked ? 'checked' : isDarkMode ? 'unchecked-dark' : 'unchecked'}}.png" bind:tap="onCheck"></image> -->
+    <image class="check-img {{isChecked?'':'unchecked'}}" src="./images/checked.png" bind:tap="onCheck"></image>
+
+    <!-- <image class="check-img" src="/images/icons/{{isChecked ? 'check-white' : isDarkMode ? 'check-dark' : 'check'}}.png" bind:tap="onCheck"></image> -->
+
+  </view>
+  <!-- S footer -->
+
+</view>
+<!-- E container -->
+
+<!-- S container _type == 'blank' -->
+<view wx:if="{{wordCard._type == 'blank'}}" class="blank-container">
+  <image src="./images/blank-box.png"></image>
+  <view class="goal-text-container">
+    <text class="chinese">不是快乐，不是悲伤，只是空空如也</text>
+  </view>
+  <view style="height:4px;"></view>
+  <text class="english">Not happy. Not sad. Just Empty.</text>
+</view>
+<!-- E container _type == 'blank' -->
+
+<!-- S container _type == 'loading' -->
+<view wx:if="{{wordCard._type == 'loading'}}" class="loader-container">
+  <view class="loader"></view>
+</view>
+<!-- E container ifLoading == true -->

@@ -1,0 +1,27 @@
+<view wx:if="{{ size == 'small' }}" class="small-btn ripple" bind:tap="onTap" data-name="addWordCard">
+  <image wx:if="{{ text == '添加卡片' }}" src="/images/icons/{{ isDarkMode ? 'add-dark' : 'add'}}.png"></image>
+  <text wx:if="{{ text == '添加卡片' }}">{{text}}</text>
+
+  <image wx:if="{{ text == '展开更多' }}" src="/images/icons/{{isDarkMode ? 'expand-dark' : 'expand'}}.png"></image>
+  <text wx:if="{{ text == '展开更多' }}">{{text}}</text>
+
+  <image wx:if="{{ text == '收起卡片' }}" src="/images/icons/collapse.png"></image>
+  <text wx:if="{{ text == '收起卡片' }}">{{text}}</text>
+
+  <image wx:if="{{ text == '加载更多' }}" src="/images/icons/{{isDarkMode ? 'expand-dark' : 'expand'}}.png"></image>
+  <text wx:if="{{ text == '加载更多' }}">{{text}}</text>
+
+  <text wx:if="{{ text == '已加载全部' }}" class="small-btn-text">{{text}}</text>
+</view>
+
+<view wx:if="{{ size == 'large' }}" class="large-btn" bind:tap="onTap" data-name="startLearning">
+  <text>{{text}}</text>
+</view>
+
+
+<!-- 恢复+开始双按钮 -->
+<view wx:if="{{ size == 'double' }}" class="double-btn large-btn" >
+  <text bind:tap="onTap" data-name="resumeLearning">{{textLeft}}</text>
+  <view class="divider"/>
+  <text bind:tap="onTap" data-name="startLearning">{{textRight}}</text>
+</view>

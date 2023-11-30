@@ -1,0 +1,49 @@
+<import src="/templates/mine.wxml" />
+<!-- template -->
+
+<!-- S container -->
+<view class="container">
+
+  <scroll-view scroll-y="true" style="width:100%;height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" bind:scroll="onScroll">
+
+    <view style="height:14px;"></view>
+    <view class="up-container">
+      <template is="avatar-bar" data="{{avatarUrl, nickName, vipExpireDate}}" />
+      <template is="statistic-bar" data="{{learningInfo}}" />
+    </view>
+
+    <view class="down-container">
+
+      <template is="cell-group" data="{{cellInfo: cellInfo_1, isDarkMode: isDarkMode}}" />
+      <view style="width:100%;height:8px;margin-top:6px;background-color:{{isDarkMode ? '#1B1C2D' : '#F7F8FA'}};"></view>
+
+      <template is="cell-group" data="{{cellInfo: cellInfo_2, isDarkMode: isDarkMode}}" />
+      <view style="width:100%;height:8px;margin-top:6px;background-color:{{isDarkMode ? '#1B1C2D' : '#F7F8FA'}};"></view>
+
+      <template is="cell-group" data="{{cellInfo: cellInfo_3, isDarkMode: isDarkMode}}" />
+      <view style="width:100%;height:28px;"></view>
+
+    </view>
+    <!-- E down-container -->
+
+  </scroll-view>
+</view>
+<!-- E container -->
+
+<!-- S ace-components -->
+<ace-navi-bar type="calendar" title="我的" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
+<ace-popup wx:if="{{ showNotifPanel }}" type="notif" style="width:100%;position:fixed;bottom:0;z-index:98;" bind:triggerCondition="onTriggerCondition" bind:triggerTime="onTriggerTime" />
+<!-- E ace-components -->
+
+<!-- S vant-components -->
+<van-toast id="van-toast" />
+<van-popup show="{{ showPopupVant }}" position="bottom" overlay="{{ false }}" duration="0" bind:close="onClose">
+  <van-action-sheet show="{{ showActionSheet }}" description="{{ actionSheetDesc }}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheet" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
+</van-popup>
+<van-datetime-picker wx:if="{{showDateTimePicker}}" style="width:100%;position:fixed;bottom:0;z-index:100;" title="提醒时间" type="time" value="{{ currentTime }}" bind:input="onDateTimePickerInput" bind:confirm="onDateTimePickerConfirm" bind:cancel="onDateTimePickerCancel" />
+<van-overlay show="{{ showOverlay }}" bind:click="onClickHideOverlay" />
+<van-overlay show="{{ showOverlayZIndex }}" z-index="{{zIndex}}" bind:click="onClickHideOverlay" />
+<!-- E vant-components -->
+
+<view wx:if="{{ showTabBarShadow }}" class="tab-bar-shadow" style="padding-bottom: {{isIOS ? 30 : 0}}px;"></view>
+<!-- tab-bar-shadow -->

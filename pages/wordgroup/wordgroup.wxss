@@ -1,0 +1,81 @@
+/* pages/wordBookWord/wordBookWord.wxss */
+@import '/templates/diccard-swiper.wxss';
+.container {
+  width: 100%;
+  height: 100%;
+  background: #FDFDFD;
+}
+
+.grey{
+  background:#F3F4F7;
+}
+
+.header {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header text{
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 16px;
+  color: #2F3236;
+}
+
+.right-container {
+  display: flex;
+  align-items: center;
+}
+
+.add-btn-container {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 50px;
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  bottom: 0;
+}
+
+.add-btn {
+  width: 155px;
+  height: 40px;
+  background: linear-gradient(133.36deg, #8472FF -16.27%, #1C00DB 136.02%);
+  box-shadow: 0px 8px 24px rgba(67, 43, 233, 0.16);
+  border-radius: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-btn image {
+  width: 16px;
+  height: 16px;
+  padding-right: 8px;
+}
+
+.add-btn text {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 16px;
+  color: #FFFFFF;
+}
+
+@media (prefers-color-scheme: dark) {
+  /* DarkMode 下的样式 start */
+  .container {
+    width: 100%;
+    height: 100%;
+    background: #1D1E30;
+  }
+
+  .grey{
+    background:#1D1E30;
+  }
+
+  /* DarkMode 下的样式 end */
+}

@@ -1,0 +1,9 @@
+module.exports = {
+  dateToMonth: function (date) {
+    var monthArr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    return monthArr[parseInt(date.slice(4, 6) - 1)]
+  },
+  dateToDay: function (date) {
+    return date[6] == '0' ? date[7] : date.slice(6, 8)
+  },
+}

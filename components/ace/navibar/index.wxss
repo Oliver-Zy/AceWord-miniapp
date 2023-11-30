@@ -1,0 +1,101 @@
+/* pages/components/naviBar/index.wxss */
+.container {
+  width: 100%;
+  left: 0;
+  top: 0;
+  position: relative;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  bottom: 6px;
+}
+
+.search-container-inner {
+  margin-left: 16px;
+  border: 0.5px solid #E9ECF2;
+  border-radius: 100px;
+  background: #FFFFFF;
+
+  display: flex;
+  align-items: center;
+}
+
+.search-img {
+  width: 20px;
+  height: 20px;
+  padding: 0 4px 0 12px;
+}
+
+.search-container-inner-text {
+  font-weight: 400;
+  font-size: 13px;
+  font-family: var(--simHei);
+  color: #86909C;
+}
+
+.inner-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  bottom: 6px;
+}
+
+.back-img {
+  width: 24px;
+  height: 24px;
+  padding-left: 16px;
+}
+
+.navi-text {
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 16px;
+  display: flex;
+  color: #181A1D;
+}
+
+@media (prefers-color-scheme: dark) {
+
+  /* DarkMode 下的样式 start */
+  .search-container-inner {
+    margin-left: 16px;
+    border: 0.5px solid #282A3D;
+    border-radius: 100px;
+    background: #282A3D;
+
+    display: flex;
+    align-items: center;
+  }
+
+  .search-container-inner-text {
+    font-weight: 400;
+    font-size: 13px;
+    font-family: var(--simHei);
+    color: #9598A9;
+  }
+
+  .navi-text {
+    font-family: var(--simHei);
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    color: #D5D9E0;
+  }
+
+  /* DarkMode 下的样式 end */
+}
+
+.back-btn,
+.back-btn::after {
+  border: none;
+  padding: 0;
+  margin: 0;
+  width: 50px;
+  height: 30px;
+  padding-left: 16px;
+}

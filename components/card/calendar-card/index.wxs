@@ -1,0 +1,21 @@
+module.exports = {
+  toTextColor: function (chosenDay, todayDay, index, isDarkMode) {
+    if (!isDarkMode) {
+      return chosenDay == (index) ? '#332FEB' : todayDay + 1 > (index) ? '#1D2129' : '#C9CDD4'
+    } else {
+      return chosenDay == (index) ? '#FFFFFF' : todayDay > (index) ? '#FFFFFF' : '#4B4F62'
+    }
+  },
+
+  dateToDay: function (date) {
+    return date[6] == '0' ? date.slice(7) : date.slice(6)
+  },
+
+  toMonth: function (monthIndex) {
+    var monthArr = ["January", "February", "March",
+      "April", "May", "June",
+      "July", "August", "September",
+      "October", "November", "December"]
+    return monthArr[monthIndex]
+  },
+}

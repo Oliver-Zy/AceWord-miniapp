@@ -1,0 +1,250 @@
+/* ---------- S header---------- */
+.header {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header view {
+  display: flex;
+  align-items: center;
+}
+
+.header image {
+  width: 24px;
+  height: 24px;
+}
+/* ---------- E header---------- */
+
+/* ---------- S wordAndipa-container---------- */
+.wordAndipa-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.word-container {
+  position: relative;
+}
+
+.word-container-blur {
+  width: 100%;
+  height: 120px;
+  position: absolute;
+  backdrop-filter: blur(10px);
+}
+
+.bottom-musk {
+  width: 100%;
+  height: 10px;
+  background: rgba(76, 52, 240, 0.04);
+  position: absolute;
+  left: 0;
+  bottom: 10px;
+}
+
+.word-text {
+  font-family: var(--poppins-bold);
+  font-size: 32px;
+  color: #1D2129;
+}
+
+.ipa-container {
+  box-sizing: border-box;
+  padding: 6px 12px;
+  background: rgba(66, 75, 255, 0.04);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.ipa-container text:nth-child(1) {
+  font-family: var(--simHei);
+  font-weight: 300;
+  font-size: 12px;
+  color: #1D2129;
+}
+
+.ipa-container image {
+  width: 18px;
+  height: 18px;
+  padding: 0 4px 0 6px;
+}
+
+.ipa-container text:nth-child(3) {
+  font-family: var(--simHei);
+  font-weight: 300;
+  font-size: 14px;
+  color: #1D2129;
+}
+
+/* ---------- E wordAndipa-container ---------- */
+
+/* ---------- S btns-group ---------- */
+.btns-group {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 30px;
+  padding: 0 40px 30px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  bottom: 50px;
+}
+
+.right-btn {
+  box-sizing: border-box;
+  width: 128px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #3D4262;
+  border-radius: 30px;
+}
+
+.left-btn {
+  box-sizing: border-box;
+  width: 128px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #3D4262;
+  border-radius: 30px;
+}
+
+.right-btn text {
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 14px;
+  color: #3D4262;
+}
+
+.left-btn text {
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 14px;
+  color: #FFFFFF;
+}
+
+.congratulation-btn {
+  box-sizing: border-box;
+  width: 260px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #3D4262;
+  border-radius: 30px;
+}
+
+.congratulation-btn text {
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 14px;
+  color: #FFFFFF;
+}
+
+/* Ripple effect */
+.ripple-leftBtn {
+  background-position: center;
+  transition: background 0.8s;
+}
+
+.ripple-leftBtn:hover {
+  background: #3D4262 radial-gradient(circle, transparent 1%, #3D4262 1%) center/15000%;
+}
+
+.ripple-leftBtn:active {
+  background-color: rgba(61, 66, 98, 0.9);
+  background-size: 100%;
+  transition: background 0s;
+}
+
+.ripple-rightBtn {
+  background-position: center;
+  transition: background 0.8s;
+}
+
+.ripple-rightBtn:hover {
+  background: #F5F8FE radial-gradient(circle, transparent 1%, #F5F8FE 1%) center/15000%;
+}
+
+.ripple-rightBtn:active {
+  background-color: rgba(0, 0, 0, 0.1);
+  background-size: 100%;
+  transition: background 0s;
+}
+
+@media (prefers-color-scheme: dark) {
+
+  /* DarkMode 下的样式 start */
+  .word-text {
+    font-family: var(--poppins-bold);
+    font-size: 32px;
+    color: #EEF1F7;
+  }
+
+  .ipa-container {
+    box-sizing: border-box;
+    padding: 6px 12px;
+    background: #303344;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+  }
+
+  .ipa-container text:nth-child(1) {
+    font-family: var(--simHei);
+    font-weight: 300;
+    font-size: 12px;
+    color: #D5D9E0;
+  }
+
+  .ipa-container image {
+    width: 18px;
+    height: 18px;
+    padding: 0 4px 0 6px;
+  }
+
+  .ipa-container text:nth-child(3) {
+    font-family: var(--simHei);
+    font-weight: 300;
+    font-size: 14px;
+    color: #D5D9E0;
+  }
+
+  .left-btn text {
+    font-family: var(--simHei);
+    font-weight: 600;
+    font-size: 14px;
+    color: #fafafa;
+  }
+
+  .right-btn text {
+    font-family: var(--simHei);
+    font-weight: 600;
+    font-size: 14px;
+    color: #9598A9;
+  }
+
+  .ripple-rightBtn:hover {
+    background: rgba(0, 0, 0, 0) radial-gradient(circle, transparent 1%, rgba(0, 0, 0, 0) 1%) center/15000%;
+  }
+  
+  .ripple-rightBtn:active {
+    background-color: #3D4262;
+    background-size: 100%;
+    transition: background 0s;
+  }
+
+  /* DarkMode 下的样式 end */
+
+}

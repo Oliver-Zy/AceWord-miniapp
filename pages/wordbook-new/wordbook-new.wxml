@@ -1,0 +1,76 @@
+<wxs module="tools" src="./wordbook-new.wxs"></wxs>
+<!-- wxs -->
+
+<!-- S container -->
+<view class="container">
+
+  <!-- S filter-container -->
+  <view wx:if="{{showFilterContainer}}" class="filter-container" style="position:fixed;top:{{naviBarHeight}}px;z-index:2;">
+    <view class="filter-item" bind:tap="onFilterItem" data-type="wordNum">
+      <text>单词数</text>
+      <image src="../../images/icons/down.png"></image>
+    </view>
+    <view class="filter-item" bind:tap="onFilterItem" data-type="subCategory">
+      <text>子分类</text>
+      <image src="../../images/icons/down.png"></image>
+    </view>
+    <view class="filter-item" bind:tap="onFilterItem" data-type="sort">
+      <text>排序方式</text>
+      <image src="../../images/icons/down.png"></image>
+    </view>
+    <!-- <van-divider custom-class="divider" style="width:100%;position:absolute;bottom:0;" /> -->
+  </view>
+  <!-- E filter-container -->
+
+  <!-- E block-container -->
+  <view wx:if="{{ showBlockContainer }}" class="block-container" style="position:fixed;top:{{naviBarHeight + 44}}px;z-index:2;">
+    <block wx:for="{{ blockList }}">
+      <view class="block-item-{{tools.isChosen(filterType, chosenIndexArr, index)}}" bind:tap="onBlockItem" data-index="{{index}}" style="width:{{blockWidth}}px;"><text>{{item.desc}}</text></view>
+    </block>
+  </view>
+  <!-- E block-container -->
+
+  <!-- S scroll-view -->
+  <scroll-view scroll-y="true" style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight + (showFilterContainer ? 44 : 0)}}px;">
+
+    <block wx:if="{{!isCustom}}" wx:for="{{wordBookList}}">
+      <view wx:if="{{!(wordBookCategoryCode != '99' && item.isInLearningPlan)}}" style="height:16px;"></view>
+      <wordbook-progress-new wx:if="{{!(wordBookCategoryCode != '99' && item.isInLearningPlan)}}" wordBook="{{item}}" currentWordBookCode="{{currentWordBookCode}}" bind:wordBook="onWordBook" data-index="{{index}}"></wordbook-progress-new>
+    </block>
+
+    <view wx:if="{{isCustom && showGuideOfCustomWordBook}}" style="height:16px;"></view>
+    <wordbook-guide wx:if="{{isCustom && showGuideOfCustomWordBook}}" bind:cancelGuide="onCancelGuide" />
+    <view wx:if="{{isCustom && showGuideOfCustomWordBookVip}}" style="height:16px;"></view>
+    <wordbook-guide-vip wx:if="{{isCustom && showGuideOfCustomWordBookVip}}" bind:cancelGuideVip="onCancelGuideVip" />
+
+    <block wx:if="{{isCustom}}" wx:for="{{wordBookListCustom}}" wx:key="item">
+      <view style="height:16px;"></view>
+      <wordbook-progress-new wordBook="{{item}}" currentWordBookCode="{{currentWordBookCode}}" bind:wordBook="onWordBookCustom" data-index="{{index}}"></wordbook-progress-new>
+    </block>
+
+    <view style="height:128px;"></view>
+
+  </scroll-view>
+  <!-- E scroll-view -->
+
+</view>
+<!-- E container -->
+
+<!-- S ace-components -->
+<view wx:if="{{isCustom}}" style="width:100%;display:flex;justify-content:center;position:fixed;bottom:60px;">
+  <ace-button bind:tap="uploadWordBookCustom" size="large" text="上传词书" />
+</view>
+<!-- E ace-components -->
+
+<!-- S vant components -->
+<van-toast id="van-toast" />
+<van-overlay show="{{ showOverlay }}" bind:click="onClickHideOverlay" />
+<van-popup show="{{ showPopup }}" position="bottom" overlay="{{ false }}" duration="0">
+  <van-action-sheet show="{{ showActionSheet }}" description="{{ actionSheetDesc }}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheet" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
+</van-popup>
+<van-popup show="{{ showPopupCustom }}" position="bottom" overlay="{{ false }}" duration="0">
+  <van-action-sheet show="{{ showActionSheetCustom }}" description="{{ actionSheetDesc }}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheetCustom" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
+</van-popup>
+<!-- E vant components -->
+
+<ace-navi-bar type="back" title="{{isCustom ? '自定义词书' : '词书广场'}}" backgroundColor="white" showVantDivider="{{isCustom ? true : false}}" style="width:100%;position:fixed;top:0;z-index:2;" />

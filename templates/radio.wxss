@@ -1,0 +1,76 @@
+.content {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 12px;
+  color: #86909C;
+}
+
+.brief-explaination-text {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: #111111;
+}
+
+.block-group {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.block-chosen {
+  width: 82px;
+  height: 30px;
+  margin-right: 16px;
+  background: #4C34F0;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.block-unchosen {
+  width: 82px;
+  height: 30px;
+  margin-right: 16px;
+  background: #E5E6EB;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.block-chosen text {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 12px;
+  color: #FFFFFF;
+}
+
+.block-unchosen text {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 12px;
+  color: #4E5969;
+}
+
+.english {
+  font-family: var(--poppins);
+  font-size: 12px;
+  color: #3D4262;
+}
+
+.chinese {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 12px;
+  color: #3D4262;
+}

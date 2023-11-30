@@ -1,0 +1,46 @@
+module.exports = {
+  prsToCh: function (prs) {
+    switch (prs) {
+      case 'noun':
+        return '名词'
+      case 'verb':
+        return '动词'
+      case 'adjective':
+        return '形容词'
+      case 'adverb':
+        return '副词'
+    }
+  },
+  prsToEn: function (prs) {
+    switch (prs) {
+      case 'adjective':
+        return 'adj'
+      case 'adverb':
+        return 'adv'
+      default:
+        return prs
+    }
+  },
+  ipaHandler: function (ipa) {
+    if (ipa == undefined) return
+    if (ipa.indexOf(';') != -1) {
+      return ipa.slice(0, ipa.indexOf(';'))
+    } else {
+      return ipa
+    }
+  },
+
+  bgColorHandler: function (bgColor, isDarkMode) {
+    if (bgColor == undefined) return 
+    if (!isDarkMode) {
+      return bgColor == 'none' ? '' : bgColor == 'yellow' ? '#FBF719' : bgColor == 'orange' ? '#FF793B' : bgColor == 'green' ? '#5DE23C' : bgColor == 'blue' ? '#30C5FF' : bgColor == 'pink' ? '#FFC0CB' : ''
+    } else {
+      return bgColor == 'none' ? '' : bgColor == 'yellow' ? 'rgb(251, 247, 25, 0.2)' : bgColor == 'orange' ? 'rgba(255, 121, 59, 0.2)' : bgColor == 'green' ? 'rgba(93, 226, 60, 0.2)' : bgColor == 'blue' ? 'rgba(48, 197, 255, 0.2)' : bgColor == 'pink' ? 'rgba(255, 192, 203, 0.2)' : ''
+    }
+  },
+
+  bgColorCNHandler: function (bgColor) {
+    if (bgColor == undefined) return 
+    return bgColor == 'none' ? '无' : bgColor == 'yellow' ? '黄色' : bgColor == 'orange' ? '橘色' : bgColor == 'green' ? '绿色' : bgColor == 'blue' ? '蓝色' : bgColor == 'pink' ? '粉色' : ''
+  },
+}

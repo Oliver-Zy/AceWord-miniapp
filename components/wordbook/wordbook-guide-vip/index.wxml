@@ -1,0 +1,28 @@
+<!-- S container -->
+<view class="container">
+
+  <!-- S header -->
+  <view class="header">
+    <text class="title-text">批量导入自定义释义</text>
+    <view class="notif-btn" bind:tap="onCancelGuide">
+      <text class="cancal-text">不再显示</text>
+    </view>
+  </view>
+  <!-- E header -->
+
+  <van-divider style="width: 100%;"/>
+
+  <!-- S inner-container -->
+  <view class="inner-container">
+    <text class="content-text">1. 开通会员后可按以下格式批量导入自定义释义\n2. 非会员将忽略第二列，此模式仅支持Excel</text>
+    <view class="down-inner-container">
+      <view class="excel-container">
+        <image src="./images/excel.png"></image>
+        <text>excel文件</text>
+      </view>
+    </view>
+  </view>
+  <!-- E inner-container -->
+
+</view>
+<!-- E container -->

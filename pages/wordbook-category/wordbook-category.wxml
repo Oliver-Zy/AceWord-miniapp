@@ -1,0 +1,24 @@
+<!-- S container -->
+<view class="container">
+
+  <!-- S scroll-view -->
+  <scroll-view scroll-y="true" style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;">
+
+    <block wx:for="{{wordBookCategoryList}}" wx:key="categoryName">
+
+      <view class="wordBookCategory" style="width:{{wordBookCategoryWidth}}px;" bind:tap="onWordBookCategory" data-wordbookCategoryCode="{{item.wordBookCategoryCode}}">
+        <image src="./images/bookCover-{{item.wordBookCategoryCode}}.png" class="bookCover-img"></image>
+        <view class="right-wordBookCategory">
+          <text>{{item.wordBookCategoryName}}</text>
+          <view style="height:2px;"></view>
+          <text>{{item.totalWordBookNum}}本词书</text>
+        </view>
+      </view>
+
+    </block>
+
+  </scroll-view>
+</view>
+<!-- E container -->
+
+<ace-navi-bar type="back" title="词书广场" backgroundColor="white" showVantDivider="true" style="width:100%;position:fixed;top:0;" />

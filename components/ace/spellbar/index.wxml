@@ -1,0 +1,11 @@
+<!-- S container -->
+<view class="container">
+  <view class="left-container" bind:tap="onHint">
+    <image src="./images/light.png"></image>
+  </view>
+  <van-field input-class="word-text" model:value="{{ inputValue }}" confirm-hold="{{ true }}" hold-keyboard="{{ true }}" adjust-position="{{ false }}" center="{{ true }}" input-align="center" selection-start="0" selection-end="0" border="{{ false }}" custom-style="background-color:#F6F6F8;" bind:focus="onFocus" bind:blur="onBlur" focus="{{ focus }}" bind:confirm="onConfirm" />
+  <view class="right-container" bind:tap="onTapConfirm">
+    <image src="./images/confirm.png"></image>
+  </view>
+</view>
+<!-- E container -->

@@ -1,0 +1,40 @@
+<wxs module="tools" src="./index.wxs"></wxs>
+<!-- wxs -->
+
+<!-- S container -->
+<view class="container" style="border:{{wordBook.wordBookCode == currentWordBookCode ? '1px solid rgba(66, 75, 255, 0.3)' : ''}};" bind:tap="onWordBook">
+
+  <!-- S book-cover -->
+  <view class="book-cover">
+    <image src="./images/book-cover.png" class="book-cover-image"></image>
+  </view>
+  <!-- E book-cover -->
+
+  <!-- S right-container -->
+  <view class="right-container" style="width:{{rightContainerWidth}}px;">
+
+    <view class="header-right-container">
+      <text class="header-right-container-text line-limit-length">{{wordBook.wordBookName}}</text>
+      <view wx:if="{{!wordBook.isInLearningPlan}}" class="tag-container">
+        <image src="./images/tag.png" style="width:10px;height:10px;padding-right:3px;"></image>
+        <text class="tag-text">{{wordBook.userNum}}</text>
+      </view>
+    </view>
+
+    <view style="height:8px;"></view>
+    <text wx:if="{{ wordBook.isInLearningPlan }}" class="progress-text">按当前每日目标，剩余{{tools.calcLeftDays(wordBook.totalWordNum, wordBook.userProgressNum, dailyTargetNum )}}天</text>
+    <text wx:if="{{ !wordBook.isInLearningPlan }}" class="progress-text">点击添加到我的计划</text>
+    <view class="progress">
+      <view style="max-width:100%;width:{{tools.calcProgress(wordBook.totalWordNum, wordBook.userProgressNum) * 0.01 * rightContainerWidth}}px;"></view>
+    </view>
+
+    <view class="footer-right-container">
+      <text>进度 {{tools.calcProgress(wordBook.totalWordNum, wordBook.userProgressNum )}}%</text>
+      <text>({{wordBook.userProgressNum == null ? 0 : wordBook.userProgressNum}}/{{wordBook.totalWordNum}})</text>
+    </view>
+
+  </view>
+  <!-- E right-container -->
+
+</view>
+<!-- E container -->

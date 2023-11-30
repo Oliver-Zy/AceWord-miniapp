@@ -1,0 +1,48 @@
+<!-- S container -->
+<view wx:if="{{ type == 'wordGroup' }}" class="container">
+
+  <!-- S header -->
+  <view class="header">
+    <view class="header-btn" bind:tap="onAddWordGroup">
+      <image src="/images/icons/add.png" style="width:18px;height:18px;"></image>
+    </view>
+    <text class="header-text">选择分组</text>
+    <view class="header-btn" bind:tap="onCancel">
+      <image src="/images/icons/add.png" style="width:18px;height:18px;transform:rotate(45deg);"></image>
+    </view>
+  </view>
+
+  <van-divider />
+  <!-- E header -->
+
+  <block wx:for="{{wordGroupList}}">
+
+    <!-- S cell -->
+    <view class="cell" bind:tap="onCheck" data-index="{{index}}">
+      <view class="cell-left">
+        <text>{{item.groupName == '默认单词本' ? '我的收藏' : item.groupName}}</text>
+        <view style="height: 4px;"></view>
+        <text>共{{item.count}}词</text>
+      </view>
+      <view class="cell-right">
+        <image src="./images/{{item.isChecked ? 'checked' : 'check'}}.png" class="check-img"></image>
+      </view>
+    </view>
+    <!-- E cell -->
+
+    <view wx:if="{{wordGroupList.length != (index + 1)}}" class="hair-line"></view>
+    <!-- hair-line -->
+  </block>
+
+  <view class="btn-container">
+    <view class="finish-btn" bind:tap="onCollectToWordGroup">
+      <text>完成添加</text>
+    </view>
+  </view>
+  <!-- btn-container -->
+
+  <view style="padding-bottom:env(safe-area-inset-bottom);"></view>
+  <!-- placeHolder -->
+
+</view>
+<!-- E container -->

@@ -1,0 +1,62 @@
+<wxs module="tools" src="./index.wxs"></wxs>
+<!-- wxs -->
+
+<view class="header">
+  <view class="header-left">
+    <text wx:if="{{titleType == 'text'}}" class="header-text">{{text}}</text>
+
+    <text wx:if="{{titleType == 'wordCard'}}" class="header-text">{{tools.dateToMonth(date)}}.{{tools.dateToDay(date)}}</text>
+    <text wx:if="{{titleType == 'wordCard'}}" class="header-text">「</text>
+    <text wx:if="{{titleType == 'wordCard'}}" class="header-text-color">{{arrLen}}</text>
+    <text wx:if="{{titleType == 'wordCard'}}" class="header-text">张卡片」</text>
+
+    <text wx:if="{{titleType == 'calendar'}}" class="header-text">{{tools.dateToMonth(date)}}.{{tools.dateToDay(date)}}</text>
+    <text wx:if="{{titleType == 'calendar'}}" class="header-text">「{{filterType == 'today' ? '新学' : '练习'}}</text>
+    <text wx:if="{{titleType == 'calendar'}}" class="header-text-{{filterType == 'today' ? 'red' : 'blue'}}">{{arrLen}}</text>
+    <text wx:if="{{titleType == 'calendar'}}" class="header-text">张卡片」</text>
+
+    <text wx:if="{{titleType == 'delete'}}" class="header-text">当前共有「</text>
+    <text wx:if="{{titleType == 'delete'}}" class="header-text-color">{{arrLen}}</text>
+    <text wx:if="{{titleType == 'delete'}}" class="header-text">张卡片」</text>
+
+    <text wx:if="{{titleType == 'wordGroup'}}" class="header-text">总共添加「</text>
+    <text wx:if="{{titleType == 'wordGroup'}}" class="header-text-color">{{arrLen}}</text>
+    <text wx:if="{{titleType == 'wordGroup'}}" class="header-text">个单词」</text>
+
+    <text wx:if="{{titleType == 'bookWord'}}" class="header-text">共「</text>
+    <text wx:if="{{titleType == 'bookWord'}}" class="header-text-color">{{arrLen}}</text>
+    <text wx:if="{{titleType == 'bookWord'}}" class="header-text">个单词」</text>
+
+
+    <text wx:if="{{titleType == 'sentence'}}" class="header-text">{{tools.dateToMonth(date)}} 2022</text>
+    <text wx:if="{{titleType == 'sentence'}}" class="header-text">「</text>
+    <text wx:if="{{titleType == 'sentence'}}" class="header-text-color">{{arrLen}}</text>
+    <text wx:if="{{titleType == 'sentence'}}" class="header-text">个句子」</text>
+  </view>
+
+  <view wx:if="{{titleType == 'wordGroup' || titleType=='bookWord'}}" class="{{showMode==2 ? 'selected-btn' : 'btn'}}" bind:tap="onBtn" data-type="changeShowMode">
+    <text class="{{showMode==2 ? 'selected-btn-text' : 'btn-text'}}">{{showMode==0?'英':showMode==1?'中':'中英'}}</text>
+  </view>
+
+
+  
+  <view wx:if="{{iconType == 'selectAll'}}" class="{{isSelectAll ? 'selected-btn' : 'btn'}}" bind:tap="onBtn" data-type="selectAll">
+    <image class="btn-img" src="/images/icons/{{isSelectAll ? 'check-white' : isDarkMode ? 'check-dark' : 'check'}}.png"></image>
+    <text class="{{isSelectAll ? 'selected-btn-text' : 'btn-text'}}">全选</text>
+  </view>
+
+  <view wx:if="{{iconType == 'learnRules'}}" class="btn" bind:tap="onBtn" data-type="learnRules">
+    <image class="btn-img" src="/images/icons/{{isDarkMode ? 'question-dark' : 'question'}}.png"></image>
+    <text class="btn-text">规则</text>
+  </view>
+
+  <view wx:if="{{iconType == 'options'}}" class="btn" bind:tap="onBtn" data-type="options">
+    <image class="btn-img" src="/images/icons/{{isDarkMode ? 'options-dark' : 'options'}}.png"></image>
+    <text class="btn-text">选项</text>
+  </view>
+
+  <view wx:if="{{iconType == 'feedback'}}" class="btn" bind:tap="onBtn" data-type="feedback">
+    <image class="btn-img" src="/images/icons/{{isDarkMode ? 'question-dark' : 'question'}}.png"></image>
+    <text class="btn-text">反馈</text>
+  </view>
+</view>

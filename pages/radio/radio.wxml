@@ -1,0 +1,50 @@
+<wxs module="tools" src="./radio.wxs"></wxs>
+<!-- wxs -->
+
+<import src="/templates/practice.wxml" />
+<import src="/templates/radio.wxml" />
+<!-- template -->
+
+<!-- S container-->
+<view class="container">
+
+  <view style="height:{{naviBarHeight}}px;"></view>
+  <template is="wordAndipa-container" data="{{entryPage: 'radio', word: wordInfoList[wordIndex].word, isWordBlur, isFinished, pronType, ipa: pronType == 'US' ? wordInfoList[wordIndex].ipaUS : wordInfoList[wordIndex].ipaUK}}" />
+  <!-- template -->
+
+  <!-- S wordNameCN-container -->
+  <view class="wordNameCN-container" style="filter:blur({{iswordNameCNBlur ? 4 : 0}}px);" bind:tap="{{iswordNameCNBlur ? 'onBlur' : ''}}" data-type="wordNameCN">
+    <view style="border-bottom: 1px dashed{{isDarkMode ? '#1D2129' : '#EEF1F7'}};">
+      <text class="wordNameCN-text">{{wordInfoList[wordIndex].wordCN}}</text>
+    </view>
+    <image src="./images/eye.png" class="eye-img" bind:tap="{{!iswordNameCNBlur ? 'onBlur' : ''}}" data-type="wordNameCN"></image>
+  </view>
+  <!-- E wordNameCN-container -->
+
+  <!-- S explainAndExample-container -->
+  <view class="explainAndExample-container" style="filter:blur({{isExplainAndExampleBlur ? 4 : 0}}px);" bind:tap="{{isExplainAndExampleBlur ? 'onBlur' : ''}}" data-type="explainAndExample">
+    <text class="explainAndExample-text">释义及例句</text>
+    <template is="content" data="{{wordInfoList, wordIndex, defListIndex, isDarkMode}}" />
+  </view>
+  <!-- E explainAndExample-container -->
+
+  <!-- S footer -->
+  <view class="footer">
+    <image src="./images/{{playType}}.png" bind:tap="onPlayType"></image>
+    <image src="./images/left.png" class="{{ifLeftOpacity ? 'left-img-opacity' : 'left-img'}}" bind:touchstart="onLeftTouchstart" bind:touchend="onPrev"></image>
+    <image src="./images/{{isPlaying ? 'pause' : 'play'}}.png" bind:tap="onPlay"></image>
+    <image src="./images/right.png" class="{{ifRightOpacity ? 'left-img-opacity' : 'left-img'}}" bind:touchstart="onRightTouchstart" bind:touchend="onNext"></image>
+    <image src="./images/play-list.png" bind:tap="onPlayList"></image>
+  </view>
+  <!-- E footer -->
+
+</view>
+<!-- E container-->
+
+<ace-play-list wx:if="{{ showPlayList }}" wordList="{{ wordList }}" wordIndex="{{ wordIndex }}" style="width:100%;height:66%;position:fixed;bottom:0;z-index:2;" bind:cancel="onPlayListCancel" bind:word="onPlayListWord" />
+<ace-navi-bar type="back" title="单词随声听" backgroundColor="#f5f8fe" showVantDivider="true" style="width:100%;position:fixed;top:0;" />
+<!-- ace-components -->
+
+<van-toast id="van-toast" />
+<van-overlay show="{{ showOverlay }}" bind:click="onClickHideOverlay" />
+<!-- vant components -->

@@ -1,0 +1,30 @@
+<wxs module="tools" src="./index.wxs"></wxs>
+<!-- wxs -->
+
+<!-- S container -->
+<view class="container">
+
+  <!-- S up-container -->
+  <view class="up-container">
+    <text class="wordBookName-text line-limit-length">{{wordBookMyInfo.currentWordBookName == undefined ? '加载中...' : wordBookMyInfo.currentWordBookName}}</text>
+    <view class="changeDic-btn" bind:tap="onChangeDic">
+      <image class="changeDic-btn-img" src="./images/{{isDarkMode ? 'change-dark' : 'change'}}.png"></image>
+      <text class="changeDic-btn-text">更换词书</text>
+    </view>
+  </view>
+  <!-- S up-container -->
+
+  <!-- S down-container -->
+  <view class="down-container">
+    <view class="dicBookMine-TextInfo">
+      <text>按当前计划，剩余{{wordBookMyInfo.currentWordBookName == undefined ? '...' : tools.calcLeftDays(wordBookMyInfo.totalWordNum, wordBookMyInfo.userProgressNum, wordBookMyInfo.dailyTargetNum )}}天</text>
+      <text>({{wordBookMyInfo.currentWordBookName == undefined ? '...' : wordBookMyInfo.userProgressNum == null ? 0 : wordBookMyInfo.userProgressNum}}/{{wordBookMyInfo.currentWordBookName == undefined? '...' : wordBookMyInfo.totalWordNum}})</text>
+    </view>
+    <view class="progress">
+      <view style="width:{{wordBookMyInfo.currentWordBookName == undefined ? 0 : tools.calcProgress(wordBookMyInfo.totalWordNum, wordBookMyInfo.userProgressNum) * 0.01 * downContainerWidth}}px;"></view>
+    </view>
+  </view>
+  <!-- E down-container -->
+
+</view>
+<!-- E container -->

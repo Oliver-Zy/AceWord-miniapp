@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "ace-navi-bar": "../../components/ace/navibar/index",
+    
+    "van-toast": "../../miniprogram_npm/@vant/weapp/toast/index"
+  },
+  "backgroundColor": "#161A27"
+}

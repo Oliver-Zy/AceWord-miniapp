@@ -1,0 +1,345 @@
+.container {
+  box-sizing: border-box;
+  padding: 24px 16px 22px;
+  margin: 8px 16px 0 16px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header text {
+  font-family: var(--poppins-bold);
+  font-size: 22px;
+  color: #1D2129;
+}
+
+.header view {
+  width: 72px;
+  height: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.header view image {
+  width: 28px;
+  height: 28px;
+}
+
+.inner-container {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-inner-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-inner-container view {
+  width: 28px;
+  display: flex;
+  justify-content: center;
+}
+
+.header-inner-container view text {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 14px;
+  color: #C9CDD4;
+}
+
+.grid-container {
+  width: 100%;
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 28px 28px 28px 28px 28px 28px 28px;
+  justify-content: space-between;
+}
+
+.calendar-group {
+  width: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.text-group {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-group text {
+  font-family: var(--poppins-medium);
+  font-size: 14px;
+}
+
+.dot-group {
+  width: 30px;
+  height: 4px;
+  padding-top: 6px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.blue-dot {
+  width: 4px;
+  height: 4px;
+  margin: 0 1px;
+  background: #5C46E6;
+  border-radius: 18px;
+}
+
+.red-dot {
+  width: 4px;
+  height: 4px;
+  margin: 0 1px;
+  background: #F99234;
+  border-radius: 18px;
+}
+
+.footer {
+  width: 100%;
+  padding-top: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.left-footer{
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+.up-left-footer {
+  display: flex;
+  align-items: center;
+}
+
+.left-dot {
+  width: 6px;
+  height: 6px;
+  margin-right: 8px;
+  background: #5C46E6;
+  border-radius: 18px;
+}
+
+.right-dot {
+  width: 6px;
+  height: 6px;
+  margin-right: 8px;
+  background: #F99234;
+  border-radius: 18px;
+}
+
+.footer view view text{
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 11px;
+  color: #86909C;
+}
+
+.progress-group {
+  width: 50%;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-group {
+  width: 106px;
+  height: 4px;
+  background: #E5E6EB;
+  border-radius: 10px;
+}
+
+.left-progress {
+  height: 4px;
+  background: #5C46E6;
+  border-radius: 10px;
+}
+
+.right-progress {
+  height: 4px;
+  background: #F99234;
+  border-radius: 10px;
+}
+
+.loader-container {
+  height: 126px;
+  margin: 12px 16px 0 16px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  height: 3px;
+  width: 3px;
+  color: #4C34F0;
+  box-shadow: -8px -8px 0 3px,
+              -8px -8px 0 3px,
+              -8px -8px 0 3px,
+              -8px -8px 0 3px;
+  animation: loader-38 5s infinite;
+}
+
+@keyframes loader-38 {
+  0% {
+    box-shadow: -8px -8px 0 3px,
+                -8px -8px 0 3px,
+                -8px -8px 0 3px,
+                -8px -8px 0 3px;
+  }
+  8.33% {
+    box-shadow: -8px -8px 0 3px ,
+                8px -8px 0 3px ,
+                8px -8px 0 3px ,
+                8px -8px 0 3px ;
+  }
+  16.66% {
+    box-shadow: -8px -8px 0 3px ,
+                8px -8px 0 3px ,
+                8px 8px 0 3px ,
+                8px 8px 0 3px ;
+  }
+  24.99% {
+    box-shadow: -8px -8px 0 3px ,
+                8px -8px 0 3px ,
+                8px 8px 0 3px ,
+                -8px 8px 0 3px ;
+  }
+  33.32% {
+    box-shadow: -8px -8px 0 3px ,
+                8px -8px 0 3px ,
+                8px 8px 0 3px ,
+                -8px -8px 0 3px ;
+  }
+  41.65% {
+    box-shadow: 8px -8px 0 3px ,
+                8px -8px 0 3px ,
+                8px 8px 0 3px ,
+                8px -8px 0 3px ;
+  }
+  49.98% {
+    box-shadow: 8px 8px 0 3px ,
+              8px 8px 0 3px ,
+              8px 8px 0 3px ,
+              8px 8px 0 3px ;
+  }
+  58.31% {
+    box-shadow: -8px 8px 0 3px ,
+                -8px 8px 0 3px ,
+                8px 8px 0 3px ,
+                -8px 8px 0 3px ;
+  }
+  66.64% {
+    box-shadow: -8px -8px 0 3px ,
+                -8px -8px 0 3px ,
+                8px 8px 0 3px ,
+                -8px 8px 0 3px ;
+  }
+  74.97% {
+    box-shadow: -8px -8px 0 3px ,
+                8px -8px 0 3px ,
+                8px 8px 0 3px ,
+                -8px 8px 0 3px ;
+  }
+  83.3% {
+    box-shadow: -8px -8px 0 3px ,
+                8px 8px 0 3px ,
+                8px 8px 0 3px ,
+                -8px 8px 0 3px ;
+  }
+  91.63% {
+    box-shadow: -8px -8px 0 3px ,
+                -8px 8px 0 3px ,
+                -8px 8px 0 3px ,
+                -8px 8px 0 3px ;
+  }
+  100% {
+    box-shadow: -8px -8px 0 3px ,
+                -8px -8px 0 3px ,
+                -8px -8px 0 3px ,
+                -8px -8px 0 3px ;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  /* DarkMode 下的样式 start */
+  .container {
+    box-sizing: border-box;
+    padding: 24px 16px 22px;
+    margin: 8px 16px 0 16px;
+    background: #27283A;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .header text {
+    font-family: var(--poppins-medium);
+    font-size: 22px;
+    color: #EEF1F7;
+  }
+
+  .footer view view text{
+    font-family: var(--simHei);
+    font-weight: 400;
+    font-size: 11px;
+    color: #D5D9E0;
+  }
+
+  .blue-dot {
+    width: 4px;
+    height: 4px;
+    margin: 0 1px;
+    background: #C7C6FF;
+    border-radius: 18px;
+  }
+
+  .left-dot {
+    width: 6px;
+    height: 6px;
+    margin-right: 8px;
+    background: #C7C6FF;
+    border-radius: 18px;
+  }
+
+  .right-dot {
+    width: 6px;
+    height: 6px;
+    margin-right: 8px;
+    background: #ffc59c;
+    border-radius: 18px;
+  }
+  
+  .right-progress {
+    height: 4px;
+    background: #ffc59c;
+    border-radius: 10px;
+  }
+  /* DarkMode 下的样式 end */
+}

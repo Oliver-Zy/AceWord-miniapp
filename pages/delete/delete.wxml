@@ -1,0 +1,60 @@
+<wxs module="tools" src="./delete.wxs"></wxs>
+<!-- wxs -->
+
+<!-- S container -->
+<view class="container">
+
+  <!-- S scroll-view -->
+  <scroll-view scroll-y="true" style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" bind:scroll="onScroll">
+
+    <view style="height: 20px;"></view>
+    <ace-header wx:if="{{wordCardList.length != 0}}" titleType="delete" arrLen="{{wordCardList.length}}" iconType="selectAll" bind:headerEvent="onHeaderEvent" data-index="{{index}}" />
+    <block wx:for="{{wordCardList}}">
+      <word-card wordCard="{{item}}" isChecked="{{tools.isChecked(item.wordCardID, wordCardIDCheckedList)}}" bind:wordCardEvent="onWordCardEvent" data-index="{{index}}" />
+    </block>
+
+    <view style="height: 16px;padding-bottom:{{wordCardIDCheckedList.length != 0 ? '112px' : 'env(safe-area-inset-bottom)'}};"></view>
+  </scroll-view>
+  <!-- S scroll-view -->
+
+</view>
+<!-- S container -->
+
+<!-- S practice-btn -->
+<view wx:if="{{wordCardIDCheckedList.length == 0 ? false : true}}" style="width:100%;display:flex;justify-content:center;position:fixed;bottom:60px;">
+  <ace-button size="large" text="开始练习" bind:btnEvent="onPractice" />
+</view>
+<!-- E practice-btn -->
+
+<!-- S dicCardSwiper-container -->
+<swiper wx:if="{{showDicCardSwiper}}" class="swiper" current="{{currentSwiperIndex}}" easing-function="easeOutCubic" bind:change="onSwiperChange" mut-bind:tap="onClickHideOverlay">
+  <block wx:for="{{dicCardList}}">
+    <swiper-item class="swiper-item">
+      <dic-card wordInfo="{{item}}" showReplaceBtn="{{false}}" bind:dicCardEvent="onDicCardEvent" mut-bind:tap="" data-index="{{index}}" />
+    </swiper-item>
+  </block>
+</swiper>
+
+<view wx:if="{{showDicCardSwiper}}" class="indicator-dots-container" bind:tap="onClickHideOverlay">
+  <view class="indicator-dots">
+    <block wx:for="{{dicCardList}}">
+      <view class="{{item.isActive ? 'active' : 'inactive'}}-dot"></view>
+    </block>
+  </view>
+</view>
+<!-- E dicCardSwiper-container -->
+
+<!-- S ace-components -->
+<ace-navi-bar type="back" title="已删除卡片" backgroundColor="rgba(0,0,0,0)" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
+<ace-search-bar wx:if="{{showSearchBarSelfDef}}" style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" placeholder="添加单词的自定义释义" bind:focus="onSearchBarFocus" bind:cancel="onSearchBarCancelSelfDef" bind:confirm="onSearchBarConfirmSelfDef" />
+<ace-popup wx:if="{{showPopup}}" type="wordGroup" wordGroupList="{{wordGroupList}}" style="width:100%;position:fixed;bottom:0;z-index:100;" bind:addWordGroup="onAddWordGroup" bind:collectToWordGroup="onCollectToWordGroup" bind:cancel="onClickHideOverlayZIndex" />
+<!-- E ace-components -->
+
+<!-- S vant components -->
+<van-toast id="van-toast" />
+<van-overlay show="{{ showOverlay }}" bind:click="onClickHideOverlay" />
+<van-overlay show="{{ showOverlayZIndex }}" z-index="99" bind:click="onClickHideOverlayZIndex" />
+<van-popup show="{{ showPopupVant }}" position="bottom" overlay="{{ false }}" duration="0" bind:close="onClose">
+  <van-action-sheet show="{{ showActionSheet }}" description="{{ actionSheetDesc }}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheet" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
+</van-popup>
+<!-- E vant components -->

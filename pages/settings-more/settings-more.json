@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "ace-navi-bar": "../../components/ace/navibar/index",
+    "ace-cell": "../../components/ace/cell/index"
+  },
+  "backgroundColor": "#FDFDFD"
+}

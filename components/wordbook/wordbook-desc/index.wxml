@@ -1,0 +1,38 @@
+<wxs module="tools" src="./index.wxs"></wxs>
+<!-- wxs -->
+
+<!-- S container -->
+<view class="container" bind:tap="onWordBook">
+  <view class="book-cover">
+    <image wx:if="{{bookCoverImg}}" src="../../../images/book-covers/book-cover-{{bookCoverImg}}.png" class="book-cover-img"></image>
+    <text class="book-cover-text-1">{{wordBook.wordBookAbbrName}}</text>
+    <text class="book-cover-text-2">{{wordBook.totalWordNum}}词</text>
+  </view>
+  <!-- book-cover -->
+
+  <!-- S right-container -->
+  <view class="right-container" style="width:{{rightContainerWidth}}px;">
+    <view class="header-right-container">
+      <text class="header-right-container-text">{{wordBook.wordBookName}}</text>
+      <view wx:if="{{wordBook.isCurrentChosen}}" class="tag">
+        <text>当前学习</text>
+      </view>
+    </view>
+    <!-- header-right-container -->
+
+    <text class="progress-text">{{wordBook.description}}</text>
+    <!-- progress-text -->
+
+    <view style="height:12px;"></view>
+    <!-- progress -->
+
+    <view class="footer-right-container">
+      <text>单词总数 {{wordBook.totalWordNum}}</text>
+    </view>
+    <!-- footer-right-container -->
+
+  </view>
+  <!-- E right-container -->
+
+</view>
+<!-- E container -->

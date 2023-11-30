@@ -1,0 +1,433 @@
+.container {
+  height: 112px;
+  margin: 12px 16px 0 16px;
+  background: linear-gradient(to bottom, #DDE6F9 50%, #FFFFFF 50%);
+  border-radius: 12px;
+  display: flex;
+}
+
+.left-container {
+  width: 30%;
+  height: 100%;
+  background: #DDE6F9;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.left-container image {
+  width: 52px;
+  height: 68px;
+}
+
+.right-container {
+  width: 70%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 24px 0 24px 20px;
+  background: #FFFFFF;
+  border-radius: 12px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  overflow: hidden;
+  position: relative;
+}
+
+.up-right-container text:nth-child(1) {
+  font-family: var(--simHei);
+  font-size: 12px;
+  color: #90919E;
+}
+
+.up-right-container text:nth-child(3) {
+  font-family: var(--simHei);
+  font-size: 12px;
+  color: #90919E;
+}
+
+.up-right-container text:nth-child(2) {
+  font-family: var(--simHei);
+  font-size: 12px;
+  color: #5F67EA;
+}
+
+.down-right-container {
+  display: flex;
+  align-items: flex-end;
+}
+
+.needReviewCardNum-text {
+  font-family: var(--sfpro-heavy-italic);
+  font-size: 30px;
+  line-height: 25px;
+  color: #303339;
+}
+
+.right-img-group {
+  display: flex;
+  align-items: center;
+}
+
+.right-img-group text:nth-child(1) {
+  font-family: var(--simHei);
+  font-size: 14px;
+  color: #303339;
+}
+
+.right-img {
+  width: 16px;
+  height: 16px;
+}
+
+.ace-img {
+  width: 100px;
+  height: 104px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.up-container {
+  width: 100%;
+  display: flex;
+}
+
+.word-group {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.word-group text:first-child {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 13px;
+  color: #90919E;
+}
+
+.down-word-group text:first-child {
+  font-family: var(--sfpro-heavy-italic);
+  font-size: 35px;
+  line-height: 42px;
+  color: #303339;
+}
+
+.down-word-group text:nth-child(2) {
+  font-family: var(--simHei);
+  font-weight: 500;
+  font-size: 12px;
+  color: #303339;
+  padding-left: 5px;
+}
+
+.down-container {
+  width: 100%;
+  padding-top: 14px;
+  border-top: 1px solid #F2F3F5;
+  margin-top: 14px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.img-group {
+  display: flex;
+  align-items: center;
+}
+
+.img-group image {
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border: 1px solid white;
+  border-radius: 50%;
+}
+
+.img-group image:nth-child(2) {
+  position: relative;
+  right: 8px;
+}
+
+.img-group image:nth-child(3) {
+  position: relative;
+  right: 16px;
+}
+
+.img-group text:nth-child(4) {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 13px;
+  color: #95979B;
+  position: relative;
+  right: 12px;
+}
+
+.start-btn {
+  width: 78px;
+  height: 25px;
+  background: #4C34F0;
+  border-radius: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-btn text {
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  color: #FFFFFF;
+}
+
+.blank-container {
+  box-sizing: border-box;
+  height: 126px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  margin: 12px 16px 0 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.blank-container image {
+  width: 64px;
+  height: 48px;
+  padding-bottom: 8px;
+}
+
+.goal-text-container text:nth-child(1) {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 12px;
+  color: #7987A3;
+}
+
+.chinese {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 12px;
+  color: #7987A3;
+}
+
+.english {
+  font-family: var(--poppins-italic);
+  font-size: 12px;
+  color: #7987A3;
+}
+
+.loader-container {
+  height: 126px;
+  margin: 12px 16px 0 16px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  height: 3px;
+  width: 3px;
+  color: #4C34F0;
+  box-shadow: -8px -8px 0 3px,
+    -8px -8px 0 3px,
+    -8px -8px 0 3px,
+    -8px -8px 0 3px;
+  animation: loader-38 5s infinite;
+}
+
+@keyframes loader-38 {
+  0% {
+    box-shadow: -8px -8px 0 3px,
+      -8px -8px 0 3px,
+      -8px -8px 0 3px,
+      -8px -8px 0 3px;
+  }
+
+  8.33% {
+    box-shadow: -8px -8px 0 3px,
+      8px -8px 0 3px,
+      8px -8px 0 3px,
+      8px -8px 0 3px;
+  }
+
+  16.66% {
+    box-shadow: -8px -8px 0 3px,
+      8px -8px 0 3px,
+      8px 8px 0 3px,
+      8px 8px 0 3px;
+  }
+
+  24.99% {
+    box-shadow: -8px -8px 0 3px,
+      8px -8px 0 3px,
+      8px 8px 0 3px,
+      -8px 8px 0 3px;
+  }
+
+  33.32% {
+    box-shadow: -8px -8px 0 3px,
+      8px -8px 0 3px,
+      8px 8px 0 3px,
+      -8px -8px 0 3px;
+  }
+
+  41.65% {
+    box-shadow: 8px -8px 0 3px,
+      8px -8px 0 3px,
+      8px 8px 0 3px,
+      8px -8px 0 3px;
+  }
+
+  49.98% {
+    box-shadow: 8px 8px 0 3px,
+      8px 8px 0 3px,
+      8px 8px 0 3px,
+      8px 8px 0 3px;
+  }
+
+  58.31% {
+    box-shadow: -8px 8px 0 3px,
+      -8px 8px 0 3px,
+      8px 8px 0 3px,
+      -8px 8px 0 3px;
+  }
+
+  66.64% {
+    box-shadow: -8px -8px 0 3px,
+      -8px -8px 0 3px,
+      8px 8px 0 3px,
+      -8px 8px 0 3px;
+  }
+
+  74.97% {
+    box-shadow: -8px -8px 0 3px,
+      8px -8px 0 3px,
+      8px 8px 0 3px,
+      -8px 8px 0 3px;
+  }
+
+  83.3% {
+    box-shadow: -8px -8px 0 3px,
+      8px 8px 0 3px,
+      8px 8px 0 3px,
+      -8px 8px 0 3px;
+  }
+
+  91.63% {
+    box-shadow: -8px -8px 0 3px,
+      -8px 8px 0 3px,
+      -8px 8px 0 3px,
+      -8px 8px 0 3px;
+  }
+
+  100% {
+    box-shadow: -8px -8px 0 3px,
+      -8px -8px 0 3px,
+      -8px -8px 0 3px,
+      -8px -8px 0 3px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+
+  /* DarkMode 下的样式 start */
+  .container {
+    height: 112px;
+    margin: 12px 16px 0 16px;
+    background: linear-gradient(to bottom, #434562 50%, #27283A 50%);
+    border-radius: 12px;
+    display: flex;
+  }
+
+  .left-container {
+    width: 30%;
+    height: 100%;
+    background: #434562;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .right-container {
+    width: 70%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 24px 0 24px 20px;
+    background: #27283A;
+    border-radius: 12px;
+  
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .up-right-container text:nth-child(1) {
+    font-family: var(--simHei);
+    font-size: 12px;
+    color: #9B9DAB;
+  }
+  
+  .up-right-container text:nth-child(3) {
+    font-family: var(--simHei);
+    font-size: 12px;
+    color: #9B9DAB;
+  }
+  
+  .up-right-container text:nth-child(2) {
+    font-family: var(--simHei);
+    font-size: 12px;
+    color: #C7C6FF;
+  }
+  
+  .needReviewCardNum-text {
+    font-family: var(--sfpro-heavy-italic);
+    font-size: 30px;
+    line-height: 25px;
+    color: #EEF1F7;
+  }
+  
+  .right-img-group text:nth-child(1) {
+    font-family: var(--simHei);
+    font-size: 14px;
+    color: #C0C1D4;
+  }
+
+  .loader-container {
+    height: 126px;
+    margin: 12px 16px 0 16px;
+    background: #27283A;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .blank-container {
+    box-sizing: border-box;
+    height: 126px;
+    background: #27283A;
+    border-radius: 12px;
+    margin: 12px 16px 0 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* DarkMode 下的样式 end */
+}

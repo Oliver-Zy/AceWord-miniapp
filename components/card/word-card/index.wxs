@@ -1,0 +1,15 @@
+module.exports = {
+  formatCreateDate: function (createDate) {
+    if (createDate == undefined) return 
+    return createDate.slice(0, 4) + '.' + createDate.slice(4, 6) + '.' + createDate.slice(6)
+  },
+
+  bgColorHandler: function (bgColor, isDarkMode) {
+    if (bgColor == undefined) return 
+    if (!isDarkMode) {
+      return bgColor == 'none' ? '' : bgColor == 'yellow' ? '#FBF719' : bgColor == 'orange' ? '#FF793B' : bgColor == 'green' ? '#5DE23C' : bgColor == 'blue' ? '#30C5FF' : bgColor == 'pink' ? '#FFC0CB' : ''
+    } else {
+      return bgColor == 'none' ? '' : bgColor == 'yellow' ? 'rgb(251, 247, 25, 0.2)' : bgColor == 'orange' ? 'rgba(255, 121, 59, 0.2)' : bgColor == 'green' ? 'rgba(93, 226, 60, 0.2)' : bgColor == 'blue' ? 'rgba(48, 197, 255, 0.2)' : bgColor == 'pink' ? 'rgba(255, 192, 203, 0.2)' : ''
+    }
+  },
+}

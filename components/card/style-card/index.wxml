@@ -1,0 +1,61 @@
+<wxs module="tools" src="./index.wxs"></wxs>
+<!-- wxs -->
+
+<!-- S container -->
+<view class="container" style="width:{{dicCardWidth}}px;">
+
+  <!-- S header -->
+  <view class="header">
+    <view class="left-header">
+      <text class="word-text" style="background:{{tools.bgColorHandler(bgColor, isDarkMode)}};color:rgba({{isDarkMode ? 238 : 29 }}, {{isDarkMode ? 241 : 33 }}, {{isDarkMode ? 247 : 41 }}, {{0.01 * (100 - sliderValue)}});" bind:tap="onCopyWord">{{wordInfo.word}}</text>
+    </view>
+    <view class="close-container" bind:tap="onClose" style="border:{{wordInfo.isCollected ? '1px solid rgba(255, 154, 46, 0.1)' : isDarkMode ? '1px solid #C9CDD4' : '1px solid #C9CDD4'}};">
+      <image src="/images/icons/{{isDarkMode ? 'add-dark' : 'add' }}.png" style="width:18px;height:18px;transform:rotate(45deg);"></image>
+    </view>
+  </view>
+  <!-- E header -->
+
+  <!-- S inner-container -->
+  <view class="inner-container">
+    <view class="content">
+      <text class="title">标记熟练度：{{sliderValue}}</text>
+      <view style="height:16px;"></view>
+      <van-slider step="10" bar-height="8px" active-color="#4C34F0" value="{{sliderValue}}" bind:change="onSliderChange" />
+    </view>
+
+    <view style="height:24px;"></view>
+    <!-- placeholder -->
+
+    <view class="content">
+      <text class="title">添加背景色：{{tools.bgColorCNHandler(bgColor)}}</text>
+      <view style="height:16px;"></view>
+      <view style="display:flex;justify-content:space-between;">
+        <image src="./images/{{ bgColor != 'none' ? 'none' : isDarkMode ? 'none-dark' : 'none-chosen'}}.png" style="width:30px;height:30px;" bind:tap="onBgColor" data-bgColor="none"></image>
+        <view style="width:30px;height:30px;background:#FBF719;border:1.5px solid {{bgColor == 'yellow' ? '#303339' : '#FFF'}};border-radius:50%;display:flex;justify-content:center;align-items:center;" bind:tap="onBgColor" data-bgColor="yellow">
+          <image wx:if="{{bgColor == 'yellow'}}" src="./images/chosen.png" style="width:13px;height:9px;"></image>
+        </view>
+        <view style="width:30px;height:30px;background:#FF793B;border:1.5px solid {{bgColor == 'orange' ? '#303339' : '#FFF'}};border-radius:50%;display:flex;justify-content:center;align-items:center;position:relative;" bind:tap="onBgColor" data-bgColor="orange">
+          <image wx:if="{{bgColor == 'orange'}}" src="./images/chosen.png" style="width:13px;height:9px;"></image>
+          <image wx:if="{{isVipExpired}}" src="./images/vip.png" style="width:16px;height:16px;position:absolute;right:-2px;top:-2px;"></image>
+        </view>
+        <view style="width:30px;height:30px;background:#5DE23C;border:1.5px solid {{bgColor == 'green' ? '#303339' : '#FFF'}};border-radius:50%;display:flex;justify-content:center;align-items:center;position:relative;" bind:tap="onBgColor" data-bgColor="green">
+          <image wx:if="{{bgColor == 'green'}}" src="./images/chosen.png" style="width:13px;height:9px;"></image>
+          <image wx:if="{{isVipExpired}}" src="./images/vip.png" style="width:16px;height:16px;position:absolute;right:-2px;top:-2px;"></image>
+        </view>
+        <view style="width:30px;height:30px;background:#30C5FF;border:1.5px solid {{bgColor == 'blue' ? '#303339' : '#FFF'}};border-radius:50%;display:flex;justify-content:center;align-items:center;position:relative;" bind:tap="onBgColor" data-bgColor="blue">
+          <image wx:if="{{bgColor == 'blue'}}" src="./images/chosen.png" style="width:13px;height:9px;"></image>
+          <image wx:if="{{isVipExpired}}" src="./images/vip.png" style="width:16px;height:16px;position:absolute;right:-2px;top:-2px;"></image>
+        </view>
+        <view style="width:30px;height:30px;background:#FFC0CB;border:1.5px solid {{bgColor == 'pink' ? '#303339' : '#FFF'}};border-radius:50%;display:flex;justify-content:center;align-items:center;position:relative;" bind:tap="onBgColor" data-bgColor="pink">
+          <image wx:if="{{bgColor == 'pink'}}" src="./images/chosen.png" style="width:13px;height:9px;"></image>
+          <image wx:if="{{isVipExpired}}" src="./images/vip.png" style="width:16px;height:16px;position:absolute;right:-2px;top:-2px;"></image>
+        </view>
+      </view>
+    </view>
+    <!-- content -->
+
+  </view>
+  <!-- E inner-container -->
+
+</view>
+<!-- E container -->

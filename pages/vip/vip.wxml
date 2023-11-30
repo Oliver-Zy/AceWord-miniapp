@@ -1,0 +1,209 @@
+<wxs module="tools" src="./vip.wxs"></wxs>
+<!-- wxs -->
+
+<!-- S container -->
+<view class="container">
+
+  <!-- S background-container -->
+  <view class="background-container" style="width:{{bgContainerWidth}}px;height:{{bgContainerHeight}}px;position:fixed;top:{{naviBarHeight + 16}}px;">
+    <view class="avatar-group">
+      <image class="avatar-img" src="{{avatarUrl == null ? './images/avatar.png' : avatarUrl}}"></image>
+      <view class="right-avatar-group">
+        <text class="right-avatar-group-text">{{nickName == '' ? '点击登录' : nickName}}</text>
+        <view class="down-right-avatar-group">
+          <text class="down-right-avatar-group-text">{{vipExpireDate == '00000000' ? '尚未开通会员' : '有效期至' + tools.formatCreateDate(vipExpireDate)}}</text>
+        </view>
+      </view>
+    </view>
+    <image src="./images/background.png" style="width:{{bgContainerWidth}}px;height:{{bgContainerHeight}}px;" class="background-img"></image>
+  </view>
+  <!-- E background-container -->
+
+  <!-- S scroll-view -->
+  <scroll-view scroll-y="true" style="padding-top:24px;height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight + 16 + 120}}px;background:#fff;border-radius:16px;padding-left:16px;box-sizing:border-box;">
+    <text wx:if="{{ !isIOS }}" class="title-text">解锁会员</text>
+    <view wx:if="{{ !isIOS }}" style="height:20px;"></view>
+    <!-- <view wx:if="{{ !isIOS }}" class="price-container" style="width:{{bgContainerWidth}}px;"> -->
+    <!-- <text class="title-text">解锁会员</text>
+    <view style="height:20px;"></view> -->
+    <!-- 终身会员 -->
+    <view class="price-container" style="width:{{bgContainerWidth}}px;margin-bottom: 10px;height: 80px;">
+      <view class=price-block{{chosenIndex==3 ? '-chosen' : '' }}" style="width:{{(bgContainerWidth)}}px;flex-direction: row;justify-content: space-between;padding: 10px;padding-left:26px;padding-right: 26px;" bind:tap="onPriceBlock" data-index="3">
+        <view>
+          <text class="desc-text" style="font-size: 16px;font-weight: bold;">终身会员</text>
+          <view style="height:4px;"></view>
+          <text class="addi-text" style="text-decoration: none;">您将永久解锁本软件的所有会员权益</text>
+        </view>
+        <view style="text-align: center;">
+          <view style="position:relative;right:4px;">
+            <image src="./images/rmb.png" style="width:16px;height:14px;"></image>
+            <text class="price-text">128</text>
+          </view>
+          <text class="addi-text">￥168</text>
+        </view>
+        <image wx:if="{{chosenIndex == 3}}" src="./images/check.png" style="width:24px;height:20px;position:absolute;top:-1px;right:-1px;"></image>
+      </view>
+    </view>
+
+    <view class="price-container" style="width:{{bgContainerWidth}}px;">
+      <view class="price-block{{chosenIndex == 0 ? '-chosen' : ''}}" style="width:{{(bgContainerWidth - 30) / 3}}px;" bind:tap="onPriceBlock" data-index="0">
+        <text class="desc-text">12个月</text>
+        <view style="height:6px;"></view>
+        <view style="position:relative;right:4px;">
+          <image src="./images/rmb.png" style="width:16px;height:14px;"></image>
+          <text class="price-text">68</text>
+        </view>
+        <view style="height:6px;"></view>
+        <text class="addi-text">￥98</text>
+        <view style="height:10px;"></view>
+        <view class="lable">
+          <text class="lable-text">优惠 30%</text>
+        </view>
+        <image wx:if="{{chosenIndex == 0}}" src="./images/check.png" style="width:24px;height:20px;position:absolute;top:-1px;right:-1px;"></image>
+      </view>
+
+      <view class="price-block{{chosenIndex == 1 ? '-chosen' : ''}}" style="width:{{(bgContainerWidth - 30) / 3}}px;" bind:tap="onPriceBlock" data-index="1">
+        <text class="desc-text">3个月</text>
+        <view style="height:6px;"></view>
+        <view style="position: relative;right: 4px;">
+          <image src="./images/rmb.png" style="width:16px;height:14px;"></image>
+          <text class="price-text">25</text>
+        </view>
+        <view style="height:6px;"></view>
+        <text class="addi-text">￥36</text>
+        <view style="height:10px;"></view>
+        <view class="lable">
+          <text class="lable-text">优惠 16%</text>
+        </view>
+        <image wx:if="{{chosenIndex == 1}}" src="./images/check.png" style="width:24px;height:20px;position:absolute;top:-1px;right:-1px;"></image>
+      </view>
+
+      <view class="price-block{{chosenIndex == 2 ? '-chosen' : ''}}" style="width:{{(bgContainerWidth - 30) / 3}}px;" bind:tap="onPriceBlock" data-index="2">
+        <text class="desc-text">1个月</text>
+        <view style="height:6px;"></view>
+        <view style="position:relative;right:4px;">
+          <image src="./images/rmb.png" style="width:16px;height:14px;"></image>
+          <text class="price-text">12</text>
+        </view>
+        <view style="height:6px;"></view>
+        <text class="blank-text">无优惠</text>
+        <view style="height:10px;"></view>
+        <view style="height:24px;"></view>
+        <image wx:if="{{chosenIndex == 2}}" src="./images/check.png" style="width:24px;height:20px;position:absolute;top:-1px;right:-1px;"></image>
+      </view>
+    </view>
+
+
+
+    <view style="height:24px;"></view>
+    <view class="pay-btn" style="width:{{bgContainerWidth}}px;height:52px;" bind:tap="onPay">
+      <text wx:if="{{ !isIOS }}" class="pay-btn-text">立即以{{chosenIndex == 0 ? 68 : chosenIndex == 1 ? 25 : chosenIndex == 2?12:128}}元开通</text>
+      <text wx:else class="pay-btn-text">升级以解锁会员</text>
+
+    </view>
+    <view wx:if="{{ !isIOS }}" style="padding-top:12px;width:100%;display:flex;justify-content:center;">
+
+      <!-- <view style="padding-top:12px;width:100%;display:flex;justify-content:center;"> -->
+      <text style="font-size:14px;color:#787878;">开通代表接受</text>
+      <text style="font-size:14px;color:#BB8247;" bind:tap="onVipProtocol">《AceWord会员协议》</text>
+    </view>
+
+    <!-- <view wx:if="{{ !isIOS }}" style="height:24px;"></view> -->
+    <view style="height:24px;"></view>
+    <text class="title-text">会员特权</text>
+    <view style="height:20px;"></view>
+
+    <view class="feature-container">
+      <image src="./images/feature-1.png" style="width:40px;height:40px;"></image>
+      <view style="width:14px;"></view>
+      <view class="right-feature-container">
+        <text class="feature-title">无限卡片用量</text>
+        <view style="height:2px;"></view>
+        <text class="feature-desc">每日新建的卡片数量无上限</text>
+      </view>
+    </view>
+
+    <view style="height:24px;"></view>
+    <view class="feature-container">
+      <image src="./images/feature-3.png" style="width:40px;height:40px;"></image>
+      <view style="width:14px;"></view>
+      <view class="right-feature-container">
+        <text class="feature-title">无限单词本、自定义词书用量</text>
+        <view style="height:2px;"></view>
+        <text class="feature-desc">创建的单词本、自定义词书数量均无上限</text>
+      </view>
+    </view>
+
+    <view style="height:24px;"></view>
+    <view class="feature-container">
+      <image src="./images/feature-6.png" style="width:40px;height:40px;"></image>
+      <view style="width:14px;"></view>
+      <view class="right-feature-container">
+        <text class="feature-title">批量导入自定义释义</text>
+        <view style="height:2px;"></view>
+        <text class="feature-desc">可以通过自定义词书批量导入自定义释义</text>
+      </view>
+    </view>
+
+    <view style="height:24px;"></view>
+    <view class="feature-container">
+      <image src="./images/feature-2.png" style="width:40px;height:40px;"></image>
+      <view style="width:14px;"></view>
+      <view class="right-feature-container">
+        <text class="feature-title">自定义复习节奏（倒计时）</text>
+        <view style="height:2px;"></view>
+        <text class="feature-desc">可以调整复习节奏更紧凑，或更松弛</text>
+      </view>
+    </view>
+
+    <view style="height:24px;"></view>
+    <view class="feature-container">
+      <image src="./images/feature-4.png" style="width:40px;height:40px;"></image>
+      <view style="width:14px;"></view>
+      <view class="right-feature-container">
+        <text class="feature-title">丰富的卡片英文字体</text>
+        <view style="height:2px;"></view>
+        <text class="feature-desc">可以切换八种不同的卡片英文字体</text>
+      </view>
+    </view>
+
+    <view style="height:24px;"></view>
+    <view class="feature-container">
+      <image src="./images/feature-5.png" style="width:40px;height:40px;"></image>
+      <view style="width:14px;"></view>
+      <view class="right-feature-container">
+        <text class="feature-title">丰富的单词背景色</text>
+        <view style="height:2px;"></view>
+        <text class="feature-desc">可以给卡片单词标记多种背景色</text>
+      </view>
+    </view>
+    <!-- <view wx:if="{{ isIOS }}" style="height:24px;"></view>
+    <view   wx:if="{{ isIOS }}" class="pay-btn" style="width:{{bgContainerWidth}}px;height:52px;" bind:tap="onPay">
+      <text wx:if="{{ !isIOS }}" class="pay-btn-text">立即以{{chosenIndex == 0 ? 28 : chosenIndex == 1 ? 88 : 18}}元开通</text>
+      <text wx:if="{{ isIOS }}" class="pay-btn-text">升级以解锁会员</text>
+    </view> -->
+
+    <!-- <view style="height:24px;"></view>
+    <view class="pay-btn" style="width:{{bgContainerWidth}}px;height:52px;" bind:tap="onPay">
+      <text wx:if="{{ !isIOS }}" class="pay-btn-text">立即以{{chosenIndex == 0 ? 68 : chosenIndex == 1 ? 25 : chosenIndex == 2?12:128}}元开通</text>
+      <text class="pay-btn-text">升级以解锁会员</text>
+    </view> -->
+    <view wx:if="{{ isIOS }}" style="height:24px;"></view>
+    <view wx:if="{{ isIOS }}" class="pay-btn" style="width:{{bgContainerWidth}}px;height:52px;" bind:tap="onPay">
+      <!-- <text wx:if="{{ isIOS }}" class="pay-btn-text">立即以{{chosenIndex == 0 ? 68 : chosenIndex == 1 ? 25 : chosenIndex == 2?12:128}}元开通</text> -->
+      <text class="pay-btn-text">升级以解锁会员</text>
+    </view>
+    <view style="height:24px;padding-bottom:env(safe-area-inset-bottom);"></view>
+  </scroll-view>
+  <!-- E scroll-view -->
+
+</view>
+<!-- S container -->
+
+<!-- S ace-components -->
+<ace-navi-bar type="vip" title="开通会员" backgroundColor="rgba(0,0,0,0)" style="width:100%;position:fixed;top:0;" />
+<!-- E ace-components -->
+
+<!-- S vant components -->
+<van-toast id="van-toast" />
+<!-- E vant components -->

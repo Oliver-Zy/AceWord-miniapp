@@ -1,0 +1,19 @@
+{
+  "usingComponents": {
+    "ace-navi-bar": "../../components/ace/navibar/index",
+    "ace-dic-card": "../../components/card/dic-card/index",
+    "ace-spell-bar": "../../components/ace/spellbar/index",
+    "ace-search-bar": "../../components/ace/searchbar/index",
+    "ace-popup": "../../components/ace/popup/index",
+    "van-checkbox": "../../miniprogram_npm/@vant/weapp/checkbox/index",
+    "van-checkbox-group": "../../miniprogram_npm/@vant/weapp/checkbox-group/index",
+    "van-overlay": "../../miniprogram_npm/@vant/weapp/overlay/index",
+    "van-toast": "../../miniprogram_npm/@vant/weapp/toast/index",
+    "van-popup": "../../miniprogram_npm/@vant/weapp/popup/index",
+    "van-action-sheet": "../../miniprogram_npm/@vant/weapp/action-sheet/index",
+    "van-dialog": "../../../miniprogram_npm/@vant/weapp/dialog/index",
+    "van-field": "../../miniprogram_npm/@vant/weapp/field/index"
+    
+  },
+  "disableScroll": true
+}

@@ -1,0 +1,17 @@
+module.exports = {
+  isChosen: function (filterType, chosenIndexArr, index) {
+    if (filterType == 'wordNum') {
+
+      return chosenIndexArr[0] == index ? 'chosen' : 'unchosen'
+      
+    } else if (filterType == 'subCategory') {
+
+      return chosenIndexArr[1] == index ? 'chosen' : 'unchosen'
+
+    } else if (filterType == 'sort') {
+
+      return chosenIndexArr[2] == index ? 'chosen' : 'unchosen'
+      
+    }
+  }
+}

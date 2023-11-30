@@ -1,0 +1,57 @@
+<wxs module="tools" src="./settings.wxs"></wxs>
+<!-- wxs -->
+
+<!-- S container -->
+<view class="container">
+
+  <view style="height:{{naviBarHeight}}px;"></view>
+  <!-- placeHolder -->
+
+  <view style="height:8px;"></view>
+  <!--placeHolder-->
+
+  <ace-cell type="setting" title="深色模式" showVipIcon="{{false}}" value="跟随系统" rightType="right" bind:tap="onCell" data-type="outfit" />
+  <ace-cell type="setting" title="每日计划新学" showVipIcon="{{false}}" value="{{settings.dailyTargetNum}}个单词" rightType="right" bind:tap="onCell" data-type="dailyTargetNum" />
+  <ace-cell type="setting" title="是否自动生成每日新学卡片" showVipIcon="{{false}}" value="{{settings.isWordCardListTodayAutolyCreated ? 'switchON' : 'switchOFF'}}" rightType="switch" bind:tap="onCell" data-type="isWordCardListTodayAutolyCreated" />
+  <ace-cell type="setting" title="默认发音类型" showVipIcon="{{false}}" value="{{tools.toChinese(settings.pronType)}}" rightType="right" bind:tap="onCell" data-type="pronType" />
+  <!-- <ace-cell type="setting" title="练习模式中显示提示倒计时" showVipIcon="{{false}}" value="{{settings.showCountDown ? 'switchON' : 'switchOFF'}}" rightType="switch" hiddenHireLine="{{true}}" bind:tap="onCell" data-type="showCountDown" /> -->
+  <view style="width:100%;height:10px;background:{{isDarkMode ? '#303344' : '#F2F3F5'}}"></view>
+  <ace-cell type="setting" title="调整推荐复习节奏" showVipIcon="{{ settings.isVipExpired }}" value="{{tools.toChinese(settings.reviewRhythm)}}" rightType="right" bind:tap="onCell" data-type="reviewRhythm" />
+  <ace-cell type="setting" title="修改卡片英文字体" showVipIcon="{{ settings.isVipExpired }}" value="{{tools.toChinese(settings.wordCardFontFamily)}}" rightType="right" bind:tap="onCell" data-type="wordCardFontFamily" />
+
+</view>
+<!-- E container -->
+
+<!-- S font-card -->
+<view wx:if="{{ showFontCard }}" style="width:100%;position:fixed;bottom:0;z-index:3;">
+  <view class="font-card" wx:if="{{ true }}">
+    <text style="font-size:18px;color:#1D2129;font-weight:600;">卡片英文字体</text>
+    <view style="height:10px;"></view>
+
+    <!-- E block-container -->
+    <view class="block-container">
+      <block wx:for="{{ fontBlockList }}">
+        <view class="block-item-{{chosenIndex == index ? 'chosen' : 'unchosen'}}" bind:tap="onBlockItem" data-index="{{index}}" style="width:{{blockWidth}}px;font-family:{{item}};">
+          <text>{{tools.toChinese(item)}}</text>
+          <image wx:if="{{settings.isVipExpired && item != 'inter-medium'}}" src="./images/vip.png" style="width:16px;height:16px;position:absolute;right:-4px;top:-4px;"></image>
+        </view>
+      </block>
+    </view>
+    <!-- E block-container -->
+
+  </view>
+  <view style="height:100px;" bind:tap="onClickHideOverlay"></view>
+</view>
+<!-- E font-card -->
+
+<ace-navi-bar type="back" title="偏好设置" showVantDivider="{{ true }}" style="position:fixed;top:0;" />
+<!-- naviBar -->
+
+<!-- S vant-components -->
+<van-popup show="{{ showPopup }}" position="bottom" overlay="{{ false }}" duration="0">
+  <van-action-sheet show="{{ showActionSheet }}" description="{{actionSheetDesc}}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheet" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
+  <van-picker wx:if="{{ showPicker }}" columns="{{ columns }}" default-index="{{ 4 }}" show-toolbar title="每日计划新学" bind:cancel="onCancelPicker" bind:confirm="onConfirmPicker" />
+</van-popup>
+<van-toast id="van-toast" />
+<van-overlay show="{{ showOverlay }}" bind:click="onClickHideOverlay" />
+<!-- E vant-components -->

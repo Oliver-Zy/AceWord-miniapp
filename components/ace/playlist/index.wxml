@@ -1,0 +1,26 @@
+<!-- S container -->
+<view class="container">
+
+  <!-- S header -->
+  <view class="header">
+    <text class="title-text">单词列表</text>
+    <text class="cancel-text" bind:tap="onCancel">取消</text>
+  </view>
+  <van-divider />
+  <!-- E header -->
+
+  <!-- S scroll-view -->
+  <scroll-view scroll-y="true" style="height:{{scrollViewHeight}}px;">
+    <block wx:for="{{wordList}}">
+      <view class="word-container">
+        <text class="word-text" style="opacity: {{wordIndex == index ? 1 : 0.5}};" bind:tap="onWord" data-index="{{index}}">{{item}}</text>
+      </view>
+      <view style="margin:0 14px; border-bottom: {{ wordList.length == (index + 1) ? 0 : '1px solid #F2F3F5' }};"></view>
+    </block>
+
+    <view style="height:{{isIOS ? 30 : 0}}px;"></view>
+  </scroll-view>
+  <!-- E scroll-view -->
+
+</view>
+<!-- E container -->

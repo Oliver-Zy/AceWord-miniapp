@@ -1,0 +1,10 @@
+module.exports = {
+  calcLeftDays: function (totalWordNum, currentWordNum, targetCount) {
+    return Math.ceil((totalWordNum - currentWordNum) / targetCount)
+  },
+
+  calcProgress: function (totalWordNum, currentWordNum) {
+    if (totalWordNum == 0) { return 0 }
+    else { return (currentWordNum * 100 / totalWordNum).toFixed(1) }
+  },
+}

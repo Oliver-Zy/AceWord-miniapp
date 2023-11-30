@@ -1,0 +1,26 @@
+<!-- S container -->
+<view wx:if="{{type == 'wordGroupFolder'}}" class="container">
+  <view class="left-container">
+    <text>{{wordGroup.groupName == '默认单词本' ? '我的收藏' : wordGroup.groupName}}</text>
+    <text>共{{wordGroup.count}}词</text>
+  </view>
+  <image src="/images/icons/right.png" class="right-img"></image>
+</view>
+<!-- E container -->
+
+<!-- S container -->
+<view wx:if="{{type == 'setting'}}" class="container" bind:tap="onFolderCell">
+  <view class="left-container">
+    <text>{{title}}</text>
+  </view>
+  <view class="right-container">
+    <image wx:if="{{showVipIcon}}" src="./images/vip.png" style="width:16px;height:16px;padding-right:8px;"></image>
+    <text class="lable-text" wx:if="{{rightType == 'right'}}">{{value}}</text>
+    <image wx:if="{{rightType == 'right'}}" src="/images/icons/right.png" class="right-img"></image>
+    <image wx:if="{{rightType == 'switch'}}" src="/images/icons/switch-{{value == 'switchON' ? 'on' : 'off'}}.png" class="switch-img"></image>
+  </view>
+</view>
+<!-- E container -->
+
+<view wx:if="{{!hiddenHireLine}}" class="hair-line"></view>
+<!-- hair-line -->

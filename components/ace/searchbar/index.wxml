@@ -1,0 +1,10 @@
+<!-- S container -->
+<view class="container">
+  <view class="search-field" style="width:{{searchFieldWidth}}px;">
+    <input class="input-class" type="text" value="{{inputValue}}" adjust-position="{{ false }}" placeholder="{{placeholder}}" confirm-type="{{confirmtype}}" placeholder-class="placeholder-class" focus="{{ true }}" bind:focus="onFocus" bind:blur="onBlur" bind:confirm="onConfirm" />
+  </view>
+  <view class="cancel-text-container" bind:tap="onCancel">
+    <text class="cancel-text">取消</text>
+  </view>
+</view>
+<!-- E container -->

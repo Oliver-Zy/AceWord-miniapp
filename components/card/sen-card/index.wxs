@@ -1,0 +1,25 @@
+module.exports = {
+  formatCreateDate: function (createDate) {
+    if (createDate == undefined) return 
+    return createDate.slice(0, 4) + '.' + createDate.slice(4, 6) + '.' + createDate.slice(6)
+  },
+  titleHandler: function (title) {
+    if (title == undefined) return 
+    return title.replace('．', '·')
+  },
+  chineseHandler: function (chinese) {
+    if (chinese == undefined) return 
+    return chinese.slice(-1) == '。' ? chinese : chinese + '。'
+  },
+  englishHandler: function (english) {
+    if (english == undefined) return
+    var arr = english.split(' ')
+    var arr_new = []
+    for (var i = 0; i < arr.length; i++) {
+      arr_new.push(arr[i])
+      i != (arr.length - 1) ? arr_new.push('&nbsp;') : ''
+    }
+  
+    return arr_new
+  },
+}

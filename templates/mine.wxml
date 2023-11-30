@@ -1,0 +1,67 @@
+<template name="avatar-bar">
+
+  <view class="avatar-bar">
+    <view class="avatar-group">
+      <image class="avatar-img" src="{{avatarUrl == null ? './images/avatar.png' : avatarUrl}}"></image>
+      <view class="right-avatar-group">
+        <text bind:tap="getUserProfile">{{nickName == '' ? '点击登录' : nickName}}</text>
+        <view class="down-right-avatar-group">
+          <image src="./images/copy.png"></image>
+          <text bind:tap="onCopyID">复制用户ID</text> 
+        </view>
+      </view>
+    </view>
+    <image bind:tap="onOpenVip" class="openvip-img" src="./images/{{vipExpireDate == '00000000' ? 'openVip' : 'renewVip'}}.png"></image>
+  </view>
+
+</template>
+
+<template name="statistic-bar">
+
+  <view class="statistic-bar">
+    <view class="statistic-group">
+      <view class="up-statistic-group">
+        <text>{{learningInfo.yearLearningDayNum}}</text>
+        <text>天</text>
+      </view>
+      <view style="height:2px;"></view>
+      <text>今年学习</text>
+    </view>
+    <view style="width:1px;height:15px;background-color:#C9CDD4;"></view>
+    <view class="statistic-group">
+      <view class="up-statistic-group">
+        <text>{{learningInfo.monthLearningDayNum}}</text>
+        <text>天</text>
+      </view>
+      <view style="height:2px;"></view>
+      <text>本月学习</text>
+    </view>
+    <view style="width:1px;height:15px;background-color:#C9CDD4;"></view>
+    <view class="statistic-group">
+      <view class="up-statistic-group">
+        <text>{{learningInfo.continuousLearningDayNum}}</text>
+        <text>天</text>
+      </view>
+      <view style="height:2px;"></view>
+      <text>连续学习</text>
+    </view>
+  </view>
+
+</template>
+
+<template name="cell-group">
+
+  <view class="cell-group">
+    <block wx:for="{{cellInfo}}" wx:key="imgName">
+      <view class="cell" bindtap="onCell" data-type="{{item.imgName}}">
+        <button wx:if="{{item.imgName == 'share'}}"class="share-button" open-type="share"></button>
+        <view>
+          <image src="/images/cell-icons/{{isDarkMode ? item.imgNameDark : item.imgName}}.png"></image>
+          <text>{{item.text}}</text>
+        </view>
+        <image class="right-img" src="./images/right.png"></image>
+      </view>
+    </block>
+  </view>
+
+</template>

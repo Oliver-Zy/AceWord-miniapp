@@ -1,0 +1,122 @@
+.container {
+  box-sizing: border-box;
+  padding: 16px 14px;
+  margin: 0 16px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.book-cover {
+  box-sizing: border-box;
+  width: 67px;
+  height: 88px;
+  margin-right: 16px;
+  border-radius: 6px;
+  position: relative;
+}
+
+.book-cover-image {
+  width: 100%;
+  height: 100%;
+}
+
+.right-container {
+  box-sizing: border-box;
+  padding: 2px 0;
+  height: 88px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.header-right-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-right-container-text {
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 16px;
+  color: #1D2129;
+}
+
+.line-limit-length {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag-container {
+  box-sizing: border-box;
+  height: 16px;
+  padding: 3px 5px 3px 3px;
+  margin-left: 10px;
+  background: #F2F3F5;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.tag-text {
+  font-family: var(--simHei);
+  font-size: 10px;
+  color: #A0A6B3;
+}
+
+.progress-text {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  color: #4E5969;
+}
+
+.progress {
+  box-sizing: border-box;
+  width: 100%;
+  height: 4px;
+  margin: 8px 0;
+  background: #F2F3F5;
+  border-radius: 12px;
+}
+
+.progress view {
+  height: 4px;
+  background: #424BFF;
+  border-radius: 12px;
+}
+
+.progress-placeholder {
+  width: 100%;
+  height: 4px;
+  margin: 8px 0;
+}
+
+.footer-right-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-right-container text {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 14px;
+  color: #A3A9AF;
+}
+
+@media (prefers-color-scheme: dark) {
+
+  .container {
+    background: #27283A;
+    color:white;
+  }
+  .header-right-container-text{
+    color:white;
+  }
+}

@@ -1,0 +1,21 @@
+<!-- S container -->
+<view class="container">
+
+  <view style="height:{{naviBarHeight}}px;"></view>
+  <!-- placeHolder -->
+
+  <view style="height:8px;"></view>
+  <!--placeHolder-->
+
+  <cell-setting wx:if="{{type == 'practice'}}" title="练习时显示提示倒计时" value="switchOFF" type="switch" />
+
+  <cell type="setting" wx:if="{{type == 'list'}}" title="卡片排序规则" value="按创建时间倒序" type="right" />
+  <cell type="setting" wx:if="{{type == 'list'}}" title="仅显示推荐现在复习的卡片" value="switchOFF" type="switch" />
+  <cell type="setting" wx:if="{{type == 'list'}}" title="自动生成今日新学卡片" value="switchON" type="switch" />
+  <!-- cell-settings -->
+
+</view>
+<!-- E container -->
+
+<ace-navi-bar type="back" title="{{type == 'practice' ? '练习相关' : '卡片列表相关'}}" showVantDivider="{{ true }}" style="position:fixed;top:0;" />
+<!-- naviBar -->

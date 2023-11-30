@@ -1,0 +1,34 @@
+module.exports = {
+  prsToCh: function (prs) {
+    switch (prs) {
+      case 'noun':
+        return '名词'
+      case 'verb':
+        return '动词'
+      case 'adjective':
+        return '形容词'
+      case 'adverb':
+        return '副词'
+    }
+  },
+  prsToEn: function (prs) {
+    switch (prs) {
+      case 'adjective':
+        return 'adj'
+      default:
+        return prs
+    }
+  },
+  ipaHandler: function (ipa) {
+    if (ipa == undefined) return
+    if (ipa.indexOf(';') != -1) {
+      return '/' + ipa.slice(0, ipa.indexOf(';')) + '/'
+    } else if (ipa.indexOf('ˌ') != -1 && (ipa.indexOf('ˌ') != 0)) {
+      return '/' + ipa.slice(0, ipa.indexOf('ˌ')) + '/'
+    } else if (ipa.length == 0) {
+      return ''
+    } else {
+      return '/' + ipa + '/'
+    }
+  }
+}

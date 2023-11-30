@@ -1,0 +1,23 @@
+module.exports = {
+  dateToMonth: function (date) {
+    if (date == undefined) return
+    return date[4] == '0' ? date[5] : date.slice(4, 6)
+  },
+
+  dateToDay: function (date) {
+    if (date == undefined) return
+    return date[6] == '0' ? date[7] : date.slice(6, 8)
+  },
+
+  toHeaderTitle: function (currentDate, wordCardList, totalCount) {
+    if (wordCardList[0]._type == 'loading' || currentDate == undefined) return '加载中...'
+    if (wordCardList[0]._type == 'blank') return (currentDate[4] == '0' ? currentDate[5] : currentDate.slice(4, 6)) + '月' + (currentDate[6] == '0' ? currentDate[7] : currentDate.slice(6, 8)) + '日' + '「' + 0 + '张卡片」'
+
+    return (currentDate[4] == '0' ? currentDate[5] : currentDate.slice(4, 6)) + '月' + (currentDate[6] == '0' ? currentDate[7] : currentDate.slice(6, 8)) + '日' + '「' + totalCount + '张卡片」'
+  },
+
+  isChecked: function (wordCardID, checkedWordCardIDList) {
+    if (checkedWordCardIDList == undefined) return false
+    return checkedWordCardIDList.indexOf(wordCardID) == -1 ? false : true  
+  },
+}

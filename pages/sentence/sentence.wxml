@@ -1,0 +1,26 @@
+<!-- S container -->
+<view class="container">
+
+  <!-- S scroll-view -->
+  <scroll-view scroll-y="true" style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" bind:scroll="onScroll">
+
+    <view style="height:20px;"></view>
+    <ace-header wx:if="{{senCardList != null}}" titleType="sentence" date="20221101" arrLen="{{senCardList.length}}" iconType="feedback" bind:headerEvent="onHeaderEvent" data-outerIndex="{{index}}" />
+    <block wx:for="{{senCardList}}">
+      <sen-card senCard="{{item}}" bind:senCardEvent="onSenCardEvent" />
+    </block>
+
+    <view style="height:16px;padding-bottom:env(safe-area-inset-bottom);"></view>
+  </scroll-view>
+  <!-- S scroll-view -->
+
+</view>
+<!-- S container -->
+
+<!-- S vant-components -->
+<van-toast id="van-toast" />
+<!-- E vant-components -->
+
+<!-- S ace-components -->
+<ace-navi-bar type="back" title="历史句子" backgroundColor="rgba(0,0,0,0)" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
+<!-- E ace-components -->

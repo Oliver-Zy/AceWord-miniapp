@@ -1,0 +1,15 @@
+<template name="share-btns-container">
+
+  <view class="share-btns-container" mut-bind:tap="">
+    <view class="up-share-btns-container">
+      <view></view>
+      <text>分享至</text>
+      <view></view>
+    </view>
+    <view class="down-share-btns-container">
+      <image class="share-btns-image" src="/images/logos/download.png" catch:tap="onShareCardEvent" data-type="download"></image>
+      <image class="share-btns-image" src="/images/logos/wechat.png" catch:tap="onShareCardEvent" data-type="wechat"></image>
+    </view>
+  </view>
+
+</template>

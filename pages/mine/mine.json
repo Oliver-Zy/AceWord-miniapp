@@ -1,0 +1,13 @@
+{
+  "component": true,
+  "usingComponents": {
+    "ace-navi-bar": "../../components/ace/navibar/index",
+    "ace-popup": "../../components/ace/popup/index",
+
+    "van-toast": "../../miniprogram_npm/@vant/weapp/toast/index",
+    "van-overlay": "../../miniprogram_npm/@vant/weapp/overlay/index",
+    "van-popup": "../../miniprogram_npm/@vant/weapp/popup/index",
+    "van-action-sheet": "../../miniprogram_npm/@vant/weapp/action-sheet/index",
+    "van-datetime-picker": "../../miniprogram_npm/@vant/weapp/datetime-picker/index"
+  }
+}

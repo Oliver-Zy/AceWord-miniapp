@@ -1,0 +1,14 @@
+{
+  "usingComponents": {
+    "ace-navi-bar": "../../components/ace/navibar/index",
+    "ace-cell": "../../components/ace/cell/index",
+
+    "van-popup": "../../miniprogram_npm/@vant/weapp/popup/index",
+    "van-action-sheet": "../../miniprogram_npm/@vant/weapp/action-sheet/index",
+    "van-toast": "../../miniprogram_npm/@vant/weapp/toast/index",
+    "van-picker": "../../miniprogram_npm/@vant/weapp/picker/index",
+    "van-overlay": "../../miniprogram_npm/@vant/weapp/overlay/index"
+  },
+  "backgroundColor": "#FDFDFD",
+  "disableScroll": true
+}

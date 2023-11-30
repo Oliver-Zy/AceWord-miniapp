@@ -1,0 +1,44 @@
+<!-- S container -->
+<view class="container">
+
+  <!-- S scroll-view -->
+  <scroll-view scroll-y="true" style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight + (showFilterContainer ? 44 : 0)}}px;">
+
+    <view wx:if="{{isCustom && showGuideOfCustomWordBook}}" style="height:16px;"></view>
+    <wordbook-guide wx:if="{{isCustom && showGuideOfCustomWordBook}}" bind:cancelGuide="onCancelGuide" />
+    <view wx:if="{{isCustom && showGuideOfCustomWordBookVip}}" style="height:16px;"></view>
+    <wordbook-guide-vip wx:if="{{isCustom && showGuideOfCustomWordBookVip}}" bind:cancelGuideVip="onCancelGuideVip" />
+
+    <block wx:if="{{isCustom}}" wx:for="{{wordBookListCustom}}" wx:key="item">
+      <view style="height:16px;"></view>
+      <wordbook-progress-new wordBook="{{item}}" currentWordBookCode="{{currentWordBookCode}}" bind:wordBook="onWordBookCustom" data-index="{{index}}"></wordbook-progress-new>
+    </block>
+
+    <view style="height:128px;"></view>
+
+  </scroll-view>
+  <!-- E scroll-view -->
+
+</view>
+<!-- E container -->
+
+<!-- S ace-components -->
+<view wx:if="{{isCustom}}" style="width:100%;display:flex;justify-content:center;position:fixed;bottom:60px;">
+
+  <ace-button bind:tap="uploadWordBookCustom" size="large" text="上传词书" />
+</view> 
+<!-- E ace-components -->
+
+<!-- S vant components -->
+<van-toast id="van-toast" />
+<van-overlay show="{{ showOverlay }}" bind:click="onClickHideOverlay" />
+<van-popup show="{{ showPopup }}" position="bottom" overlay="{{ false }}" duration="0">
+  <van-action-sheet show="{{ showActionSheet }}" description="{{ actionSheetDesc }}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheet" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
+</van-popup> 
+<van-popup show="{{ showPopupCustom }}" position="bottom" overlay="{{ false }}" duration="0">
+  <van-action-sheet show="{{ showActionSheetCustom }}" description="{{ actionSheetDesc }}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheetCustom" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
+</van-popup>
+<!-- E vant components -->
+
+<ace-navi-bar type="appback" title="上传自定义词书" backgroundColor="white" showVantDivider="{{isCustom ? true : false}}"  style="width:100%;position:fixed;top:0;z-index:2;" />
+<!-- ace-navi-bar -->

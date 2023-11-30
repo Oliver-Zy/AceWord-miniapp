@@ -1,0 +1,181 @@
+@import '/templates/practice.wxss';
+@import '/templates/radio.wxss';
+
+.container {
+  width: 100%;
+  height: 100%;
+  background: #f5f8fe;
+}
+
+.wordNameCN-container {
+  padding: 16px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  margin: 33px 18px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wordNameCN-container view {
+  display: flex;
+  align-items: center;
+}
+
+.wordNameCN-text {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 16px;
+  color: #1D2129;
+}
+
+.eye-img {
+  width: 20px;
+  height: 20px;
+}
+
+.explainAndExample-container {
+  padding: 16px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  margin: 16px 18px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  left: 0;
+  bottom: 54px;
+}
+
+.footer image:nth-child(1),
+.footer image:nth-child(5) {
+  width: 20px;
+  height: 20px;
+}
+
+.left-img {
+  width: 32px;
+  height: 32px;
+}
+
+.left-img-opacity {
+  opacity: 30%;
+  width: 32px;
+  height: 32px;
+}
+
+.footer image:nth-child(3) {
+  width: 60px;
+  height: 60px;
+}
+
+@media (prefers-color-scheme: dark) {
+
+  /* DarkMode 下的样式 start */
+  .container {
+    width: 100%;
+    height: 100%;
+    background: #121325;
+  }
+  
+  .wordNameCN-container {
+    padding: 16px;
+    background: #27283A;
+    border-radius: 12px;
+    margin: 33px 18px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .wordNameCN-text {
+    font-family: var(--simHei);
+    font-weight: 400;
+    font-size: 16px;
+    color: #EEF1F7;
+  }
+
+  .explainAndExample-container {
+    padding: 16px;
+    background: #27283A;
+    border-radius: 12px;
+    margin: 16px 18px 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title {
+    font-family: var(--simHei);
+    font-weight: 400;
+    font-size: 12px;
+    color: #9598A9;
+  }
+  
+  .brief-explaination-text {
+    font-family: var(--simHei);
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 18px;
+    color: #D5D9E0;
+  }
+  
+  .block-chosen {
+    width: 82px;
+    height: 30px;
+    margin-right: 16px;
+    background: #4C34F0;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .block-unchosen {
+    width: 82px;
+    height: 30px;
+    margin-right: 16px;
+    background: #4B4F62;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .block-chosen text {
+    font-family: var(--simHei);
+    font-weight: 400;
+    font-size: 12px;
+    color: #D5D9E0;
+  }
+  
+  .block-unchosen text {
+    font-family: var(--simHei);
+    font-weight: 400;
+    font-size: 12px;
+    color: #D5D9E0;
+  }
+  
+  .english {
+    font-family: var(--poppins);
+    font-size: 12px;
+    color: #D5D9E0;
+  }
+  
+  .chinese {
+    font-family: var(--simHei);
+    font-weight: 400;
+    font-size: 12px;
+    color: #D5D9E0;
+  }
+
+  /* DarkMode 下的样式 end */
+
+}

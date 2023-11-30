@@ -1,0 +1,38 @@
+<!-- S container -->
+<view wx:if="{{reviewCard != null && !isFinished}}" class="container" bind:tap="onReview">
+  <view class="left-container">
+    <image src="./images/review-plan.png"></image>
+  </view>
+  <view class="right-container">
+    <view class="up-right-container">
+      <text>今日待复习（已完成</text>
+      <text>{{reviewCard.hasFinishedCardNum}}</text>
+      <text>张）</text>
+    </view>
+    <view class="down-right-container">
+      <text class="needReviewCardNum-text">{{reviewCard.needReviewCardNum}}</text>
+      <view style="width:6px;"></view>
+      <view class="right-img-group">
+        <text>张卡片</text>
+        <image class="right-img" src="./images/{{isDarkMode ? 'right-dark' : 'right'}}.png"></image>
+      </view>
+    </view>
+    <image class="ace-img" src="./images/{{isDarkMode ? 'ace-dark' : 'ace'}}.png"></image>
+  </view>
+</view>
+<!-- E container -->
+
+<!-- S blank-container -->
+<view wx:if="{{isFinished}}" class="blank-container">
+  <image src="./images/finish.png"></image>
+  <view class="goal-text-container">
+    <text class="chinese">已完成今日的推荐复习计划</text>
+  </view>
+</view>
+<!-- E blank-container -->
+
+<!-- S container sentence == undefined -->
+<view wx:if="{{reviewCard == null}}" class="loader-container">
+  <view class="loader"></view>
+</view>
+<!-- E container sentence == undefined -->

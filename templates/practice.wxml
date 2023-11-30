@@ -1,0 +1,74 @@
+<!--
+  naviBarHeight: Number,
+  isCollected: Boolean,
+-->
+<template name="header">
+  <view style="height:{{naviBarHeight}}px;"></view>
+  <view class="header">
+    <image src="/images/icons/{{isCollected ? 'star-fill' : isDarkMode ? 'star-dark' : 'star'}}.png" mut-bind:tap="onCollect" bind:longpress="onWordGroup"></image>
+    <view>
+      <image src="./images/{{isDarkMode ? 'spell-dark' : 'spell'}}.png" mut-bind:tap="onSpell"></image>
+      <view style="width:16px;"></view>
+      <image src="./images/{{isDarkMode ? 'delete-dark' : 'delete'}}.png" mut-bind:tap="onDelete"></image>
+      <view style="width:16px;"></view>
+      <image src="./images/{{isDarkMode ? 'more-dark' : 'more'}}.png" mut-bind:tap="onMore"></image>
+    </view>
+  </view>
+</template>
+
+<!--
+  word: String,
+  isWordBlur: Boolean,
+  isFinished: Boolean,
+  pronType: String,
+  ipa: String,
+-->
+<template name="wordAndipa-container">
+
+  <view class="wordAndipa-container">
+
+    <view style="width:100%;height:60px;"></view>
+    <view class="word-container">
+      <text class="word-text">{{isFinished ? 'congratulation!' : word}}</text>
+      <view class="bottom-musk"></view>
+    </view>
+    <view wx:if="{{isWordBlur && !isFinished}}" class="word-container-blur"></view>
+
+    <view style="width:100%;height:24px;"></view>
+    <view wx:if="{{!isFinished}}" class="ipa-container" catchtap="_pronounce">
+      <text>[{{pronType == 'US' ? '美' : '英'}}]</text>
+      <image src="/images/icons/{{isDarkMode ? 'sound-dark' : 'sound'}}.png"></image>
+      <text>/{{isFinished ? 'kənˌɡrætʃ.əˈleɪ.ʃən' : tools.ipaHandler(ipa)}}/</text>
+    </view>
+
+  </view>
+</template>
+
+<!--
+  isFinished: Boolean,
+  innerIndex: Number,
+-->
+
+<wxs module="tools" src="../pages/practice/practice.wxs"></wxs>
+<!-- wxs -->
+
+<template name="btns-group">
+
+  <view class="btns-group" wx:if="{{!isFinished}}">
+    <view class="left-btn ripple-leftBtn" mut-bind:tap="onNext" data-side="left">
+      <text>{{tools.btnText('left', innerIndex)}}</text>
+    </view>
+    <view class="right-btn ripple-rightBtn" mut-bind:tap="{{innerIndex != 0 ? 'onNext' : 'onShowDic'}}" data-side="right">
+      <text>{{tools.btnText('right', innerIndex)}}</text>
+    </view>
+  </view>
+
+  <view class="btns-group" wx:if="{{isFinished}}">
+    <view></view>
+    <view class="congratulation-btn ripple-leftBtn" mut-bind:tap="onFinished">
+      <text>{{tools.btnText('finished', innerIndex)}}</text>
+    </view>
+    <view></view>
+  </view>
+
+</template>

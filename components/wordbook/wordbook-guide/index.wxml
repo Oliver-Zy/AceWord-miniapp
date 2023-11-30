@@ -1,0 +1,34 @@
+<!-- Todo: 画完自定义词数说明卡片 -->
+
+<!-- S container -->
+<view class="container">
+
+  <!-- S header -->
+  <view class="header">
+    <text class="title-text">导入词表说明</text>
+    <view class="notif-btn" bind:tap="onCancelGuide">
+      <text class="cancal-text">不再显示</text>
+    </view>
+  </view>
+  <!-- E header -->
+
+  <van-divider style="width: 100%;"/>
+
+  <!-- S inner-container -->
+  <view class="inner-container">
+    <text class="content-text">1. 可以按下列任一格式导入词表\n2. 点击【上传词书】按钮完成上传</text>
+    <view class="down-inner-container">
+      <view class="excel-container">
+        <image src="./images/excel.png"></image>
+        <text>excel文件</text>
+      </view>
+      <view class="excel-container">
+        <image src="./images/txt.png"></image>
+        <text>txt文件</text>
+      </view>
+    </view>
+  </view>
+  <!-- E inner-container -->
+
+</view>
+<!-- E container -->

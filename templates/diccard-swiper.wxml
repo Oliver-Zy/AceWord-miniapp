@@ -1,0 +1,27 @@
+<template name="diccard-swiper">
+  <swiper 
+    class="swiper" 
+    current="{{currentSwiperIndex}}" 
+    easing-function="easeOutCubic" 
+    bind:change="onSwiperChange" 
+    mut-bind:tap="onClickHideOverlay">
+
+    <block wx:for="{{dicCardList}}">
+      <swiper-item class="swiper-item">
+        <dic-card wordInfo="{{item}}" showReplaceBtn="{{showReplaceBtn}}" showStyleBtn="{{showStyleBtn}}" bind:dicCardEvent="onDicCardEvent" mut-bind:tap="" data-index="{{index}}" />
+      </swiper-item>
+    </block>
+  </swiper>
+
+  <view 
+    class="indicator-dots-container" 
+    bind:tap="onClickHideOverlay">
+
+    <view class="indicator-dots">
+      <block wx:for="{{dicCardList}}">
+        <view class="{{item.isActive ? 'active' : 'inactive'}}-dot"></view>
+      </block>
+    </view>
+
+  </view>
+</template>

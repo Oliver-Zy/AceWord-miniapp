@@ -1,0 +1,39 @@
+<!--
+  wordInfoList: Array,
+  defListIndex: Number,
+-->
+
+<wxs module="tools" src="../pages/radio/radio.wxs"></wxs>
+<!-- wxs -->
+
+<template name="content">
+
+  <!-- S content -->
+  <view class="content">
+    <text class="title">英英释义</text>
+    <view class="block-group">
+      <block wx:if="{{wordInfoList[wordIndex].defList.length != 0}}" wx:for="{{wordInfoList[wordIndex].defList}}" wx:key="english">
+        <view class="{{defListIndex == index ? 'block-chosen' : 'block-unchosen' }}" catch:tap="onSwitchDefinition" data-index="{{index}}">
+          <text>{{tools.prsToCh(item.prs)}}. {{tools.prsToEn(item.prs)}}</text>
+        </view>
+      </block>
+    </view>
+    <view wx:if="{{wordInfoList[wordIndex].defList.length != 0}}" style="height:6px;"></view>
+    <text wx:if="{{wordInfoList[wordIndex].defList.length != 0}}" class="english">{{wordInfoList[wordIndex].defList[defListIndex].english}}</text>
+    <text wx:if="{{wordInfoList[wordIndex].defList.length == 0}}" class="english">Currently no definition.</text>
+  </view>
+  <!-- E content -->
+
+  <!-- S content -->
+  <view class="content">
+    <text class="title">例句</text>
+    <view style="height:6px;"></view>
+    <text wx:if="{{wordInfo.exampleList.length != 0 && wordInfo.exampleList[defListIndex].english != null}}" class="english">{{wordInfo.exampleList[defListIndex].english}}</text>
+    <text wx:if="{{wordInfo.exampleList.length == 0 || wordInfo.exampleList[defListIndex].english == null}}" class="english">Currently no example.</text>
+    <view style="height:6px;"></view>
+    <text wx:if="{{wordInfo.exampleList.length != 0 && wordInfo.exampleList[defListIndex].chinese != null}}" class="chinese">{{wordInfo.exampleList[defListIndex].chinese}}</text>
+    <text wx:if="{{wordInfo.exampleList.length == 0 || wordInfo.exampleList[defListIndex].chinese == null}}" class="chinese">当前暂无例句。</text>
+  </view>
+  <!-- E content -->
+
+</template>

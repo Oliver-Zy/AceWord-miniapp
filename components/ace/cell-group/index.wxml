@@ -1,0 +1,32 @@
+<wxs module="tools" src="./index.wxs"></wxs>
+<!-- wxs -->
+
+<!-- S container -->
+<view class="container">
+
+  <view class="header">
+    <text>{{tools.dateTodotDate(date)}}</text>
+    <view></view>
+  </view>
+  <!-- today-header -->
+
+  <block wx:for="{{wordInfoList}}" wx:key="name">
+    <van-swipe-cell right-width="{{ 65 }}" bind:click="onDeleteWord" data-index="{{index}}">
+      <view class="word-cell" bind:tap="onWord" data-index="{{index}}">
+        <view>
+          <text class="word" hidden="{{showMode==1}}" >{{item.word}}</text>
+          <view class="{{showMode==1?'word':'nameCN'}}" hidden="{{showMode==0}}">{{item.nameCN}}</view>
+        </view>
+        <image catch:tap="onCheckWord" src="./images/{{item.isChecked ? 'checked' : 'unchecked'}}.png" class="unchecked-img" data-index="{{index}}"></image>
+      </view>
+      <view slot="right" class="van-swipe-cell__right">删除</view>
+    </van-swipe-cell>
+
+    <view hidden="{{isLastCellGroup && (wordInfoList.length - 1) == index}}" class="hair-line"></view>
+    <!-- hair-line -->
+
+  </block>
+  <!-- word-cell -->
+
+</view>
+<!-- E container -->

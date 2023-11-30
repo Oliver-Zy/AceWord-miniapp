@@ -1,0 +1,66 @@
+<wxs module="tools" src="./review.wxs"></wxs>
+<!-- wxs -->
+
+<import src="/templates/diccard-swiper.wxml" />
+<!-- template -->
+
+<!-- S container -->
+<view class="container">
+
+  <!-- S scroll-view -->
+  <scroll-view scroll-y="true" style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" bind:scroll="onScroll">
+
+    <view style="height: 20px;"></view>
+    <block wx:for="{{reviewCardDateList}}" wx:key="groupDate">
+
+      <ace-header titleType="wordCard" date="{{item.date}}" arrLen="{{item.totalCardNum}}" iconType="selectAll" bind:headerEvent="onHeaderEvent" data-outerIndex="{{index}}" />
+      <block wx:for="{{item.wordCardList}}" wx:for-item="_item" wx:for-index="_index">
+        <word-card wordCard="{{_item}}" isChecked="{{tools.isChecked(_item.wordCardID, wordCardIDCheckedList)}}" bind:wordCardEvent="onWordCardEvent" data-outerIndex="{{index}}" data-innerIndex="{{_index}}" />
+      </block>
+
+      <view wx:if="{{!item.isExpanded && (item.totalCardNum != 1)}}" style="padding-top:24px;display:flex;justify-content:center;">
+        <ace-button size="small" text="{{'展开更多'}}" bind:btnEvent="onExpand" data-outerIndex="{{index}}" />
+      </view>
+      <view style="height:24px;"></view>
+
+    </block>
+    <view wx:if="{{reviewCardDateList.length == 0}}" class="empty">
+      未找到相关数据
+    </view>
+    <view style="padding-bottom:{{wordCardIDCheckedList.length != 0 ? '100px' : 'env(safe-area-inset-bottom)'}};"></view>
+  </scroll-view>
+  <!-- E scroll-view -->
+
+</view>
+<!-- S container -->
+
+<template is="{{showDicCardSwiper ? 'diccard-swiper' : ''}}" data="{{showReplaceBtn: false, showStyleBtn: true, currentSwiperIndex, dicCardList}}" />
+<!-- template -->
+
+<!-- S style-card -->
+<view style="position:fixed;bottom:0;z-index:3;">
+  <style-card wx:if="{{showStyleCard}}" wordInfo="{{wordInfo}}" opacity="{{reviewCardDateList[currentWordCardOuterIndex].wordCardList[currentWordCardIndex].wordInfoList[currentSwiperIndex].opacity}}" bgColor="{{reviewCardDateList[currentWordCardOuterIndex].wordCardList[currentWordCardIndex].wordInfoList[currentSwiperIndex].bgColor}}" isVipExpired="{{isVipExpired}}" bind:styleCardEvent="onStyleCardEvent" />
+  <view style="height:100px;" bind:tap="onClickHideOverlay"></view>
+</view>
+<!-- E style-card -->
+
+<!-- S practice-btn -->
+<view wx:if="{{wordCardIDCheckedList.length == 0 ? false : true}}" style="width:100%;display:flex;justify-content:center;position:fixed;bottom:60px;">
+  <ace-button size="large" text="开始练习" bind:btnEvent="onPractice" />
+</view>
+<!-- E practice-btn -->
+
+<!-- S ace-components -->
+<ace-navi-bar type="back" title="推荐复习计划" backgroundColor="rgba(0,0,0,0)" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
+<ace-search-bar wx:if="{{showSearchBarSelfDef}}" style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" placeholder="添加单词的自定义释义" bind:focus="onSearchBarFocus" bind:cancel="onSearchBarCancelSelfDef" bind:confirm="onSearchBarConfirmSelfDef" />
+<ace-popup wx:if="{{showPopup}}" type="wordGroup" wordGroupList="{{wordGroupList}}" style="width:100%;position:fixed;bottom:0;z-index:100;" bind:addWordGroup="onAddWordGroup" bind:collectToWordGroup="onCollectToWordGroup" bind:cancel="onClickHideOverlayZIndex" />
+<!-- E ace-components -->
+
+<!-- S vant components -->
+<van-toast id="van-toast" />
+<van-overlay show="{{ showOverlay }}" bind:click="onClickHideOverlay" />
+<van-overlay show="{{ showOverlayZIndex }}" z-index="99" bind:click="onClickHideOverlayZIndex" />
+<van-popup show="{{ showPopupVant }}" position="bottom" overlay="{{ false }}" duration="0" bind:close="onClose">
+  <van-action-sheet show="{{ showActionSheet }}" description="{{ actionSheetDesc }}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheet" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
+</van-popup>
+<!-- E vant components -->

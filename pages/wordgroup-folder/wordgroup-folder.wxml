@@ -1,0 +1,33 @@
+<!-- S container -->
+<view class="container">
+
+  <!-- S scroll-view -->
+  <scroll-view scroll-y="true" style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" bind:scroll="onScroll">
+
+    <!-- S-cell-folder -->
+    <block wx:for="{{wordGroupList}}" wx:key="id">
+      <van-swipe-cell right-width="{{ 65 }}" bind:click="onDeleteWordGroup" data-index="{{index}}">
+        <ace-cell type="wordGroupFolder" wordGroup="{{item}}" catch:tap="onCellFolder"  data-index="{{index}}" />
+        <view slot="right" class="van-swipe-cell__right">删除</view>
+      </van-swipe-cell>
+    </block>
+    <!-- E-cell-folder -->
+
+  </scroll-view>
+</view>
+<!-- E container -->
+
+<ace-navi-bar type="back" title="单词本" backgroundColor="white" showVantDivider="true" style="width:100%;position:fixed;top:0;" />
+<view style="width:100%;display:flex;justify-content:center;position:fixed;bottom:60px;">
+  <ace-button bind:tap="onAddWordGroup" size="large" text="新建单词本" />
+</view>
+<!-- btn-container -->
+
+<van-toast id="van-toast" />
+<van-dialog use-slot title="新建单词本" show="{{ showFieldDialog }}" show-cancel-button confirm-button-color='#424BFF' bind:confirm="onFieldDialogConfirm" bind:cancel="onFieldDialogCancel">
+  <view class="field-container">
+    <van-field value="{{ fieldValue }}" clearable="{{ true }}" custom-style="padding:14px 12px;background:#F2F3F5;border-radius:8px;" placeholder="请输入单词本名称" bind:change="onFieldChange" />
+  </view>
+</van-dialog>
+<van-dialog show="{{ showNotifDialog }}" title="提示" message="无法删除默认单词本" confirmButtonText="我知道了"></van-dialog>
+<!-- vant components -->

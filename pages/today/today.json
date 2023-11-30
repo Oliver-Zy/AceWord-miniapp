@@ -1,0 +1,14 @@
+{
+  "usingComponents": {
+    "ace-navi-bar": "../../components/ace/navibar/index",
+    "ace-header": "../../components/ace/header/index",
+    "ace-button": "../../components/ace/button/index",
+    
+    "dic-card": "../../components/card/dic-card/index",
+    "word-card": "../../components/card/word-card/index",
+
+    "van-toast": "../../miniprogram_npm/@vant/weapp/toast/index",
+    "van-overlay": "../../miniprogram_npm/@vant/weapp/overlay/index",
+    "van-action-sheet": "../../miniprogram_npm/@vant/weapp/action-sheet/index"
+  }
+}

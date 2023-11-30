@@ -1,0 +1,27 @@
+{
+  "usingComponents": {
+    "ace-navi-bar": "../../components/ace/navibar/index",
+    "ace-search-bar": "../../components/ace/searchbar/index",
+    "ace-header": "../../components/ace/header/index",
+    "ace-button": "../../components/ace/button/index",
+    "ace-popup": "../../components/ace/popup/index",
+
+    "dic-card": "../../components/card/dic-card/index",
+    "style-card": "../../components/card/style-card/index",
+    "sen-card": "../../components/card/sen-card/index",
+    "review-card": "../../components/card/review-card/index",
+    "word-card": "../../components/card/word-card/index",
+
+    "wordbook-my-info": "../../components/wordbook/wordbook-my-info/index",
+
+    "van-popup": "../../miniprogram_npm/@vant/weapp/popup/index",
+    "van-action-sheet": "../../miniprogram_npm/@vant/weapp/action-sheet/index",
+    "van-toast": "../../miniprogram_npm/@vant/weapp/toast/index",
+    "van-dialog": "../../../miniprogram_npm/@vant/weapp/dialog/index",
+    "van-overlay": "../../miniprogram_npm/@vant/weapp/overlay/index",
+    "van-field": "../../miniprogram_npm/@vant/weapp/field/index"
+  },
+  "backgroundColor": "#F3F4F7",
+  
+  "disableScroll": true
+}

@@ -1,0 +1,5 @@
+<!-- wxml -->
+<web-view wx:if="{{type == 'learnRules'}}" src="https://mp.weixin.qq.com/s?__biz=MzkzNDQwMzgxNw==&mid=2247483667&idx=1&sn=0b2f0181c0b6853eae13f00e088b5fc9&chksm=c2bc8a95f5cb0383c96f5000cfd5600d72525d6e86b0b07ad9f0fcf859c9f34fb6951139ecd1#rd"></web-view>
+<web-view wx:if="{{type == 'userGuideBook'}}" src="https://mp.weixin.qq.com/s?__biz=MzkzNDQwMzgxNw==&mid=2247483688&idx=1&sn=734de7a087be27ff99bf8f039a9757f2&chksm=c2bc8aaef5cb03b8c6badd15af485852127b39844f15f8ad8697599051c5ebeda11088c52883&token=1066332344&lang=zh_CN#rd"></web-view>
+<web-view wx:if="{{type == 'subscribeMP'}}" src="https://mp.weixin.qq.com/s?__biz=MzkzNDQwMzgxNw==&mid=2247483698&idx=1&sn=144c08767ccff488bba274cfbc0a7102&chksm=c2bc8ab4f5cb03a25263dc19a3e108d32540f9d48f46840ec8c6cf874fdade81752a789296be&tok"></web-view>
+<web-view wx:if="{{type == 'vipProtocol'}}" src="https://mp.weixin.qq.com/s?__biz=MzkzNDQwMzgxNw==&mid=2247483703&idx=1&sn=43cc958a0373ddf44ca7706ac2a9db05&chksm=c2bc8ab1f5cb03a789c1d1ff8be6f2d76796859b7a7b55aad2f196f63b349f49579690794232&token=40042851&lang=zh_CN#rd"></web-view>

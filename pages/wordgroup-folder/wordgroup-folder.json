@@ -1,0 +1,13 @@
+{
+  "usingComponents": {
+    "ace-navi-bar": "../../components/ace/navibar/index",
+    "ace-button": "../../components/ace/button/index",
+    "ace-cell": "../../components/ace/cell/index",
+
+    "van-dialog": "../../miniprogram_npm/@vant/weapp/dialog/index",
+    "van-field": "../../miniprogram_npm/@vant/weapp/field/index",
+    "van-swipe-cell": "../../miniprogram_npm/@vant/weapp/swipe-cell/index",
+    "van-toast": "../../miniprogram_npm/@vant/weapp/toast/index"
+  },
+  "backgroundColor": "#FDFDFD"
+}

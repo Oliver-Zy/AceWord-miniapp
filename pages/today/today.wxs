@@ -1,0 +1,6 @@
+module.exports = {
+  isChecked: function (wordCardID, checkedWordCardIDList) {
+    if (checkedWordCardIDList == undefined) return false
+    return checkedWordCardIDList.indexOf(wordCardID) == -1 ? false : true  
+  },
+}

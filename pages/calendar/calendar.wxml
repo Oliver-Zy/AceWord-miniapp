@@ -1,0 +1,65 @@
+<wxs module="tools" src="./calendar.wxs"></wxs>
+<!-- wxs -->
+
+<import src="/templates/diccard-swiper.wxml" />
+<!-- template -->
+
+<!-- S container -->
+<view class="container">
+
+  <scroll-view wx:if="{{!loading}}" scroll-y="true" refresher-enabled="true" refresher-triggered="{{isRefresherTriggered}}" style="width:100%;height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" bind:scroll="onScroll" bind:refresherrefresh="onScrollViewRefresh">
+
+    <calendar-card dateInfo="{{dateInfo}}" calendarInfoList="{{calendarInfoList}}" bind:calendarCardEvent="onCalendarCardEvent" />
+
+    <view style="height:22px;"></view>
+    <ace-header titleType="calendar" date="{{dateInfo.currentDate}}" arrLen="{{totalCount}}" iconType="options" filterType="{{filterType}}" bind:headerEvent="onHeaderEvent" />
+    <block wx:for="{{wordCardList}}">
+      <word-card wordCard="{{item}}" isChecked="{{tools.isChecked(item.wordCardID, wordCardIDCheckedList)}}" bind:wordCardEvent="onWordCardEvent" data-index="{{index}}" />
+    </block>
+
+    <view wx:if="{{hasNextPage}}" style="padding:28px 0;display:flex;justify-content:center;">
+      <ace-button size="small" text="{{'加载更多'}}" bind:btnEvent="onNextPage" data-index="{{index}}" />
+    </view>
+    <view wx:if="{{!hasNextPage}}" style="padding:28px 0;display:flex;justify-content:center;">
+      <text style="font-family:var(--poppins-italic);font-size:12px;color:#7987A3;">- Rome wasn't built in a day -</text>
+    </view>
+
+    <view wx:if="{{wordCardIDCheckedList.length != 0}}" style="height:62px;"></view>
+  </scroll-view>
+
+</view>
+<!-- E container -->
+
+<template is="{{showDicCardSwiper ? 'diccard-swiper' : ''}}" data="{{showReplaceBtn: false, showStyleBtn: true, currentSwiperIndex, dicCardList}}" />
+<!-- template -->
+
+<!-- S style-card -->
+<view style="position:fixed;bottom:0;z-index:3;">
+  <style-card wx:if="{{showStyleCard}}" wordInfo="{{wordInfo}}" opacity="{{wordCardList[currentWordCardIndex].wordInfoList[currentSwiperIndex].opacity}}" bgColor="{{wordCardList[currentWordCardIndex].wordInfoList[currentSwiperIndex].bgColor}}" isVipExpired="{{isVipExpired}}" bind:styleCardEvent="onStyleCardEvent" />
+  <view style="height:100px;" bind:tap="onClickHideOverlay"></view>
+</view>
+<!-- E style-card -->
+
+<!-- S practice-btn -->
+<view wx:if="{{ wordCardIDCheckedList.length != 0}}" style="width:100%;display:flex;justify-content:center;position:fixed;bottom:100px;">
+  <ace-button size="large" text="开始练习" bind:btnEvent="onPractice" />
+</view>
+<!-- E practice-btn -->
+
+<!-- S ace-components -->
+<ace-navi-bar type="calendar" title="学习日历" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
+<ace-search-bar wx:if="{{showSearchBarSelfDef}}" style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" placeholder="添加单词的自定义释义" bind:focus="onSearchBarFocus" bind:cancel="onSearchBarCancelSelfDef" bind:confirm="onSearchBarConfirmSelfDef" />
+<ace-popup wx:if="{{showPopup}}" type="wordGroup" wordGroupList="{{wordGroupList}}" style="width:100%;position:fixed;bottom:0;z-index:100;" bind:addWordGroup="onAddWordGroup" bind:collectToWordGroup="onCollectToWordGroup" bind:cancel="onClickHideOverlayZIndex" />
+<!-- E ace-components -->
+
+<!-- S vant components -->
+<van-toast id="van-toast" />
+<van-overlay show="{{ showOverlay }}" bind:click="onClickHideOverlay" />
+<van-overlay show="{{ showOverlayZIndex }}" z-index="99" bind:click="onClickHideOverlayZIndex" />
+<van-popup show="{{ showPopupVant }}" position="bottom" overlay="{{ false }}" duration="0" bind:close="onClose">
+  <van-action-sheet show="{{ showActionSheet }}" description="{{ actionSheetDesc }}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheet" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
+</van-popup>
+<!-- E vant components -->
+
+<view class="tab-bar-shadow" style="padding-bottom: {{isIOS ? 30 : 0}}px;"></view>
+<!-- tab-bar-shadow -->

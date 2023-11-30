@@ -1,0 +1,19 @@
+module.exports = {
+  btnText: function (side, innerIndex) {
+    if (side == 'left') {
+      return innerIndex == 0 ? '记住了' : '记得'
+    } else if (side == 'right') {
+      return innerIndex == 0 ? '详细释义' : '模糊'
+    } else if (side == 'finished') {
+      return '保存进度，并返回上一页'
+    }
+  },
+  ipaHandler: function (ipa) {
+    if (ipa == undefined) return
+    if (ipa.indexOf(';') != -1) {
+      return ipa.slice(0, ipa.indexOf(';'))
+    } else {
+      return ipa
+    }
+  }
+}

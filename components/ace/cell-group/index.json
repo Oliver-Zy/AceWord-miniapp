@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "ace-header": "../../../components/ace/header/index",
+
+    "van-swipe-cell": "../../../miniprogram_npm/@vant/weapp/swipe-cell/index"
+  }
+}

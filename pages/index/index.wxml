@@ -1,0 +1,102 @@
+<wxs module="tools" src="./index.wxs"></wxs>
+<!-- wxs -->
+
+<import src="/templates/diccard-swiper.wxml" />
+<import src="/templates/share-btns-container.wxml" />
+<!-- template -->
+
+<!-- S container -->
+<view class="container">
+
+  <!-- S scroll-view -->
+  <scroll-view scroll-y="true" refresher-enabled="true" refresher-triggered="{{isRefresherTriggered}}" scroll-into-view="{{toView}}" scroll-with-animation="true" style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" bind:scroll="onScroll" bind:refresherrefresh="onScrollViewRefresh">
+
+    <wordbook-my-info wordBookMyInfo="{{wordBookMyInfo}}" bind:changeDic="onChangeDic" />
+    <sen-card senCard="{{senCard}}" bind:senCardEvent="onSenCardEvent" />
+
+    <view style="height:22px;"></view>
+    <ace-header titleType="text" text="推荐复习计划" iconType="learnRules" bind:headerEvent="onHeaderEvent" />
+    <review-card isFinished="{{reviewCard.needReviewCardNum == 0 ? true : false}}" reviewCard="{{reviewCard}}" bind:review="onReview" />
+
+    <view style="height:22px;"></view>
+    <ace-header titleType="text" text="今日新学计划" iconType="selectAll" isSelectAll="{{wordCardIDCheckedList.length == todayCardList.length}}" bind:headerEvent="onHeaderEvent" />
+    <block wx:for="{{todayCardList}}">
+      <word-card wordCard="{{item}}" isChecked="{{tools.isChecked(item.wordCardID, wordCardIDCheckedList)}}" bind:wordCardEvent="onWordCardEvent" data-index="{{index}}" />
+    </block>
+
+    <view id="scrollBottom" style="padding:28px 0;display:flex;justify-content:center;">
+      <ace-button size="small" text="添加卡片" bind:btnEvent="onAddWordCard" />
+    </view>
+
+    <view style="height:{{wordCardIDCheckedList.length != 0 ? 62 : 0}}px;"></view>
+  </scroll-view>
+
+</view>
+<!-- E container -->
+
+<template is="{{showDicCardSwiper ? 'diccard-swiper' : ''}}" data="{{showReplaceBtn: true, showStyleBtn: true, currentSwiperIndex, dicCardList}}" />
+<!-- template -->
+
+<!-- S practice-btn -->
+<view wx:if="{{wordCardIDCheckedList.length != 0 && !hasUnfinishedTask}}" style="display:flex;justify-content:center;position:absolute;left:50%;transform:translate(-50%);bottom:{{ isIOS ? 100 : 70}}px;overflow: hidden;">
+  <ace-button size="large" text="开始练习" bindtap="onPractice" />
+</view>
+<!-- E practice-btn -->
+
+<view wx:if="{{wordCardIDCheckedList.length == 0 && hasUnfinishedTask}}" style="display:flex;justify-content:center;position:absolute;left:50%;transform:translate(-50%);bottom:{{ isIOS ? 100 : 70}}px;overflow: hidden;">
+  <ace-button size="large" text="恢复练习" bindtap="fetchUnSavePracticeData" />
+</view>
+
+<view wx:if="{{wordCardIDCheckedList.length != 0 && hasUnfinishedTask}}" style="display:flex;justify-content:center;position:absolute;left:50%;transform:translate(-50%);bottom:{{ isIOS ? 100 : 70}}px;overflow: hidden;">
+  <ace-button size="double" textRight="开始练习" textLeft="恢复练习" bind:btnEvent="catchDoubleBtnEvent" />
+</view>
+
+<!-- S dic-card -->
+<view style="position:fixed;bottom:0;z-index:3;">
+  <dic-card wx:if="{{showDicCard}}" wordInfo="{{wordInfo}}" showReplaceBtn="{{false}}" showStyleBtn="{{false}}" bind:dicCardEvent="onDicCardEvent" />
+  <view style="height:100px;" bind:tap="onClickHideOverlay"></view>
+</view>
+<!-- E dic-card -->
+
+<!-- S style-card -->
+<view style="position:fixed;bottom:0;z-index:3;">
+  <style-card wx:if="{{showStyleCard}}" wordInfo="{{wordInfo}}" opacity="{{todayCardList[currentWordCardIndex].wordInfoList[currentSwiperIndex].opacity}}" bgColor="{{todayCardList[currentWordCardIndex].wordInfoList[currentSwiperIndex].bgColor}}" isVipExpired="{{isVipExpired}}" bind:styleCardEvent="onStyleCardEvent" />
+  <view style="height:100px;" bind:tap="onClickHideOverlay"></view>
+</view>
+<!-- E style-card -->
+
+<!-- S shareCard-container -->
+<view wx:if="{{showShareCard}}" class="sharecard-container" mut-bind:tap="onClickHideOverlay">
+  <canvas id="shareCard" type="2d" style="width:{{canvasWidth}}px;height:{{canvasHeight}}px;" mut-bind:tap="" />
+  <view style="height:30px;"></view>
+  <template is="share-btns-container" />
+</view>
+<!-- E shareCard-container -->
+
+<!-- S ace components -->
+<ace-navi-bar type="search" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
+<ace-search-bar wx:if="{{showSearchBar}}" style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" placeholder="开始查询单词" confirmtype="search" bind:focus="onSearchBarFocus" bind:cancel="onSearchBarCancel" bind:confirm="onSearchBarConfirm" />
+<ace-search-bar wx:if="{{showSearchBarSelfDef}}" style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" placeholder="添加单词的自定义释义" confirmtype="done" bind:focus="onSearchBarFocus" bind:cancel="onClickHideOverlayZIndex" bind:confirm="onSearchBarConfirmSelfDef" />
+<ace-popup wx:if="{{showPopup}}" type="wordGroup" wordGroupList="{{wordGroupList}}" style="width:100%;position:fixed;bottom:0;z-index:100;" bind:addWordGroup="onAddWordGroup" bind:collectToWordGroup="onCollectToWordGroup" bind:cancel="onClickHideOverlayZIndex" />
+<!-- E ace components -->
+
+<!-- S vant components -->
+<van-toast id="van-toast" />
+<van-dialog id="van-dialog" confirm-button-color="#4C34F0" show-cancel-button="{{ false }}" bind:cancel="onDialogCancel" />
+<van-overlay show="{{ showOverlay }}" bind:click="onClickHideOverlay" />
+<van-overlay show="{{ showOverlayZIndex }}" z-index="99" bind:click="onClickHideOverlayZIndex" />
+<van-popup show="{{ showPopupVant }}" position="bottom" overlay="{{ false }}" duration="0" bind:close="onClose">
+  <van-action-sheet show="{{ showActionSheet }}" description="{{ actionSheetDesc }}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheet" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
+</van-popup>
+<van-dialog use-slot title="新建单词本" show="{{ showFieldDialog }}" show-cancel-button confirm-button-color='#424BFF' bind:confirm="onFieldDialogConfirm" bind:cancel="onFieldDialogCancel">
+  <view style="box-sizing:border-box;width:100%;margin:28px 0 40px 0;padding:0 24px;">
+    <van-field value="{{ fieldValue }}" clearable="{{ true }}" custom-style="padding:14px 12px;background:#F2F3F5;border-radius:8px;" placeholder="请输入单词本名称" bind:change="onFieldChange" />
+  </view>
+</van-dialog>
+<!-- E vant components -->
+
+<image wx:if="{{showGuideOfAddToMyMiniApp}}" bind:tap="_showGuideOfAddToMyMiniApp" src="./images/addToMyMiniApp.png" style="width:162px;height:44px;position:fixed;top:{{capsuleInfo.top + capsuleInfo.height + 5}}px;right:{{windowWidth - capsuleInfo.right + 5}}px;"></image>
+<!-- add-to-my-miniapp -->
+
+<view wx:if="{{ showTabBarShadow }}" class="tab-bar-shadow" style="padding-bottom: {{isIOS ? 30 : 0}}px;"></view>
+<!-- tab-bar-shadow -->

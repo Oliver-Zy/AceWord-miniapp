@@ -1,0 +1,105 @@
+.small-btn {
+  height: 28px;
+  padding: 0 9px;
+  background: #F7F8FA;
+  border: 1px solid #E5E6EB;
+  border-radius: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.small-btn image {
+  width: 16px;
+  height: 16px;
+  padding-right: 3px;
+}
+
+.small-btn text {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 12px;
+  color: #86909C;
+}
+
+.small-btn-text {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 12px;
+  color: #86909C;
+}
+
+.large-btn {
+  height: 40px;
+  padding: 0 30px;
+  background: linear-gradient(133.36deg, #8472FF -16.27%, #1C00DB 136.02%);
+  border-radius: 100px;
+  box-shadow: 0px 8px 24px rgba(67, 43, 233, 0.16);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.large-btn text {
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 16px;
+  color: #FFFFFF;
+}
+.double-btn text{
+  font-size: 14px!important;
+}
+.double-btn{
+  min-width:45vw;
+  justify-content: space-around;
+
+
+}
+.double-btn .divider{
+  height: 40%;
+  width:1px;
+  background-color: #8472FF;
+  margin:0 10px;
+}
+
+.ripple {
+  background-position: center;
+  transition: background 0.8s;
+}
+
+.ripple:active {
+  background-color: rgba(0, 0, 0, 0.04);
+  background-size: 100%;
+  transition: background 0s;
+}
+
+@media (prefers-color-scheme: dark) {
+  /* DarkMode 下的样式 start */
+  
+  .small-btn {
+    height: 28px;
+    padding: 0 9px;
+    background: #303344;    
+    border: 1px solid #303344;
+    border-radius: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .small-btn text {
+    font-family: var(--simHei);
+    font-weight: 400;
+    font-size: 12px;
+    color: #86909C;
+  }  
+
+  .small-btn-text {
+    font-family: var(--simHei);
+    font-weight: 400;
+    font-size: 12px;
+    color: #86909C;
+  }  
+  
+  /* DarkMode 下的样式 end */
+}

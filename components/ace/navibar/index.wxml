@@ -1,0 +1,61 @@
+<!-- S container type == 'search' -->
+<view wx:if="{{type == 'search'}}" class="container" style="height:{{naviBarHeight}}px;box-shadow:{{showDivider && !isDarkMode ? '0px 4px 14px rgba(31, 32, 34, 0.08)'  :''}};">
+  <view class="search-container">
+    <view class="search-container-inner" style="width:{{searchBarWidth}}px; height:{{searchBarHeight}}px;" bind:tap="onSearch">
+      <image class="search-img" src="../../../images/icons/{{isDarkMode ? 'search-dark' : 'search'}}.png"></image>
+      <text class="search-container-inner-text">开始查询单词</text>
+    </view>
+  </view>
+</view>
+<!-- E container type == 'search' -->
+
+<!-- S container type == 'back' -->
+<view wx:if="{{type == 'back'}}" class="container" style="height:{{naviBarHeight}}px;position:fixed;background-color:{{isDarkMode ? '#323346' : backgroundColor}};box-shadow:{{showDivider && !isDarkMode ? '0px 4px 14px rgba(31, 32, 34, 0.08)'  :''}};">
+  <view class="inner-container" style="height:{{searchBarHeight}}px;">
+    <image class="back-img" src="../../../images/icons/{{isDarkMode ? 'back-dark' : 'back'}}.png" bind:tap="onBack" data-type="back"></image>
+    <text class="navi-text">{{title}}</text>
+    <view style="width:40px;height:24px;"></view>
+  </view>
+
+  <van-divider wx:if="{{showVantDivider}}" borderColor="{{isDarkMode ? '#303344' : ''}}" style="width:100%;position:absolute;display: none;" />
+  <!-- van-naviBar -->
+</view>
+<!-- E container type == 'back' -->
+
+<!-- S container type == 'appback' -->
+<view wx:if="{{type == 'appback'}}" class="container" style="height:{{naviBarHeight}}px;position:fixed;background-color:{{isDarkMode ? '#323346' : backgroundColor}};box-shadow:{{showDivider && !isDarkMode ? '0px 4px 14px rgba(31, 32, 34, 0.08)'  :''}};">
+  <view class="inner-container" style="height:{{searchBarHeight}}px;">
+    <button class="back-btn" open-type="launchApp"  binderror="launchAppError" style="background-color:transparent;border:none;padding:0;">
+      <image class="back-img" src="../../../images/icons/{{isDarkMode ? 'back-dark' : 'back'}}.png" bind:tap="onBack" data-type="back"></image>
+    </button>
+
+    <text class="navi-text">{{title}}</text>
+    <view style="width:40px;height:24px;"></view>
+  </view>
+
+  <van-divider wx:if="{{showVantDivider}}" borderColor="{{isDarkMode ? '#303344' : ''}}" style="width:100%;position:absolute;display: none" />
+  <!-- van-naviBar -->
+</view>
+<!-- E container type == 'appback' -->
+
+
+
+<!-- S container type == 'calendar' -->
+<view wx:if="{{type == 'calendar'}}" class="container" style="height:{{naviBarHeight}}px;box-shadow:{{showDivider && !isDarkMode ? '0px 4px 14px rgba(31, 32, 34, 0.08)'  :''}};">
+  <view class="inner-container" style="height:{{searchBarHeight}}px;">
+    <view style="width:54px;height:{{searchBarHeight}}px;"></view>
+    <text class="navi-text">{{title}}</text>
+    <view style="width:54px;height:{{searchBarHeight}}px;"></view>
+  </view>
+</view>
+<!-- E container type == 'calendar' -->
+
+<!-- S container type == 'vip' -->
+<view wx:if="{{type == 'vip'}}" class="container" style="height:{{naviBarHeight}}px;">
+  <view class="inner-container" style="height:{{searchBarHeight}}px;">
+    <image class="back-img" src="../../../images/icons/{{isDarkMode ? 'back-dark' : 'back'}}.png" bind:tap="onBack" data-type="back"></image>
+    <text class="navi-text" style="color:#FFDB93;">{{title}}</text>
+    <view style="width:40px;height:24px;"></view>
+  </view>
+</view>
+<!-- E container type == 'calendar' -->

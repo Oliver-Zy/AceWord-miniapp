@@ -1,0 +1,61 @@
+<wxs module="tools" src="../index/index.wxs"></wxs>
+<import src="/templates/diccard-swiper.wxml" />
+
+<!-- S container -->
+<!-- style="background-color: {{cardType?'#F3F4F7':'#FDFDFD'}}; -->
+<view class="container {{cardType?'grey':''}}" >
+  <ace-header style="padding:20px 0;box-sizing:border-box;position:  fixed;top:{{naviBarHeight}}px;width: 100%;" titleType="wordGroup" arrLen="{{totalWordNum}}" iconType="options" bind:headerEvent="onHeaderEvent" />
+  <scroll-view scroll-y="true" style="height:{{scrollViewHeight-50}}px;position:fixed;top:{{naviBarHeight+50}}px;">
+    <block wx:if="{{!cardType}}" wx:for="{{wordListByDate}}" wx:key="date">
+      <cell-group isLastCellGroup="{{((wordListByDate.length - 1) == index && !hasNextPage) ? true : false}}" date="{{item.date}}" wordInfoList="{{item.wordInfoList}}" bind:checkWord="onCheckWord" bind:deleteWord="onDeleteWord" bind:word="onWord" data-index="{{index}}" showMode="{{showMode}}" />
+    </block>
+
+    <block wx:if="{{cardType}}" wx:for="{{cardList}}">
+      <word-card wordCard="{{item}}" noHeader="{{true}}" isChecked="{{tools.isChecked(index, wordCardIndexCheckedList)}}" bind:wordCardEvent="onWordCardEvent" data-index="{{index}}" />
+    </block>
+
+    <view wx:if="{{hasNextPage}}" style="padding:24px 0;display:flex;justify-content:center;">
+      <ace-button size="small" text="展开更多" bind:btnEvent="onExpand" />
+    </view>
+
+    <view style="padding-bottom:{{wordCheckedList.length != 0 ? '100px' : 'env(safe-area-inset-bottom)'}};"></view>
+  </scroll-view>
+
+</view>
+<!-- S container -->
+
+<!-- S dic-card -->
+<view style="position:fixed;bottom:0;z-index:3;">
+  <dic-card wx:if="{{showDicCard}}" wordInfo="{{wordInfo}}" showReplaceBtn="{{false}}" hiddenCollectBtn="{{true}}" bind:dicCardEvent="onDicCardEvent" />
+  <view style="height:100px;" bind:tap="onClickHideOverlay"></view>
+</view>
+<!-- E dic-card -->
+
+<!-- S ace-button -->
+<view wx:if="{{wordCheckedList.length != 0}}" style="width:100%;display:flex;justify-content:center;position:fixed;bottom:60px;">
+  <ace-button bind:tap="onPractice" size="large" text="开始练习" />
+</view>
+<!-- E ace-button -->
+
+<ace-search-bar wx:if="{{showSearchBarSelfDef}}" style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" placeholder="添加单词的自定义释义" confirmtype="done" bind:focus="onSearchBarFocus" bind:cancel="onSearchBarCancelSelfDef" bind:confirm="onSearchBarConfirmSelfDef" />
+<ace-navi-bar type="back" title="{{wordGroupName}}" backgroundColor="white" showVantDivider="true" style="width:100%;position:fixed;top:0;" />
+<!-- ace-components -->
+
+<van-toast id="van-toast" />
+<van-overlay show="{{ showOverlay }}" bind:click="onClickHideOverlay" />
+<van-overlay show="{{ showOverlayZIndex }}" z-index="99" bind:click="onClickHideOverlayZIndex" />
+<van-popup show="{{ showPopupVant }}" position="bottom" overlay="{{ false }}" duration="0" bind:close="onClose">
+  <van-action-sheet show="{{ showActionSheet }}" description="{{ actionSheetDesc }}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheet" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
+</van-popup>
+<van-dialog use-slot title="新建单词本" show="{{ showFieldDialog }}" show-cancel-button confirm-button-color='#424BFF' bind:confirm="onFieldDialogConfirm" bind:cancel="onFieldDialogCancel">
+  <view style="box-sizing:border-box;width:100%;margin:28px 0 40px 0;padding:0 24px;">
+    <van-field value="{{ fieldValue }}" clearable="{{ true }}" custom-style="padding:14px 12px;background:#F2F3F5;border-radius:8px;" placeholder="请输入单词本名称" bind:change="onFieldChange" />
+  </view>
+</van-dialog>
+
+<!-- vant-components -->
+<van-action-sheet show="{{ showBottomSheet }}" actions="{{ bottomSheetActions }}" cancel-text="取消" bind:select="onSelectBottomSheet" bind:cancel="onCancelBottomSheet" bind:click-overlay="onCancelBottomSheet" />
+
+
+  <!-- 词典 -->
+  <template is="{{showDicCardSwiper ? 'diccard-swiper' : ''}}" data="{{showReplaceBtn: false, showStyleBtn: true, currentSwiperIndex, dicCardList}}" />

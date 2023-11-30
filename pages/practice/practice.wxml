@@ -1,0 +1,78 @@
+<wxs module="tools" src="./practice.wxs"></wxs>
+<!-- wxs -->
+
+<import src="/templates/practice.wxml" />
+<!-- template -->
+
+<!-- S container -->
+<view class="container" mut-bind:tap="onWordCN">
+  <!-- 跳过单词的弹窗 -->
+  <van-dialog use-slot use-title-slot show="{{ showSkipWordDialog }}" show-cancel-button confirm-button-color='#424BFF' cancel-button-color="#85858c" bind:confirm="onSkipWordDialogConfirm" bind:cancel="onSkipWordDialogCancel" custom-class="my-custom-class">
+    <view slot="title" class="dialog-title">
+      提示
+    </view>
+    <view class="dialog-container">
+      本次练习将跳过该词
+    </view>
+    <view class="dialog-option">
+      <van-checkbox checked-color="#424BFF" icon-size="16" value="{{ deleteWordInCardOption }}" bind:change="onChangeDeleteWordInCardOption">
+        <view style="color:{{deleteWordInCardOption?'#424BFF':'#999'}}">
+          在卡片中删除该单词
+        </view>
+      </van-checkbox>
+    </view>
+  </van-dialog>
+  <template is="header" data="{{naviBarHeight, isCollected: wordInfoList[wordIndex].isCollected, isDarkMode}}" />
+  <template is="wordAndipa-container" data="{{entryPage: 'practice', word: wordInfoList[wordIndex].word, isWordBlur, isFinished, pronType, ipa: pronType == 'US' ? wordInfoList[wordIndex].ipaUS : wordInfoList[wordIndex].ipaUK, isDarkMode}}" />
+  <!-- template -->
+
+  <!-- S wordNameCh-container -->
+  <view style="width:100%;height:68px;"></view>
+  <view class="wordNameCN-container" style="border-bottom: {{isFinished ? '' : '1px dashed #1D2129'}};">
+    <text wx:if="{{!isFinished}}" class="wordNameCN-text" mut-bind:tap="onSelfDef">{{wordInfoList[wordIndex].selfDef != undefined ? wordInfoList[wordIndex].selfDef : wordInfoList[wordIndex].wordCN}}</text>
+    <text wx:if="{{isFinished}}" class="wordNameCN-text" style="font-weight:{{isFinished ? 600 : 400}};position:relative;bottom:60px;">恭喜，你已完成本次练习!</text>
+  </view>
+  <view wx:if="{{innerIndex != 0 && !isFinished && !showWordCN}}" class="wordNameCN-container-blur" mut-bind:tap="onWordCN"></view>
+  <!-- E wordNameCh-container -->
+
+  <!-- confetti -->
+  <view style="height:10px;"></view>
+  <image wx:if="{{isFinished}}" src="./images/champagne.png" style="width:220px;height:220px;"></image>
+
+  <!-- S progress-container -->
+  <view wx:if="{{tools.btnText('left', innerIndex) == '记住了' && showCountDown && !isFinished}}" class="progress-container">
+    <text>请默念三遍单词中文释义</text>
+    <view class="progress">
+      <view wx:if="{{showProgress}}" class="inner-progress"></view>
+    </view>
+  </view>
+  <!-- E progress-container -->
+
+  <!-- S btns-group -->
+  <template is="btns-group" data="{{isFinished, innerIndex }}" />
+  <!-- E btns-group -->
+
+</view>
+
+<!-- S ace components -->
+<ace-navi-bar type="back" title="{{isFinished ? '练习已完成' : isVagueMode ? '模糊巩固' : '本组练习'}} {{isFinished ? '' : practiceMode == 'memorize' ? outerIndex + 1 : wordIndex + 1}}{{isFinished ? '' : '/'}}{{isFinished ? '' : wordInfoList.length}}" backgroundColor="{{'#EFF4FF'}}" showVantDivider="{{ true }}" style="position:fixed;top:0;" />
+<ace-spell-bar wx:if="{{showSpellBar}}" style="width:100%;position:fixed;bottom:{{keyboardHeight}}px;z-index:100;" bind:focus="onSpellBarFocus" bind:blur="onSpellBarBlur" bind:spellBarEvent="onSpellBarEvent" />
+<ace-search-bar wx:if="{{showSearchBarSelfDef}}" style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" placeholder="修改自定义释义" bind:focus="onSearchBarSelfDefFocus" bind:confirm="onSearchBarSelfDefConfirm" bind:cancel="onSearchBarSelfDefCancel" />
+<ace-dic-card wx:if="{{showDicCard}}" wordInfo="{{wordInfo}}" style="position:fixed;bottom:100px;z-index:2;" showReplaceBtn="{{false}}" bind:dicCardEvent="onDicCardEvent" />
+<ace-popup wx:if="{{showPopup}}" type="wordGroup" wordGroupList="{{wordGroupList}}" style="width:100%;position:fixed;bottom:0;z-index:100;" bind:addWordGroup="onAddWordGroup" bind:collectToWordGroup="onCollectToWordGroup" bind:cancel="{{showDicCard ? 'onClickHideOverlayZIndex' : 'onClickHideOverlay'}}" />
+<!-- E ace components -->
+
+<!-- S vant components -->
+<van-toast id="van-toast" />
+<van-overlay show="{{ showOverlay }}" bind:click="onClickHideOverlay" />
+<van-overlay show="{{ showOverlayZIndex }}" z-index="99" bind:click="onClickHideOverlayZIndex" />
+<van-popup show="{{ showPopupVant }}" position="bottom" overlay="{{ false }}" duration="0">
+  <van-action-sheet show="{{ showActionSheet }}" actionSheetDesc="{{ actionSheetDesc }}" actions="{{ actions }}" description="练习模式设置项" cancel-text="取消" bind:select="onSelectActionSheet" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
+</van-popup>
+
+<van-dialog use-slot title="新建单词本" show="{{ showFieldDialog }}" show-cancel-button confirm-button-color='#424BFF' bind:confirm="onFieldDialogConfirm" bind:cancel="onFieldDialogCancel">
+  <view class="field-container">
+    <van-field value="{{ fieldValue }}" clearable="{{ true }}" custom-style="padding:14px 12px;background:#F2F3F5;border-radius:8px;" placeholder="请输入单词本名称" bind:change="onFieldChange" />
+  </view>
+</van-dialog>
+<!-- E vant components -->
