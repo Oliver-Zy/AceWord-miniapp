@@ -387,7 +387,7 @@ class CalendarPageHandler {
 
 }
 
-export {
+module.exports = {
   ShareCardHandler,
   ReviewPageHandler,
   CalendarPageHandler

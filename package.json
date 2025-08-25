@@ -1,15 +1,23 @@
 {
-  "name": "a4-miniapp",
-  "version": "1.0.0",
-  "description": "",
-  "main": ".eslintrc.js",
+  "name": "aceword-miniapp",
+  "version": "2.0.0",
+  "description": "AceWord 英语单词学习小程序",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "echo \"开发环境\"",
+    "build": "echo \"构建生产版本\"",
+    "test": "echo \"运行测试\"",
+    "lint": "echo \"代码检查\""
   },
-  "author": "",
-  "license": "ISC",
+  "keywords": ["miniprogram", "english", "vocabulary", "learning"],
+  "author": "AceWord Team",
+  "license": "MIT",
   "dependencies": {
-    "@vant/weapp": "^1.10.3",
+    "@vant/weapp": "^1.11.6",
     "miniprogram-recycle-view": "^0.1.5"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

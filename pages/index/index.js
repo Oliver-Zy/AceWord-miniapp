@@ -1,12 +1,14 @@
-import {
+const {
   Common
-} from '../../models/common.js'
-import {
+} = require('../../models/common.js')
+const {
   HTTP
-} from '../../utils/http.js'
-import {
+} = require('../../utils/http.js')
+const {
   ShareCardHandler
-} from '../../models/handler.js'
+} = require('../../models/handler.js')
+const { logger } = require('../../utils/logger.js')
+
 const common = new Common()
 const http = new HTTP()
 const shareCardHandler = new ShareCardHandler()
@@ -42,13 +44,13 @@ Page({
       "#6c58f4",
       "#4c34f0",
     ]
-    console.log(colorList[e.detail])
+    logger.debug('Rate color changed:', colorList[e.detail])
     this.setData({
       rateColor: colorList[e.detail - 1]
     })
   },
   error(e) {
-    console.log(e)
+    logger.error('Index page error:', e)
   },
   showTempMeaning() {
     this.onSearchBarConfirm({
@@ -118,7 +120,7 @@ Page({
     common.request({
       url: `/homedata`
     }).then(homeData => {
-      console.log(homeData)
+      logger.info('Home data loaded:', homeData)
       Toast.clear()
       // set globalData: settings
       let settings = homeData.settings

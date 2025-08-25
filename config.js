@@ -56,6 +56,6 @@ const config = {
   ],
 }
 
-export {
+module.exports = {
   config
 }

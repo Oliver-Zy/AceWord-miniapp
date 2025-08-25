@@ -60,161 +60,55 @@ App({
     this.globalData.isIOS = wx.getSystemInfoSync().system.slice(0, 3) == 'iOS' ? true : false
 
     this.autoUpdate()
-    // 加载字体文件
-    wx.loadFontFace({
-      global: true,
-      family: 'inter-medium',
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/inter-medium.ttf")',
-      // success: console.log
-    })
+    
+    // 异步预加载核心字体，不阻塞启动
+    this.preloadFonts()
+  },
 
-    wx.loadFontFace({
-      global: true,
-      family: 'sfpro-bold',
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/sfpro-bold.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'sfpro-heavy-italic',
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/sfpro-heavy-italic.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'poppins',
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/poppins.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'poppins-medium',
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/poppins-medium.ttf")',
-      // success: console.log,
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'poppins-bold',
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/poppins-bold.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'poppins-italic',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/poppins-italic.ttf")',
-      // success: console.log
-    })
-
-    // -- 卡片字体 --
-    wx.loadFontFace({
-      global: true,
-      family: 'barlow-medium',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/barlow-medium.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'cormorantgaramond-medium',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/cormorantgaramond-medium.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'dmsans-medium',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/dmsans-medium.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'koho-medium',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/koho-medium.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'livvic-medium',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/livvic-medium.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'prompt-medium',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/prompt-medium.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'zillaslab-medium',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/zillaslab-medium.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'gelasio-medium',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/gelasio-medium.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'ibmplexmono-medium',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/ibmplexmono-medium.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'mali-medium',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/mali-medium.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'roboto-medium',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/roboto-medium.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'mplus1p-medium',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/mplus1p-medium.ttf")',
-      // success: console.log
-    })
-
-    wx.loadFontFace({
-      global: true,
-      family: 'spectral-medium',
-      scopes: ["webview", "native"],
-      source: 'url("https://cdn.uuorb.com/a4/font/v2/spectral-medium.ttf")',
-      // success: console.log
-    })
+  /**
+   * 预加载字体文件
+   */
+  async preloadFonts() {
+    try {
+      // 检查是否为开发环境，如果是则跳过字体加载避免错误提示
+      const accountInfo = wx.getAccountInfoSync()
+      const isDev = accountInfo.miniProgram.envVersion === 'develop'
+      
+      // 开发环境字体加载策略
+      const DEV_FONT_STRATEGY = 'silent' // 可选: 'skip', 'silent', 'normal'
+      // 'skip' - 完全跳过字体加载
+      // 'silent' - 静默加载字体，不显示错误
+      // 'normal' - 正常加载字体，显示所有信息
+      
+      if (isDev && DEV_FONT_STRATEGY === 'skip') {
+        console.log('🎨 开发环境跳过字体加载，避免网络错误提示')
+        return
+      }
+      
+      const silentMode = isDev && DEV_FONT_STRATEGY === 'silent'
+      if (silentMode) {
+        console.log('🎨 开发环境静默加载字体，错误将被忽略')
+      }
+      
+      const { fontLoader } = require('./utils/fontLoader.js')
+      // 根据策略决定是否静默加载
+      const shouldSilent = silentMode || !isDev
+      
+      // 预加载核心字体
+      await fontLoader.preloadCorefonts(shouldSilent)
+      
+      // 延迟加载特殊字体
+      setTimeout(() => {
+        fontLoader.loadSpecialFonts(shouldSilent)
+      }, 2000)
+      
+      // 在用户可能需要时加载卡片字体
+      setTimeout(() => {
+        fontLoader.loadCardFonts(shouldSilent)
+      }, 5000)
+    } catch (error) {
+      console.warn('字体加载失败:', error)
+    }
   },
 
   globalData: {

@@ -3,7 +3,7 @@
  * Common.js
  */
 
-import { HTTP } from '../utils/http'
+const { HTTP } = require('../utils/http')
 const http = new HTTP()
 
 class Common {
@@ -57,4 +57,6 @@ class Common {
   }
 }
 
-export { Common }
+module.exports = {
+  Common
+}
