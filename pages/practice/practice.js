@@ -86,6 +86,16 @@ Page({
       wordPracticeRecordDict: wordDict
     })
   },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow: function () {
+    // 设置状态栏颜色，适配浅色背景
+    const isDarkMode = wx.getSystemInfoSync().theme === 'dark'
+    app.setStatusBarColor(isDarkMode)
+  },
+
   /**
    * 在卡片中删除单词的弹窗中的选项
    * @param {*} e 
@@ -571,6 +581,36 @@ Page({
       Toast.success('修改成功')
 
     }
+  },
+
+  /**
+   * 监听自定义释义输入框获得焦点事件
+   *
+   * @event
+   * @param { Object } e 事件参数
+   */
+  onSearchBarSelfDefFocus: function (e) {
+    this.setData({
+      keyboardHeight: e.detail.height
+    })
+  },
+
+  /**
+   * 监听取消修改自定义释义事件
+   *
+   * @event
+   */
+  onSearchBarSelfDefCancel: function () {
+    // 如果是从词典弹窗进入的自定义释义编辑，取消时也要关闭词典弹窗
+    const shouldCloseDicCard = this.data.showDicCard && this.data.showOverlayZIndex
+    
+    this.setData({
+      showSearchBarSelfDef: false,
+      showOverlay: shouldCloseDicCard ? false : this.data.showOverlay,
+      showOverlayZIndex: false,
+      showDicCard: shouldCloseDicCard ? false : this.data.showDicCard,
+      keyboardHeight: 0
+    })
   },
 
   /**

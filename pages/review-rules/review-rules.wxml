@@ -1,0 +1,72 @@
+<!-- pages/review-rules/review-rules.wxml -->
+<view class="container">
+  
+  <!-- 导航栏 -->
+  <ace-navi-bar type="back" title="复习规则" style="width:100%;position:fixed;top:0;z-index:100;" />
+  
+  <!-- 内容区域 -->
+  <scroll-view scroll-y="true" class="content-scroll" style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;">
+    
+    <!-- 主要说明 -->
+    <view class="section">
+      <view class="intro-text">
+        我们在「艾宾浩斯遗忘曲线」的基础上进行了优化，在保持高效记忆的同时，不产生过多历史负担，助你更加动力满满。
+      </view>
+    </view>
+
+    <!-- 复习时间说明 -->
+    <view class="section">
+      <view class="section-title">复习时间安排</view>
+      <view class="description-text">
+        举个例子，今天你新学了一组卡片，我们会分别在第1、2、4、7、14天时，以「推荐复习计划」的形式整理好卡片提供你复习：
+      </view>
+      
+      <!-- 时间轴展示 -->
+      <view class="timeline-container">
+        <view class="timeline-item" wx:for="{{timelineData}}" wx:key="day">
+          <view class="timeline-dot {{item.isToday ? 'timeline-dot-active' : ''}}"></view>
+          <view class="timeline-content">
+            <view class="timeline-day">第{{item.day}}天</view>
+            <view class="timeline-desc">{{item.desc}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 学习计划示例 -->
+    <view class="section">
+      <view class="section-title">学习计划示例</view>
+      <view class="description-text">
+        如果你每天都固定新学一组卡片，未来15日我们为你安排的学习计划如下：
+      </view>
+      
+      <!-- 计划表格 -->
+      <view class="plan-table">
+        <view class="plan-header">
+          <view class="plan-cell">日期</view>
+          <view class="plan-cell">新学</view>
+          <view class="plan-cell">复习</view>
+        </view>
+        <view class="plan-row" wx:for="{{planData}}" wx:key="date">
+          <view class="plan-cell plan-date">{{item.date}}</view>
+          <view class="plan-cell plan-new">{{item.newCards}}</view>
+          <view class="plan-cell plan-review">{{item.reviewCards}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 常见问题 -->
+    <view class="section">
+      <view class="section-title">常见问题</view>
+      
+      <view class="faq-item" wx:for="{{faqData}}" wx:key="id">
+        <view class="faq-question">{{item.id}}. {{item.question}}</view>
+        <view class="faq-answer">{{item.answer}}</view>
+      </view>
+    </view>
+
+    <!-- 底部间距 -->
+    <view style="height: 40px;"></view>
+    
+  </scroll-view>
+</view>

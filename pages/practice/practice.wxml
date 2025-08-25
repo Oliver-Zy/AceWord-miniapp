@@ -7,17 +7,17 @@
 <!-- S container -->
 <view class="container" mut-bind:tap="onWordCN">
   <!-- 跳过单词的弹窗 -->
-  <van-dialog use-slot use-title-slot show="{{ showSkipWordDialog }}" show-cancel-button confirm-button-color='#424BFF' cancel-button-color="#85858c" bind:confirm="onSkipWordDialogConfirm" bind:cancel="onSkipWordDialogCancel" custom-class="my-custom-class">
+  <van-dialog use-slot use-title-slot show="{{ showSkipWordDialog }}" show-cancel-button confirm-button-color='#6366F1' cancel-button-color="#9CA3AF" bind:confirm="onSkipWordDialogConfirm" bind:cancel="onSkipWordDialogCancel" custom-class="practice-dialog">
     <view slot="title" class="dialog-title">
-      提示
+      跳过单词
     </view>
     <view class="dialog-container">
-      本次练习将跳过该词
+      本次练习将跳过该单词，是否继续？
     </view>
     <view class="dialog-option">
-      <van-checkbox checked-color="#424BFF" icon-size="16" value="{{ deleteWordInCardOption }}" bind:change="onChangeDeleteWordInCardOption">
-        <view style="color:{{deleteWordInCardOption?'#424BFF':'#999'}}">
-          在卡片中删除该单词
+      <van-checkbox checked-color="#6366F1" icon-size="18" value="{{ deleteWordInCardOption }}" bind:change="onChangeDeleteWordInCardOption">
+        <view class="checkbox-label" style="color:{{deleteWordInCardOption?'#6366F1':'#6B7280'}}">
+          同时从卡片中删除该单词
         </view>
       </van-checkbox>
     </view>

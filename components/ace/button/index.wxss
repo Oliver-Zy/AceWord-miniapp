@@ -32,9 +32,9 @@
 .large-btn {
   height: 40px;
   padding: 0 30px;
-  background: linear-gradient(133.36deg, #8472FF -16.27%, #1C00DB 136.02%);
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
   border-radius: 100px;
-  box-shadow: 0px 8px 24px rgba(67, 43, 233, 0.16);
+  box-shadow: 0px 8px 24px rgba(99, 102, 241, 0.20);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -58,7 +58,7 @@
 .double-btn .divider{
   height: 40%;
   width:1px;
-  background-color: #8472FF;
+  background-color: #6366F1;
   margin:0 10px;
 }
 

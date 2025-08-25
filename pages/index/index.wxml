@@ -18,7 +18,7 @@
     <review-card isFinished="{{reviewCard.needReviewCardNum == 0 ? true : false}}" reviewCard="{{reviewCard}}" bind:review="onReview" />
 
     <view style="height:22px;"></view>
-    <ace-header titleType="text" text="今日新学计划" iconType="selectAll" isSelectAll="{{wordCardIDCheckedList.length == todayCardList.length}}" bind:headerEvent="onHeaderEvent" />
+    <ace-header titleType="textWithCount" text="今日新学计划" arrLen="{{todayCardList.length > 0 && todayCardList[0]._type != 'loading' ? todayCardList.length * 5 : 0}}" iconType="selectAll" isSelectAll="{{wordCardIDCheckedList.length == todayCardList.length}}" bind:headerEvent="onHeaderEvent" />
     <block wx:for="{{todayCardList}}" wx:key="id">
       <word-card wordCard="{{item}}" isChecked="{{tools.isChecked(item.wordCardID, wordCardIDCheckedList)}}" bind:wordCardEvent="onWordCardEvent" data-index="{{index}}" />
     </block>

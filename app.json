@@ -19,7 +19,8 @@
     "pages/sentence/sentence",
     "pages/vip/vip",
     "pages/wordbook-word-list/wordbook-word-list",
-    "pages/lab/lab"
+    "pages/lab/lab",
+    "pages/review-rules/review-rules"
   ],
   "window": {
     "navigationStyle": "custom"

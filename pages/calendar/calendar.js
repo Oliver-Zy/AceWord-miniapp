@@ -892,6 +892,10 @@ Page({
   },
 
   onShow: function () {
+    // 设置状态栏颜色，适配当前主题
+    const isDarkMode = wx.getSystemInfoSync().theme === 'dark'
+    app.setStatusBarColor(isDarkMode)
+    
     if (typeof this.getTabBar === 'function' &&
       this.getTabBar()) {
       this.getTabBar().setData({

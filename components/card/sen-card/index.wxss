@@ -4,6 +4,7 @@
   padding: 14px 12px 16px 12px;
   margin: 16px 16px 0;
   background: #FFFFFF;
+  border: 1px solid #F1F3F4;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -174,6 +175,7 @@
     padding: 14px 12px 16px 12px;
     margin: 16px 16px 0;
     background: #27283A;
+    border: 1px solid #3A3F4B;
     border-radius: 12px;
     display: flex;
     flex-direction: column;

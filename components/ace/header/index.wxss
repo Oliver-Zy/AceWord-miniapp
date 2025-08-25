@@ -17,7 +17,7 @@
 .header-text-color {
   font-family: var(--simHei);
   font-weight: 600;
-  color: #4C34F0;
+  color: #6366F1;
 }
 
 .header-text-red {
@@ -29,7 +29,7 @@
 .header-text-blue {
   font-family: var(--simHei);
   font-weight: 600;
-  color: #4C34F0;
+  color: #6366F1;
 }
 
 .btn {
@@ -58,7 +58,7 @@
 .selected-btn {
   width: 58px;
   height: 22px;
-  background: #424BFF;
+  background: #6366F1;
   border: 1px solid #F2F3F5;
   border-radius: 22px;
   display: flex;
@@ -101,13 +101,13 @@
   .header-text-color {
     font-family: var(--simHei);
     font-weight: 600;
-    color: #C7C6FF;
+    color: #A5B4FC;
   }
 
   .header-text-blue {
     font-family: var(--simHei);
     font-weight: 600;
-    color: #C7C6FF;
+    color: #A5B4FC;
   }
 
   .header-text-red {

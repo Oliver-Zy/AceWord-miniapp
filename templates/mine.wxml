@@ -2,16 +2,16 @@
 
   <view class="avatar-bar">
     <view class="avatar-group">
-      <image class="avatar-img" src="{{avatarUrl == null ? './images/avatar.png' : avatarUrl}}" bind:tap="modifyAvatar"></image>
+      <image class="avatar-img" src="{{avatarUrl == null ? './images/avatar.png' : avatarUrl}}" bindtap="modifyAvatar"></image>
       <view class="right-avatar-group">
-        <text bind:tap="modifyNickname">{{nickName == '' ? '点击登录' : nickName}}</text>
+        <text bindtap="modifyNickname">{{nickName == '' ? '点击登录' : nickName}}</text>
         <view class="down-right-avatar-group">
           <image src="./images/copy.png"></image>
-          <text bind:tap="onCopyID">复制用户ID</text>
+          <text bindtap="onCopyID">复制用户ID</text>
         </view>
       </view>
     </view>
-    <image bind:tap="onOpenVip" class="openvip-img" src="./images/{{vipExpireDate == '00000000' ? 'openVip' : 'renewVip'}}.png"></image>
+    <image bindtap="onOpenVip" class="openvip-img" src="./images/{{vipExpireDate == '00000000' ? 'openVip' : 'renewVip'}}.png"></image>
   </view>
 
 </template>

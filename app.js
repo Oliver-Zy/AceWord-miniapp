@@ -111,6 +111,26 @@ App({
     }
   },
 
+  /**
+   * 设置状态栏颜色
+   * @param {boolean} isDark 是否为深色模式
+   */
+  setStatusBarColor: function(isDark = false) {
+    if (isDark) {
+      // 深色模式：白色文本，深色背景
+      wx.setNavigationBarColor({
+        frontColor: '#ffffff',
+        backgroundColor: '#1E1B4B'
+      })
+    } else {
+      // 浅色模式：深色文本，浅色背景
+      wx.setNavigationBarColor({
+        frontColor: '#000000',
+        backgroundColor: '#EDE9FE'
+      })
+    }
+  },
+
   globalData: {
 
   }

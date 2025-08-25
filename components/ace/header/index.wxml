@@ -4,6 +4,10 @@
 <view class="header">
   <view class="header-left">
     <text wx:if="{{titleType == 'text'}}" class="header-text">{{text}}</text>
+    
+    <text wx:if="{{titleType == 'textWithCount'}}" class="header-text">{{text}}「</text>
+    <text wx:if="{{titleType == 'textWithCount'}}" class="header-text-color">{{arrLen}}</text>
+    <text wx:if="{{titleType == 'textWithCount'}}" class="header-text">个单词」</text>
 
     <text wx:if="{{titleType == 'wordCard'}}" class="header-text">{{tools.dateToMonth(date)}}.{{tools.dateToDay(date)}}</text>
     <text wx:if="{{titleType == 'wordCard'}}" class="header-text">「</text>

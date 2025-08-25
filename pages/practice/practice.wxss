@@ -11,24 +11,38 @@
   --button-default-color:#000;
 }
 
+/* 弹窗样式优化 */
 .dialog-title {
-  font-weight: bold;
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 18px;
+  color: #1F2937;
+  text-align: center;
+  padding: 8px 0;
 }
+
 .dialog-container {
   text-align: center;
-  color: #999;
-  line-height: 50px;
-  font-size: 16px;
+  color: #4B5563;
+  line-height: 24px;
+  font-size: 15px;
+  font-family: var(--simHei);
+  padding: 16px 24px;
 }
 
-
- 
 .dialog-option {
   font-size: 14px;
-  padding: 15px;
-  padding-top: 0px;
+  padding: 16px 24px 8px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.checkbox-label {
+  font-family: var(--simHei);
+  font-size: 14px;
+  margin-left: 8px;
+  line-height: 20px;
 }
 
 .wordNameCN-container {

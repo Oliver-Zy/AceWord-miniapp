@@ -1,0 +1,239 @@
+/* pages/review-rules/review-rules.wxss */
+.container {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #EDE9FE -10%, #F9FAFB 30%);
+}
+
+.content-scroll {
+  width: 100%;
+}
+
+.section {
+  margin: 24px 16px 0 16px;
+  padding: 20px;
+  background: #FFFFFF;
+  border: 1px solid #F1F3F4;
+  border-radius: 16px;
+}
+
+.intro-text {
+  font-family: var(--simHei);
+  font-size: 16px;
+  line-height: 24px;
+  color: #1A202C;
+  text-align: justify;
+}
+
+.section-title {
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 18px;
+  color: #1A202C;
+  margin-bottom: 16px;
+}
+
+.description-text {
+  font-family: var(--simHei);
+  font-size: 14px;
+  line-height: 22px;
+  color: #4A5568;
+  margin-bottom: 20px;
+  text-align: justify;
+}
+
+/* 时间轴样式 */
+.timeline-container {
+  position: relative;
+  padding-left: 20px;
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 20px;
+  width: 2px;
+  height: calc(100% - 8px);
+  background: #E2E8F0;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #E2E8F0;
+  margin-right: 16px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.timeline-dot-active {
+  background: #6366F1;
+}
+
+.timeline-content {
+  flex: 1;
+}
+
+.timeline-day {
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 14px;
+  color: #6366F1;
+  margin-bottom: 4px;
+}
+
+.timeline-desc {
+  font-family: var(--simHei);
+  font-size: 13px;
+  color: #718096;
+}
+
+/* 计划表格样式 */
+.plan-table {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #E2E8F0;
+}
+
+.plan-header {
+  display: flex;
+  background: #F7FAFC;
+}
+
+.plan-row {
+  display: flex;
+  border-top: 1px solid #E2E8F0;
+}
+
+.plan-cell {
+  flex: 1;
+  padding: 12px 8px;
+  text-align: center;
+  font-family: var(--simHei);
+  font-size: 13px;
+}
+
+.plan-header .plan-cell {
+  font-weight: 600;
+  color: #2D3748;
+}
+
+.plan-date {
+  color: #4A5568;
+}
+
+.plan-new {
+  color: #6366F1;
+  font-weight: 500;
+}
+
+.plan-review {
+  color: #059669;
+  font-weight: 500;
+}
+
+/* FAQ样式 */
+.faq-item {
+  margin-bottom: 20px;
+}
+
+.faq-question {
+  font-family: var(--simHei);
+  font-weight: 600;
+  font-size: 15px;
+  color: #2D3748;
+  margin-bottom: 8px;
+  line-height: 22px;
+}
+
+.faq-answer {
+  font-family: var(--simHei);
+  font-size: 14px;
+  line-height: 22px;
+  color: #4A5568;
+  text-align: justify;
+  padding-left: 16px;
+}
+
+/* 深色模式 */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: linear-gradient(180deg, #1E1B4B -10%, #1F2937 30%);
+  }
+
+  .section {
+    background: #1E2139;
+    border-color: #3A3F4B;
+  }
+
+  .intro-text,
+  .section-title {
+    color: #F7FAFC;
+  }
+
+  .description-text {
+    color: #CBD5E0;
+  }
+
+  .timeline-day {
+    color: #A5B4FC;
+  }
+
+  .timeline-desc {
+    color: #A0AEC0;
+  }
+
+  .plan-header {
+    background: #2A2D3A;
+  }
+
+  .plan-header .plan-cell {
+    color: #E2E8F0;
+  }
+
+  .plan-date {
+    color: #CBD5E0;
+  }
+
+  .plan-new {
+    color: #A5B4FC;
+  }
+
+  .plan-review {
+    color: #68D391;
+  }
+
+  .faq-question {
+    color: #E2E8F0;
+  }
+
+  .faq-answer {
+    color: #CBD5E0;
+  }
+
+  .timeline-dot {
+    background: #4A5568;
+  }
+
+  .timeline-dot-active {
+    background: #A5B4FC;
+  }
+
+  .timeline-item:not(:last-child)::after {
+    background: #4A5568;
+  }
+
+  .plan-table,
+  .plan-row {
+    border-color: #4A5568;
+  }
+}

@@ -203,6 +203,7 @@ Page({
     })
   },
   modifyAvatar: function () {
+    console.log('modifyAvatar 被调用')
     let that = this
     wx.chooseMedia({
       count: 1,
@@ -211,7 +212,11 @@ Page({
       sizeType: "compressed",
       camera: 'back',
       success(res) {
-        Toast.loading()
+        console.log('选择图片成功:', res)
+        Toast.loading({
+          message: '上传中...',
+          forbidClick: true
+        })
         wx.uploadFile({
           url: config.api_base_url + '/avatar',
           filePath: res.tempFiles[0].tempFilePath,
@@ -224,18 +229,23 @@ Page({
             'Authorization': wx.getStorageSync('token')
           },
           success(e) {
+            console.log('上传成功:', e)
             Toast.success('修改成功')
             let url = JSON.parse(e.data)['data']
-            console.log(url)
+            console.log('新头像URL:', url)
             that.setData({
-
               avatarUrl: url
             })
           },
-          fail() {
-            Toast.fail('修改失败')
+          fail(error) {
+            console.error('上传失败:', error)
+            Toast.fail('修改失败: ' + (error.errMsg || '未知错误'))
           }
         })
+      },
+      fail(error) {
+        console.error('选择图片失败:', error)
+        Toast.fail('选择图片失败')
       }
     })
   },
@@ -613,6 +623,10 @@ Page({
   },
 
   onShow: function () {
+    // 设置状态栏颜色，适配当前主题
+    const isDarkMode = wx.getSystemInfoSync().theme === 'dark'
+    app.setStatusBarColor(isDarkMode)
+    
     let triggerCondition = app.globalData.settings.triggerCondition
     let triggerTime = app.globalData.settings.triggerTime
 

@@ -50,7 +50,7 @@
 .changeDic-btn-text {
   font-family: var(--simHei);
   font-size: 12px;
-  color: #5F67EA;
+  color: #6366F1;
 }
 
 .down-container {
@@ -93,7 +93,7 @@
 
 .progress view:first-child {
   height: 4px;
-  background: #4C34F0;
+  background: #6366F1;
   border-radius: 12px;
 }
 
@@ -116,7 +116,7 @@
   .changeDic-btn-text {
     font-family: var(--simHei);
     font-size: 12px;
-    color: #EEF1F7;
+    color: #A5B4FC;
   }
 
   .dicBookMine-TextInfo text:nth-child(1) {
@@ -145,7 +145,7 @@
 
   .progress view:first-child {
     height: 4px;
-    background: #EEF1F7;
+    background: #A5B4FC;
     border-radius: 12px;
   }
 
