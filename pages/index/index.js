@@ -22,6 +22,10 @@ Page({
    * 页面的初始数据
    */
   data: {
+    rateColor: "#ee0a24",
+    showForgetDialog: false,
+    tempWord: "abandon",
+    showUpdateOverlay: true,
     currentSwiperIndex: 0,
     showTabBarShadow: true,
     todayCardList: [{
@@ -29,6 +33,43 @@ Page({
     }],
     wordCardIDCheckedList: [],
     isInit: false,
+  },
+  onChangeRate(e) {
+    let colorList = [
+      "#bab4e6",
+      "#a095ef",
+      "#8778ee",
+      "#6c58f4",
+      "#4c34f0",
+    ]
+    console.log(colorList[e.detail])
+    this.setData({
+      rateColor: colorList[e.detail - 1]
+    })
+  },
+  error(e) {
+    console.log(e)
+  },
+  showTempMeaning() {
+    this.onSearchBarConfirm({
+      detail: {
+        value: "abandon"
+      }
+    })
+    this.setData({
+      showForgetDialog: false
+    })
+    // this.setData({
+    //   tempWord: "抛弃；放弃"
+    // })
+  },
+  onClickHideUpdateOverlay() {
+    this.setData({
+      showUpdateOverlay: false
+    })
+    this.getTabBar().setData({
+      show: true
+    })
   },
   fetchUnSavePracticeData() {
     if (wx.getStorageSync('hasUnfinishedTask')) {
@@ -76,7 +117,7 @@ Page({
     // 获取首页数据
     common.request({
       url: `/homedata`
-    }).then(homeData => { 
+    }).then(homeData => {
       console.log(homeData)
       Toast.clear()
       // set globalData: settings
@@ -113,13 +154,13 @@ Page({
       this.setData({
         todayCardList: todayCardList.length == 0 ? [{
           _type: 'blank'
-        }] : todayCardList, 
-      }) 
+        }] : todayCardList,
+      })
 
       wx.setStorageSync('todayCardList', todayCardList)
     }).catch(e => {
       this.onLoad()
-    }) 
+    })
   },
 
   /**
@@ -167,6 +208,11 @@ Page({
    */
   onHeaderEvent: function (e) {
 
+    // this.setData({
+    //   showForgetDialog: true
+    // })
+    // return
+
     let isSelectAll = e.detail.isSelectAll
     let wordCardIDCheckedList = this.data.wordCardIDCheckedList
 
@@ -212,6 +258,7 @@ Page({
    * @param { Object } e 事件参数
    */
   onSearchBarConfirm: async function (e) {
+    console.log(e.detail.value)
     Toast.loading()
     this.setData({
       showSearchBar: false,
@@ -225,6 +272,9 @@ Page({
     }).catch(() => {
       // 单词未找到
       Toast.fail("未找到该单词")
+      this.getTabBar().setData({
+        show: true
+      })
     })
 
     // 判断wordInfo
@@ -925,7 +975,8 @@ Page({
     if (typeof this.getTabBar === 'function' &&
       this.getTabBar()) {
       this.getTabBar().setData({
-        selected: 0
+        selected: 0,
+        show: true
       })
     }
 
@@ -1071,11 +1122,13 @@ Page({
    * @inner
    */
   _pronounce: function (word) {
-    innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${word}&type=${app.globalData.settings.pronType == 'US' ? 0 : 1}`
+    console.log(`https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=${app.globalData.settings.pronType == 'US' ? 0 : 1}`)
+    innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=${app.globalData.settings.pronType == 'US' ? 0 : 1}`
     innerAudioContext.play()
     innerAudioContext.onError((res) => {
+      console.log("error",res)
       backgroundAudioManager.title = word
-      backgroundAudioManager.src = `https://dict.youdao.com/dictvoice?audio=${word}&type=${app.globalData.settings.pronType == 'US' ? 0 : 1}`
+      backgroundAudioManager.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=${app.globalData.settings.pronType == 'US' ? 0 : 1}`
     })
   },
 

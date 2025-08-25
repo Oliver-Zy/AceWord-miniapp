@@ -1,143 +1,24 @@
 {
   "setting": {
     "compileHotReLoad": true,
-    "urlCheck": false
+    "urlCheck": false,
+    "coverView": true,
+    "lazyloadPlaceholderEnable": false,
+    "skylineRenderEnable": false,
+    "preloadBackgroundData": false,
+    "autoAudits": false,
+    "useApiHook": true,
+    "useApiHostProcess": true,
+    "showShadowRootInWxmlPanel": true,
+    "useStaticServer": true,
+    "useLanDebug": false,
+    "showES6CompileOption": false,
+    "checkInvalidKey": true,
+    "ignoreDevUnusedFiles": true,
+    "bigPackageSizeSupport": false,
+    "useIsolateContext": true
   },
-  "condition": {
-    "miniprogram": {
-      "list": [
-        {
-          "name": "",
-          "pathName": "pages/calendar/calendar",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/dicBook/dicBook",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/wordBook-folder/wordBook-folder",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/radio/radio",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/practice/practice",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "pages/mine/mine",
-          "pathName": "pages/mine/mine",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "test",
-          "pathName": "pages/test/test",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/wordbook-new/wordbook-new",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/sentence/sentence",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/vip/vip",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/index/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/index/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/index/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/index/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/index/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/index/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "app跳转，上传词书",
-          "pathName": "pages/wordbook-custom-app/wordbook-custom-app",
-          "query": "token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqd3QtdXNlci1vcGVuaWQiOiJvNG5PcDVBa2tibTNKM2FXMnVOWnVKcDg1am1nIiwiand0LXVzZXItaWQiOiI1OTlhZjU1YjcyMWUxMWVkYTA2MGI4Y2VmNmI2ZWUyNCIsInN1YiI6IndlYXBwX3Rva2VuIiwiand0LXVzZXItc3lzdGVtIjoid2VjaGF0Iiwicm9sZXMtaW5mb3Mta2V5Ijoicm9sZXMtdXNlciIsImlzcyI6InFkdS5saWZlIiwiZXhwIjoxNjc1MDczOTA0LCJpYXQiOjE2NzI0ODE5MDR9.iCeFQyY0kiBSE4DscZCvzpyHx8ML4firEmz4QnAscoc",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "",
-          "pathName": "pages/wordbook-custom-app/wordbook-custom-app",
-          "query": "token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqd3QtdXNlci1vcGVuaWQiOiJvNG5PcDVBa2tibTNKM2FXMnVOWnVKcDg1am1nIiwiand0LXVzZXItaWQiOiI1OTlhZjU1YjcyMWUxMWVkYTA2MGI4Y2VmNmI2ZWUyNCIsInN1YiI6IndlYXBwX3Rva2VuIiwiand0LXVzZXItc3lzdGVtIjoid2VjaGF0Iiwicm9sZXMtaW5mb3Mta2V5Ijoicm9sZXMtdXNlciIsImlzcyI6InFkdS5saWZlIiwiZXhwIjoxNjc1MDczOTA0LCJpYXQiOjE2NzI0ODE5MDR9.iCeFQyY0kiBSE4DscZCvzpyHx8ML4firEmz4QnAscoc",
-          "launchMode": "default",
-          "scene": 1069,
-          "referrerInfo": {
-            "appId": "wxd1a434e282c5a91c"
-          }
-        }
-      ]
-    }
-  },
+  "condition": {},
   "projectname": "aceword_miniapp",
   "description": "项目私有配置文件。此文件中的内容将覆盖 project.config.json 中的相同字段。项目的改动优先同步到此文件中。详见文档：https://developers.weixin.qq.com/miniprogram/dev/devtools/projectconfig.html",
   "libVersion": "2.25.4"

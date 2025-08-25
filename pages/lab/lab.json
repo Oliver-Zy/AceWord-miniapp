@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "ace-navi-bar": "../../components/ace/navibar/index"
+
+  }
+}

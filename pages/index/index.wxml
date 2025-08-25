@@ -10,7 +10,6 @@
 
   <!-- S scroll-view -->
   <scroll-view scroll-y="true" refresher-enabled="true" refresher-triggered="{{isRefresherTriggered}}" scroll-into-view="{{toView}}" scroll-with-animation="true" style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" bind:scroll="onScroll" bind:refresherrefresh="onScrollViewRefresh">
-
     <wordbook-my-info wordBookMyInfo="{{wordBookMyInfo}}" bind:changeDic="onChangeDic" />
     <sen-card senCard="{{senCard}}" bind:senCardEvent="onSenCardEvent" />
 
@@ -20,7 +19,7 @@
 
     <view style="height:22px;"></view>
     <ace-header titleType="text" text="今日新学计划" iconType="selectAll" isSelectAll="{{wordCardIDCheckedList.length == todayCardList.length}}" bind:headerEvent="onHeaderEvent" />
-    <block wx:for="{{todayCardList}}">
+    <block wx:for="{{todayCardList}}" wx:key="id">
       <word-card wordCard="{{item}}" isChecked="{{tools.isChecked(item.wordCardID, wordCardIDCheckedList)}}" bind:wordCardEvent="onWordCardEvent" data-index="{{index}}" />
     </block>
 
@@ -79,6 +78,31 @@
 <ace-search-bar wx:if="{{showSearchBarSelfDef}}" style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" placeholder="添加单词的自定义释义" confirmtype="done" bind:focus="onSearchBarFocus" bind:cancel="onClickHideOverlayZIndex" bind:confirm="onSearchBarConfirmSelfDef" />
 <ace-popup wx:if="{{showPopup}}" type="wordGroup" wordGroupList="{{wordGroupList}}" style="width:100%;position:fixed;bottom:0;z-index:100;" bind:addWordGroup="onAddWordGroup" bind:collectToWordGroup="onCollectToWordGroup" bind:cancel="onClickHideOverlayZIndex" />
 <!-- E ace components -->
+<!-- 版本更新 -->
+
+<!-- <van-overlay show="{{ showUpdateOverlay }}">
+  <view style="height: 100vh;width: 100vw;text-align: center;display: flex;flex-direction:column;justify-content:center;text-align: center;">
+    <view style="position: relative; width: 337px;height:519px;background: url('https://cdn.uuorb.com/a4/images/update_dialog.png') no-repeat center center;background-size: 100% 100%;margin: 0 auto;">
+      <ace-button style="position: absolute;bottom: 40px;left: 40px;opacity: .5;" size="large" text="关闭" bindtap="onClickHideUpdateOverlay" />
+      <ace-button style="position: absolute;bottom: 40px;right:40px;" size="large" text="查看更新" bindtap="onPractice" />
+    </view>
+  </view>
+</van-overlay> -->
+<van-dialog custom-style="margin-top:100px" show="{{showForgetDialog}}" custom-class="my-custom-class" use-slot closeOnClickOverlay showCancelButton showConfirmButton="{{false}}" cancelButtonText="关闭">
+  <view class="dialog-content" style="overflow: hidden; text-align: center;">
+    <view class="dialog-title" style="display: flex;justify-content: flex-end;margin-right: 20px; margin-top: 20px;color:#d4cbcc;font-size: 12px;">
+      为什么我会看到弹窗?
+    </view>
+    <view class="dialog-word" style="margin-bottom: 6px;margin-top: 10px;font-weight: bold;font-size: 38px;">{{tempWord}}</view>
+    <view style="margin-bottom: 20px;color:grey;font-size: 12px;" bind:tap="showTempMeaning">显示释义</view>
+    <view style="margin-top: 34px;margin-bottom: 20px;  display: flex;justify-content: center;align-items: center;">
+      <view style="margin-top: 4px; font-size: 12px;margin-right: 18px;color:#d4cbcc">陌生</view>
+      <van-rate icon="smile-o" void-icon="smile-o" size="24" value="{{ 0 }}" bind:change="onChangeRate" />
+      <view style="margin-top: 4px;font-size: 12px;margin-left: 18px;color:#d4cbcc">熟悉</view>
+    </view>
+
+  </view>
+</van-dialog>
 
 <!-- S vant components -->
 <van-toast id="van-toast" />

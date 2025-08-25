@@ -116,7 +116,7 @@ Page({
    */
   onFilterItem: function (e) {
     // 再次点击关闭
-    if(this.data.showBlockContainer){
+    if (this.data.showBlockContainer) {
       this.setData({
         showBlockContainer: false,
         showOverlay: false,
@@ -362,14 +362,18 @@ Page({
     } else {
 
       let actions = [{
-        name: '设置为当前学习'
-      },   {
-        name: '重置进度'
-      }, {
-        name: '查看词书单词'
-      },{
-        name: '删除词书'
-      }]
+          name: '设置为当前学习'
+        }, {
+          name: '重置进度'
+        }, {
+          name: '查看词书单词'
+        },
+        {
+          name: '重命名'
+        }, {
+          name: '删除词书'
+        }
+      ]
       this.setData({
         wordBook,
         wordBookListIndex,
@@ -501,7 +505,7 @@ Page({
       case '查看词书单词': {
         let book = JSON.stringify(this.data.wordBookList[this.data.wordBookListIndex])
         wx.navigateTo({
-          url: `/pages/wordbook-word-list/wordbook-word-list?book=${book}`,             
+          url: `/pages/wordbook-word-list/wordbook-word-list?book=${book}`,
         })
         break
       }
@@ -513,7 +517,7 @@ Page({
    *
    * @event
    */
-  onSelectActionSheetCustom: function (e) {
+   onSelectActionSheetCustom:  function (e) {
     this.onCancelActionSheet()
     let wordBook = this.data.wordBook
     let wordBookListIndex = this.data.wordBookListIndex
@@ -549,6 +553,35 @@ Page({
           }
         }).catch(err => console.error(err))
         break
+      }
+      case '重命名': {
+        wx.showModal({
+          title: '请输入新词书名',
+          editable: true,
+          confirmText: '确认'
+        }).then(res => { 
+          if (res.confirm) {
+            console.log(res.content)
+            http.request({
+              url: '/custombook/rename',
+              method: 'POST',
+              data: {
+                "bookCode": wordBook.wordBookCode,
+                "bookName": res.content
+              }
+            }).then(res  => {
+              Toast.success('设置成功')
+              common.request({
+                url: `/wordbooks-custom`
+              }).then(e=>{
+                this.setData({
+                  wordBookListCustom:e
+                })
+              })
+            }).catch(err => console.error(err))
+          }
+        })
+        break;
       }
 
       case '重置进度': {
@@ -610,7 +643,7 @@ Page({
       case '查看词书单词': {
         let book = JSON.stringify(wordBook)
         wx.navigateTo({
-          url: `/pages/wordbook-word-list/wordbook-word-list?book=${book}`,             
+          url: `/pages/wordbook-word-list/wordbook-word-list?book=${book}`,
         })
         break
       }

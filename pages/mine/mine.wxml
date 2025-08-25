@@ -3,26 +3,38 @@
 
 <!-- S container -->
 <view class="container">
-
+  <!-- <view wx:if="{{showOfficialAccount}}" style="position: fixed;bottom:78px;z-index: 999;left: 0;width: 100vw;">
+    <official-account binderror="error"></official-account>
+  </view> -->
   <scroll-view scroll-y="true" style="width:100%;height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" bind:scroll="onScroll">
-
     <view style="height:14px;"></view>
     <view class="up-container">
       <template is="avatar-bar" data="{{avatarUrl, nickName, vipExpireDate}}" />
       <template is="statistic-bar" data="{{learningInfo}}" />
     </view>
-
     <view class="down-container">
 
       <template is="cell-group" data="{{cellInfo: cellInfo_1, isDarkMode: isDarkMode}}" />
       <view style="width:100%;height:8px;margin-top:6px;background-color:{{isDarkMode ? '#1B1C2D' : '#F7F8FA'}};"></view>
 
       <template is="cell-group" data="{{cellInfo: cellInfo_2, isDarkMode: isDarkMode}}" />
+      <view class="cell-group">
+        <view class="cell" bindtap="onCell" data-type="notif">
+          <view>
+            <image src="/images/cell-icons/{{isDarkMode ? 'notif-dark' : 'notif' }}.png"></image>
+            <text>订阅复习提醒</text>
+          </view>
+          <view style="display: flex;justify-content: flex-end;">
+            <text style="margin-right: 10px;font-weight: bold;" wx:if="{{triggerCondition=='never'}}">未开启</text>
+            <text style="margin-right: 10px;font-weight: bold;" wx:if="{{triggerCondition!=null && triggerTime.hour == null}}">默认21点</text>
+            <text style="margin-right: 10px;font-weight: bold;" wx:if="{{triggerCondition!=null && triggerTime.hour != null}}">{{currentTime}}</text>
+            <image class="right-img" style="width: 16px;height: 16px;padding-right: 0;" src="./images/right.png"></image>
+          </view>
+        </view>
+      </view>
       <view style="width:100%;height:8px;margin-top:6px;background-color:{{isDarkMode ? '#1B1C2D' : '#F7F8FA'}};"></view>
-
       <template is="cell-group" data="{{cellInfo: cellInfo_3, isDarkMode: isDarkMode}}" />
       <view style="width:100%;height:28px;"></view>
-
     </view>
     <!-- E down-container -->
 
@@ -40,7 +52,23 @@
 <van-popup show="{{ showPopupVant }}" position="bottom" overlay="{{ false }}" duration="0" bind:close="onClose">
   <van-action-sheet show="{{ showActionSheet }}" description="{{ actionSheetDesc }}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheet" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
 </van-popup>
-<van-datetime-picker wx:if="{{showDateTimePicker}}" style="width:100%;position:fixed;bottom:0;z-index:100;" title="提醒时间" type="time" value="{{ currentTime }}" bind:input="onDateTimePickerInput" bind:confirm="onDateTimePickerConfirm" bind:cancel="onDateTimePickerCancel" />
+<!-- 时间弹窗 -->
+<van-popup show="{{ showDateTimePicker }}" round position="bottom" overlay="{{ true }}" bind:close="onDateTimePickerCancel">
+  <view style="padding: 10px;">
+    <view style="text-align: center;font-weight: bold;padding:10px 0 ">消息提醒</view>
+    <van-cell border="{{false}}" size="large" title="是否开启消息提醒">
+      <van-switch checked="{{openNotification}}" bind:change="onChange" size="20"></van-switch>
+    </van-cell>
+    <van-cell border="{{false}}" size="large" title="点此关注公众号以接收提醒" is-link bind:tap="navigateToGZH" />
+    <van-cell border="{{false}}" size="large" title="测试能否接收提醒" is-link bind:tap="testNotify" />
+
+    <van-divider dashed contentPosition="center">提醒时间</van-divider>
+    <van-datetime-picker show-toolbar="{{false}}" wx:if="{{openNotification}}" type="time" value="{{ currentTime }}" bind:input="onDateTimePickerInput" bind:confirm="onDateTimePickerConfirm" bind:cancel="onDateTimePickerCancel" />
+
+    <ace-button size="large" text="确定" bind:btnEvent="onConfirmChangeNotification" style="margin-top: 10px" />
+  </view>
+</van-popup>
+
 <van-overlay show="{{ showOverlay }}" bind:click="onClickHideOverlay" />
 <van-overlay show="{{ showOverlayZIndex }}" z-index="{{zIndex}}" bind:click="onClickHideOverlay" />
 <!-- E vant-components -->

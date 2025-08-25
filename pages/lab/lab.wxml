@@ -1,0 +1,4 @@
+<!--pages/lab.wxml-->
+<view class="container">
+  <ace-navi-bar type="calendar" title="工作台" showDivider="true" style="width:100%;position:fixed;top:0;" />
+</view>

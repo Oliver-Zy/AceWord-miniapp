@@ -67,17 +67,17 @@ Page({
    */
   onPay: function (e) {
 
-    // iOS不支持虚拟支付
-    if (this.data.isIOS) {
-      // if (false) {
-
-      wx.showModal({
-        title: '提示',
-        content: '因微信限制，iOS版本AceWord暂时无法快速解锁',
-        showCancel: false,
-        confirmText: '好的',
-      })
-    } else {
+    // // iOS不支持虚拟支付
+    // if (this.data.isIOS) {
+    //   // if (false) {
+ 
+    //   wx.showModal({
+    //     title: '提示',
+    //     content: '因微信限制，iOS版本AceWord暂时无法快速解锁',
+    //     showCancel: false,
+    //     confirmText: '好的',
+    //   })
+    // } else {
       let chosenIndex = this.data.chosenIndex
       let priceList = [68, 25, 12, 128]
       let price = priceList[chosenIndex]
@@ -164,7 +164,7 @@ Page({
         fail: console.error,
       })
 
-    }
+    // }
   },
 
   checkPayStatus: async function () {

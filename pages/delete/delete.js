@@ -400,12 +400,12 @@ Page({
     * @inner
   */
     _pronounce: function (word) {
-    innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${word}&type=${app.globalData.settings.pronType == 'US' ? 1 : 2}`
+    innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=${app.globalData.settings.pronType == 'US' ? 1 : 2}`
     innerAudioContext.play()
     innerAudioContext.onError((res) => {
 
       backgroundAudioManager.title = word
-      backgroundAudioManager.src = `https://dict.youdao.com/dictvoice?audio=${word}&type=${app.globalData.settings.pronType == 'US' ? 1 : 2}`
+      backgroundAudioManager.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=${app.globalData.settings.pronType == 'US' ? 1 : 2}`
 
     })
   },

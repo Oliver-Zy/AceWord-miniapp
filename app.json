@@ -18,7 +18,8 @@
     "pages/wordbook-new/wordbook-new",
     "pages/sentence/sentence",
     "pages/vip/vip",
-    "pages/wordbook-word-list/wordbook-word-list"
+    "pages/wordbook-word-list/wordbook-word-list",
+    "pages/lab/lab"
   ],
   "window": {
     "navigationStyle": "custom"
@@ -35,12 +36,14 @@
         "pagePath": "pages/calendar/calendar",
         "text": "日历"
       },
+
       {
         "pagePath": "pages/mine/mine",
         "text": "我的"
       }
     ]
   },
+  
   "darkmode": true,
   "themeLocation": "theme.json",
   "sitemapLocation": "sitemap.json"

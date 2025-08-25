@@ -199,11 +199,11 @@ Page({
   _pronounce: function () {
     const innerAudioContext = wx.createInnerAudioContext()
     this.setData({ innerAudioContext })
-    innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${this.data.wordList[this.data.wordIndex]}&type=${app.globalData.settings.pronType == 'US' ? 1 : 2}`
+    innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(this.data.wordList[this.data.wordIndex])}&type=${app.globalData.settings.pronType == 'US' ? 1 : 2}`
     innerAudioContext.play()
     innerAudioContext.onError((res) => {
       backgroundAudioManager.title = word
-      backgroundAudioManager.src = `https://dict.youdao.com/dictvoice?audio=${this.data.wordList[this.data.wordIndex]}&type=${app.globalData.settings.pronType == 'US' ? 1 : 2}`
+      backgroundAudioManager.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(this.data.wordList[this.data.wordIndex])}&type=${app.globalData.settings.pronType == 'US' ? 1 : 2}`
     })
   },
 

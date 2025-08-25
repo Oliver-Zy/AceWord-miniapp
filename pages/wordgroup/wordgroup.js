@@ -15,7 +15,7 @@ Page({
    */
   data: {
     wordCheckedList: [],
-    wordCardIndexCheckedList:[],
+    wordCardIndexCheckedList: [],
     isSelectedAll: false,
     showMode: 0,
     // 以卡片还是列表形式展示
@@ -459,11 +459,11 @@ Page({
     // todo: 将所有卡片设置为选中
     let wordCardIndexCheckedList = []
 
-    if(!this.data.isSelectedAll){
-      this.data.cardList.forEach((e,index)=>{
+    if (!this.data.isSelectedAll) {
+      this.data.cardList.forEach((e, index) => {
         wordCardIndexCheckedList.push(index)
       })
-    
+
     }
 
     this.setData({
@@ -618,7 +618,29 @@ Page({
     pageInfo.data.forEach(wordListByDate => {
       allWordList = allWordList.concat(wordListByDate.wordList)
     })
+    var newWordArr = this.arrSlice(allWordList)
+    var cardList = this.data.cardList
+    newWordArr.forEach(e => {
+      var wordInfoList = []
+      e.forEach(word => {
+        wordInfoList.push({
+          "wordName": word,
+          "opacity": 100,
+          "bgColor": "none",
+          "passed": 0
+        })
+      })
+      var tempCard = {
+        wordList: e,
+        wordInfoList
+      }
+      cardList.push(tempCard)
+    })
 
+
+    this.setData({
+      cardList
+    })
     // console.log(allWordList)
     // 获取释义
     let meaningMap = this.data.meaningMap
@@ -730,12 +752,12 @@ Page({
    * @inner
    */
   _pronounce: function (word) {
-    innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${word}&type=${app.globalData.settings.pronType == 'US' ? 1 : 2}`
+    innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=${app.globalData.settings.pronType == 'US' ? 1 : 2}`
     innerAudioContext.play()
     innerAudioContext.onError((res) => {
 
       backgroundAudioManager.title = word
-      backgroundAudioManager.src = `https://dict.youdao.com/dictvoice?audio=${word}&type=${app.globalData.settings.pronType == 'US' ? 1 : 2}`
+      backgroundAudioManager.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=${app.globalData.settings.pronType == 'US' ? 1 : 2}`
 
     })
   },

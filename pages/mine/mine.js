@@ -19,12 +19,103 @@ Page({
    * 页面的初始数据
    */
   data: {
+    showOfficialAccount: true,
+    openNotification: true,
+    currentTime: "",
     cellInfo_1: config.cellInfo_1,
     cellInfo_2: config.cellInfo_2,
     cellInfo_3: config.cellInfo_3,
     showTabBarShadow: true,
+    showDateTimePicker: false
   },
+  jump2hdd() {
+    wx.navigateToMiniProgram({
+      appId: "wxf84133e012d24963",
+      path: "/pages/index/welcomePage?cid=ERSD20671&storeCd=0746745689",
+      envVersion: "trial"
+    })
+  },
+  onChange({
+    detail
+  }) {
+    wx.showModal({
+      title: '提示',
+      content: '是否' + (detail ? '开启' : '关闭') + '提醒',
+      success: (res) => {
+        if (res.confirm) {
+          http.request({
+            url: '/settings',
+            method: 'PUT',
+            data: {
+              triggerCondition: (detail ? 'always' : 'never')
+            }
+          }).then(res => {
+            console.log(res)
+            app.globalData.settings.triggerCondition = (detail ? 'always' : 'never')
+            this.setData({
+              openNotification: detail
+            })
+            wx.showToast({
+              icon: "none",
+              title: (detail ? '开启' : '关闭') + '成功',
+            })
+          }).catch(err => console.error(err))
+        }
+      }
+    });
+  },
+  onDateTimePickerInput(e) {
+    this.setData({
+      tempTime: e.detail
+    })
+    console.log(this.data.tempTime)
+  },
+  onConfirmChangeNotification() {
+    console.log(this.data.tempTime)
 
+    let triggerTime = {
+      hour: this.data.tempTime.split(":")[0],
+      minute: this.data.tempTime.split(":")[1],
+    }
+    console.log("triggerTime", triggerTime)
+    wx.showLoading({
+      title: '修改中',
+    })
+    http.request({
+      url: '/settings',
+      method: 'PUT',
+      data: {
+        triggerCondition: app.globalData.settings.triggerCondition,
+        triggerTime
+      }
+    }).then(res => {
+      wx.hideLoading()
+      console.log(res)
+      this.setData({
+        showDateTimePicker: false,
+        currentTime: this.data.tempTime
+      })
+      app.globalData.settings.triggerTime = triggerTime
+
+      wx.showToast({
+        icon: "none",
+        title: '修改成功',
+      })
+      this.getTabBar().setData({
+        show: true
+      })
+    }).catch(err => {
+      wx.hideLoading()
+      wx.showToast({
+        icon: "error",
+        title: '修改失败',
+      })
+      this.getTabBar().setData({
+        show: true
+      })
+      console.error(err)
+    })
+  },
   /**
    * 生命周期函数--监听页面加载
    */
@@ -56,7 +147,7 @@ Page({
    */
   onClickHideOverlay: function (e) {
     this.setData({
-      showNotifPanel: false,
+      showNotifPanel: true,
       showOverlay: false,
       showTabBarShadow: true
     })
@@ -75,7 +166,79 @@ Page({
       show: true
     })
   },
+  modifyNickname: function () {
+    wx.showModal({
+      editable: true,
+      placeholderText: "长度不能超过15",
+      title: '修改昵称',
+      content: '',
+      complete: (res) => {
+        if (res.confirm) {
+          console.log(res.content)
+          if (res.content.length > 15) {
+            wx.showToast({
+              icon: 'none',
+              title: '长度须小于15',
+            })
+            return
+          }
+          let nickName = res.content
+          Toast.loading()
+          common.request({
+            url: '/settings',
+            method: 'PUT',
+            data: {
+              "nickName": nickName
+            }
+          }).then(res => {
+            this.setData({
+              nickName
+            })
+            Toast.success("修改成功")
+          }).catch(err => {
+            Toast.fail("修改失败")
+          })
+        }
+      }
+    })
+  },
+  modifyAvatar: function () {
+    let that = this
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      sizeType: "compressed",
+      camera: 'back',
+      success(res) {
+        Toast.loading()
+        wx.uploadFile({
+          url: config.api_base_url + '/avatar',
+          filePath: res.tempFiles[0].tempFilePath,
+          name: 'avatar',
+          formData: {
+            'avatar': res.tempFiles[0].tempFilePath
+          },
+          header: {
+            'content-type': 'multipart/form-data',
+            'Authorization': wx.getStorageSync('token')
+          },
+          success(e) {
+            Toast.success('修改成功')
+            let url = JSON.parse(e.data)['data']
+            console.log(url)
+            that.setData({
 
+              avatarUrl: url
+            })
+          },
+          fail() {
+            Toast.fail('修改失败')
+          }
+        })
+      }
+    })
+  },
   /**
    * avatar-bar相关事件
    *
@@ -85,8 +248,7 @@ Page({
     wx.getUserProfile({
       desc: '用于完善用户资料',
       success: (res) => {
-        // console.log(res)
-
+        console.log(res)
         let nickName = res.userInfo.nickName
         let avatarUrl = res.userInfo.avatarUrl
         Toast.loading()
@@ -115,7 +277,13 @@ Page({
       url: `/openid`
     })
     wx.setClipboardData({
-      data: openID
+      data: openID,
+      success(res) {
+        wx.showToast({
+          icon: "none",
+          title: '复制成功',
+        })
+      }
     })
   },
 
@@ -274,14 +442,63 @@ Page({
           ? 'Ace-Oliver' : 'aceword.xyz@gmail.com'}`
     })
   },
+  onDateTimePickerCancel: function () {
+    this.getTabBar().setData({
+      show: true
+    })
+    this.setData({
+      showDateTimePicker: false
+    })
+  },
 
+  navigateToGZH() {
+    wx.navigateTo({
+      url: '../web-view/web-view?type=subscribeMP'
+    })
+  },
+  testNotify() {
+    wx.showLoading({
+      title: '发送中',
+    })
+    common.request({
+      url: `/testNotify`,
+      method: 'POST'
+    }).then(e => {
+      wx.showToast({
+        icon: 'none',
+        title: '发送成功，请检查是否收到',
+      })
+    }).catch(err => {
+      wx.hideLoading()
+      wx.showToast({
+        icon: 'none',
+        title: '发送失败',
+      })
+    })
+
+  },
+
+  error(e) {
+    console.log(e)
+    this.setData({
+      showOfficialAccount: false,
+      scrollViewHeight: this.data.scrollViewHeight + 100
+    })
+  },
   /**
    * 监听定时提醒事件
    *
    * @event
    */
   onNotif: async function () {
+    this.setData({
+      showDateTimePicker: true
+    })
+    this.getTabBar().setData({
+      show: false
+    })
 
+    return
     let triggerCondition = app.globalData.settings.triggerCondition
     if (triggerCondition == 'never') {
       Toast.loading()
@@ -366,6 +583,14 @@ Page({
    * @event
    */
   onOpenVip: function () {
+    // 判断是不是ios 
+    if (app.globalData.isIOS) {
+      wx.showToast({
+        icon: "none",
+        title: '由于相关规范，iOS功能暂不可用',
+      })
+      return
+    }
     wx.navigateTo({
       url: `/pages/vip/vip?event=${'vip'}`
     })
@@ -383,8 +608,27 @@ Page({
       showNaviBarDivider: false
     })
   },
+  zeroPadding(number) {
+    return number < 10 ? `0${number}` : `${number}`;
+  },
 
   onShow: function () {
+    let triggerCondition = app.globalData.settings.triggerCondition
+    let triggerTime = app.globalData.settings.triggerTime
+
+    console.log("triggerCondition", triggerCondition)
+    console.log("triggerTime", triggerTime)
+    console.log(this.zeroPadding(triggerTime.minute))
+
+    this.setData({
+      triggerCondition,
+      triggerTime,
+      openNotification: triggerCondition != 'never',
+      currentTime: triggerTime.hour + ":" + this.zeroPadding(triggerTime.minute),
+      tempTime: triggerTime.hour + ":" + this.zeroPadding(triggerTime.minute),
+    })
+
+
     if (typeof this.getTabBar === 'function' &&
       this.getTabBar()) {
       this.getTabBar().setData({

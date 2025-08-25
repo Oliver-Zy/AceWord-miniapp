@@ -75,6 +75,16 @@ Page({
       this._pronounce(this.data.wordInfoList[0].word)
 
     }
+    let wordDict = {}
+    this.data.wordInfoList.forEach(wordInfo => {
+      wordDict[wordInfo['word']] = {
+        vague: 0,
+        remember: 0
+      }
+    })
+    this.setData({
+      wordPracticeRecordDict: wordDict
+    })
   },
   /**
    * 在卡片中删除单词的弹窗中的选项
@@ -360,7 +370,7 @@ Page({
         data: {
           cardIdArr: wordCardIDCheckedList,
           word: word[0].word
-        } 
+        }
       })
     }
     this.setData({
@@ -621,12 +631,29 @@ Page({
    * @event
    */
   onNext: async function (e) {
-
     let innerIndex = this.data.innerIndex
     let outerIndex = this.data.outerIndex
     let wordIndex = this.data.wordIndex
     let wordInfoList = this.data.wordInfoList
     let practiceMode = this.data.practiceMode
+
+    // 0代表右侧是详细释义那个界面
+    if (this.data.innerIndex != 0) {
+      let isVague = e.currentTarget.dataset.side == 'right'
+      let currentWord = wordInfoList[wordIndex].word
+      let wordPracticeRecordDict = this.data.wordPracticeRecordDict
+      if (isVague) {
+        wordPracticeRecordDict[currentWord].vague = wordPracticeRecordDict[currentWord].vague + 1
+      }
+      if (!isVague) {
+        wordPracticeRecordDict[currentWord].remember = wordPracticeRecordDict[currentWord].remember + 1
+      }
+      this.setData({
+        wordPracticeRecordDict
+      })
+    }
+
+    // todo
     this.setData({
       showWordCN: false
     })
@@ -643,19 +670,14 @@ Page({
     }
 
     if (practiceMode == 'memorize') {
-
       // ---- Finished ----
       if (innerIndex == wordInfoList.length && outerIndex == (wordInfoList.length - 1) && wordIndex == (wordInfoList.length - 1)) {
-
         if (this.data.wordInfoVagueList.length == 0) {
-
           this.setData({
             isFinished: true
           })
           return
-
         } else {
-
           this.setData({
             isVagueMode: true,
             wordInfoList: this.data.wordInfoVagueList,
@@ -668,14 +690,10 @@ Page({
             wordInfoVagueList: []
           })
           this._pronounce(this.data.wordInfoList[this.data.wordIndex].word)
-
         }
-
         // ---- Non Finished ----
       } else if (innerIndex > outerIndex) {
-
         if (e.currentTarget.dataset.side == 'right' || (app.globalData.settings.isResultShownWhenTapRemember ? e.currentTarget.dataset.side == 'left' : false)) {
-
           // onPress: 'vague'
           innerIndex = 0
           this.setData({
@@ -720,7 +738,7 @@ Page({
           }
 
         } else {
-
+          // 。。
           if (e.currentTarget.dataset.side == 'right' || (app.globalData.settings.isResultShownWhenTapRemember ? e.currentTarget.dataset.side == 'left' : false) && innerIndex != 0) {
 
             // onPress: 'vague'
@@ -813,6 +831,26 @@ Page({
     this.setData({
       canClickFinishBtn: false
     })
+    let wordPracticeRecordDict = this.data.wordPracticeRecordDict
+    let practiceWordReportArrayList = [];
+    for (let word in wordPracticeRecordDict) {
+      if (wordPracticeRecordDict.hasOwnProperty(word)) {
+        let report = {
+          word: word,
+          rememberCount: wordPracticeRecordDict[word].remember,
+          vagueCount: wordPracticeRecordDict[word].vague
+        };
+        practiceWordReportArrayList.push(report);
+      }
+    }
+    // 保存学习记录
+    await common.request({
+      url: `/practice-report`,
+      method: 'POST',
+      data: practiceWordReportArrayList
+    })
+
+
     // 从已删除页面进入，也无需保存
     if (this.data.entryPage != 'wordgroup' && this.data.entryPage != 'deleted') {
 
@@ -826,6 +864,7 @@ Page({
         data: data
       })
 
+
       let wordCardIDCheckedList = app.globalData.practiceInfo.wordCardIDCheckedList
       let pages = getCurrentPages()
       let prevPage = pages[pages.length - 2]
@@ -834,11 +873,13 @@ Page({
         let wordCardList = await common.request({
           url: `/wordcards?word-card-id-list=${wordCardIDCheckedList.join(',')}`
         })
-        // console.log(wordCardList)
-
         // UPDATE: todayCardList
         wordCardIDCheckedList.forEach((item, index) => {
           let currentWordCardIndex = prevPage.data.todayCardList.findIndex(_item => _item.wordCardID == item)
+          console.log("currentWordCardIndex",currentWordCardIndex)
+          if(currentWordCardIndex == -1){
+            return
+          }
           prevPage.setData({
             [`todayCardList[${currentWordCardIndex}]._relatedAction`]: 'practice',
             [`todayCardList[${currentWordCardIndex}].realPracticeNum`]: wordCardList[index].realPracticeNum,
@@ -940,11 +981,11 @@ Page({
       word = this.data.wordInfoList[this.data.wordIndex].word
     }
 
-    innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${word}&type=${app.globalData.settings.pronType == 'US' ? 0 : 1}`
+    innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=${app.globalData.settings.pronType == 'US' ? 0 : 1}`
     innerAudioContext.play()
     innerAudioContext.onError((res) => {
       backgroundAudioManager.title = word
-      backgroundAudioManager.src = `https://dict.youdao.com/dictvoice?audio=${word}&type=${app.globalData.settings.pronType == 'US' ? 0 : 1}`
+      backgroundAudioManager.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=${app.globalData.settings.pronType == 'US' ? 0 : 1}`
     })
   },
 

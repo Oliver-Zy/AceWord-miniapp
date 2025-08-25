@@ -13,15 +13,16 @@
     "word-card": "../../components/card/word-card/index",
 
     "wordbook-my-info": "../../components/wordbook/wordbook-my-info/index",
-
+    "van-icon": "../../miniprogram_npm/@vant/weapp/icon/index",
     "van-popup": "../../miniprogram_npm/@vant/weapp/popup/index",
     "van-action-sheet": "../../miniprogram_npm/@vant/weapp/action-sheet/index",
     "van-toast": "../../miniprogram_npm/@vant/weapp/toast/index",
-    "van-dialog": "../../../miniprogram_npm/@vant/weapp/dialog/index",
+    "van-dialog": "../../miniprogram_npm/@vant/weapp/dialog/index",
     "van-overlay": "../../miniprogram_npm/@vant/weapp/overlay/index",
-    "van-field": "../../miniprogram_npm/@vant/weapp/field/index"
+    "van-field": "../../miniprogram_npm/@vant/weapp/field/index",
+    "van-rate": "../../miniprogram_npm/@vant/weapp/rate/index"
   },
   "backgroundColor": "#F3F4F7",
-  
+
   "disableScroll": true
 }
