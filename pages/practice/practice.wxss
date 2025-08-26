@@ -11,39 +11,7 @@
   --button-default-color:#000;
 }
 
-/* 弹窗样式优化 */
-.dialog-title {
-  font-family: var(--simHei);
-  font-weight: 600;
-  font-size: 18px;
-  color: #1F2937;
-  text-align: center;
-  padding: 8px 0;
-}
 
-.dialog-container {
-  text-align: center;
-  color: #4B5563;
-  line-height: 24px;
-  font-size: 15px;
-  font-family: var(--simHei);
-  padding: 16px 24px;
-}
-
-.dialog-option {
-  font-size: 14px;
-  padding: 16px 24px 8px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.checkbox-label {
-  font-family: var(--simHei);
-  font-size: 14px;
-  margin-left: 8px;
-  line-height: 20px;
-}
 
 .wordNameCN-container {
   display: flex;
@@ -137,6 +105,8 @@
     font-size: 16px;
     color: #D5D9E0;
   }
+
+
 
   /* DarkMode 下的样式 end */
 

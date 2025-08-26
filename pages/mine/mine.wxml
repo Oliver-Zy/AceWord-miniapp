@@ -24,10 +24,7 @@
             <image src="/images/cell-icons/{{isDarkMode ? 'notif-dark' : 'notif' }}.png"></image>
             <text>订阅复习提醒</text>
           </view>
-          <view style="display: flex;justify-content: flex-end;">
-            <text style="margin-right: 10px;font-weight: bold;" wx:if="{{triggerCondition=='never'}}">未开启</text>
-            <text style="margin-right: 10px;font-weight: bold;" wx:if="{{triggerCondition!=null && triggerTime.hour == null}}">默认21点</text>
-            <text style="margin-right: 10px;font-weight: bold;" wx:if="{{triggerCondition!=null && triggerTime.hour != null}}">{{currentTime}}</text>
+          <view style="display: flex;justify-content: flex-end;align-items: center;">
             <image class="right-img" style="width: 16px;height: 16px;padding-right: 0;" src="./images/right.png"></image>
           </view>
         </view>
@@ -52,20 +49,61 @@
 <van-popup show="{{ showPopupVant }}" position="bottom" overlay="{{ false }}" duration="0" bind:close="onClose">
   <van-action-sheet show="{{ showActionSheet }}" description="{{ actionSheetDesc }}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheet" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
 </van-popup>
-<!-- 时间弹窗 -->
-<van-popup show="{{ showDateTimePicker }}" round position="bottom" overlay="{{ true }}" bind:close="onDateTimePickerCancel">
-  <view style="padding: 10px;">
-    <view style="text-align: center;font-weight: bold;padding:10px 0 ">消息提醒</view>
-    <van-cell border="{{false}}" size="large" title="是否开启消息提醒">
-      <van-switch checked="{{openNotification}}" bind:change="onChange" size="20"></van-switch>
-    </van-cell>
-    <van-cell border="{{false}}" size="large" title="点此关注公众号以接收提醒" is-link bind:tap="navigateToGZH" />
-    <van-cell border="{{false}}" size="large" title="测试能否接收提醒" is-link bind:tap="testNotify" />
+<!-- 订阅提醒弹窗 -->
+<van-popup show="{{ showDateTimePicker }}" round position="bottom" overlay="{{ true }}" bind:close="onDateTimePickerCancel" custom-class="notification-popup">
+  <view class="notification-popup-content">
+    <!-- 弹窗头部 -->
+    <view class="popup-header">
+      <view class="popup-title">订阅复习提醒</view>
+      <view class="popup-subtitle">设置每日复习提醒时间</view>
+    </view>
+    
+    <!-- 开关设置 -->
+    <view class="popup-section">
+      <view class="setting-item">
+        <view class="setting-label">
+          <image class="setting-icon" src="/images/cell-icons/{{isDarkMode ? 'notif-dark' : 'notif' }}.png"></image>
+          <text class="setting-text">开启消息提醒</text>
+        </view>
+        <van-switch checked="{{openNotification}}" bind:change="onChange" size="20" active-color="#6366F1"></van-switch>
+      </view>
+    </view>
 
-    <van-divider dashed contentPosition="center">提醒时间</van-divider>
-    <van-datetime-picker show-toolbar="{{false}}" wx:if="{{openNotification}}" type="time" value="{{ currentTime }}" bind:input="onDateTimePickerInput" bind:confirm="onDateTimePickerConfirm" bind:cancel="onDateTimePickerCancel" />
+    <!-- 时间选择 -->
+    <view class="popup-section" wx:if="{{openNotification}}">
+      <view class="section-title">提醒时间</view>
+      <view class="time-picker-container">
+        <van-datetime-picker 
+          show-toolbar="{{false}}" 
+          type="time" 
+          value="{{ currentTime }}" 
+          bind:input="onDateTimePickerInput" 
+          bind:confirm="onDateTimePickerConfirm" 
+          bind:cancel="onDateTimePickerCancel"
+          custom-class="custom-time-picker" />
+      </view>
+    </view>
 
-    <ace-button size="large" text="确定" bind:btnEvent="onConfirmChangeNotification" style="margin-top: 10px" />
+    <!-- 功能按钮 -->
+    <view class="popup-section">
+      <view class="action-buttons">
+        <view class="action-button" bind:tap="navigateToGZH">
+          <image class="action-icon" src="/images/icons/{{isDarkMode ? 'wechat-dark' : 'wechat'}}.png"></image>
+          <text class="action-text">关注公众号</text>
+          <text class="action-desc">接收提醒消息</text>
+        </view>
+        <view class="action-button" bind:tap="testNotify">
+          <image class="action-icon" src="/images/icons/{{isDarkMode ? 'test-dark' : 'test'}}.png"></image>
+          <text class="action-text">测试提醒</text>
+          <text class="action-desc">验证接收状态</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 确认按钮 -->
+    <view class="popup-footer">
+      <ace-button size="large" text="确定" bind:btnEvent="onConfirmChangeNotification" />
+    </view>
   </view>
 </van-popup>
 

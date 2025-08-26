@@ -6,22 +6,17 @@
 
 <!-- S container -->
 <view class="container" mut-bind:tap="onWordCN">
-  <!-- 跳过单词的弹窗 -->
-  <van-dialog use-slot use-title-slot show="{{ showSkipWordDialog }}" show-cancel-button confirm-button-color='#6366F1' cancel-button-color="#9CA3AF" bind:confirm="onSkipWordDialogConfirm" bind:cancel="onSkipWordDialogCancel" custom-class="practice-dialog">
-    <view slot="title" class="dialog-title">
-      跳过单词
-    </view>
-    <view class="dialog-container">
-      本次练习将跳过该单词，是否继续？
-    </view>
-    <view class="dialog-option">
-      <van-checkbox checked-color="#6366F1" icon-size="18" value="{{ deleteWordInCardOption }}" bind:change="onChangeDeleteWordInCardOption">
-        <view class="checkbox-label" style="color:{{deleteWordInCardOption?'#6366F1':'#6B7280'}}">
-          同时从卡片中删除该单词
-        </view>
-      </van-checkbox>
-    </view>
-  </van-dialog>
+  <!-- 跳过单词的 Bottom Sheet -->
+  <van-popup show="{{ showSkipWordPopup }}" position="bottom" overlay="{{ false }}" duration="0" bind:close="onSkipWordDialogCancel">
+    <van-action-sheet 
+      show="{{ showSkipWordDialog }}" 
+      description="选择操作" 
+      actions="{{ skipWordActions }}"
+      cancel-text="取消"
+      bind:select="onSelectSkipWordAction"
+      bind:cancel="onSkipWordDialogCancel"
+      bind:click-overlay="onSkipWordDialogCancel" />
+  </van-popup>
   <template is="header" data="{{naviBarHeight, isCollected: wordInfoList[wordIndex].isCollected, isDarkMode}}" />
   <template is="wordAndipa-container" data="{{entryPage: 'practice', word: wordInfoList[wordIndex].word, isWordBlur, isFinished, pronType, ipa: pronType == 'US' ? wordInfoList[wordIndex].ipaUS : wordInfoList[wordIndex].ipaUK, isDarkMode}}" />
   <!-- template -->

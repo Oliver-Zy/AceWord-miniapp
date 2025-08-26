@@ -125,6 +125,14 @@ Page({
 
     // setData: userProfile
     let settings = app.globalData.settings
+    
+    // 调试服务器返回的settings数据
+    console.log("=== 服务器返回的完整settings数据 ===")
+    console.log(JSON.stringify(settings, null, 2))
+    console.log("settings.avatarUrl:", settings.avatarUrl)
+    console.log("settings.nickName:", settings.nickName)
+    console.log("=====================================")
+    
     this.setData({
       nickName: settings.nickName,
       avatarUrl: settings.avatarUrl,
@@ -194,6 +202,8 @@ Page({
             this.setData({
               nickName
             })
+            // 更新全局数据
+            app.globalData.settings.nickName = nickName
             Toast.success("修改成功")
           }).catch(err => {
             Toast.fail("修改失败")
@@ -217,29 +227,38 @@ Page({
           message: '上传中...',
           forbidClick: true
         })
-        wx.uploadFile({
-          url: config.api_base_url + '/avatar',
+        // 尝试使用微信云存储上传头像
+        wx.cloud.uploadFile({
+          cloudPath: `avatars/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.jpg`,
           filePath: res.tempFiles[0].tempFilePath,
-          name: 'avatar',
-          formData: {
-            'avatar': res.tempFiles[0].tempFilePath
-          },
-          header: {
-            'content-type': 'multipart/form-data',
-            'Authorization': wx.getStorageSync('token')
-          },
-          success(e) {
-            console.log('上传成功:', e)
-            Toast.success('修改成功')
-            let url = JSON.parse(e.data)['data']
-            console.log('新头像URL:', url)
-            that.setData({
-              avatarUrl: url
+          success: cloudRes => {
+            console.log('云存储上传成功:', cloudRes)
+            let avatarUrl = cloudRes.fileID
+            
+            // 通过settings API更新头像URL
+            common.request({
+              url: '/settings',
+              method: 'PUT',
+              data: {
+                avatarUrl: avatarUrl
+              }
+            }).then(settingsRes => {
+              console.log('头像URL更新成功:', settingsRes)
+              Toast.success('修改成功')
+              // 更新页面数据
+              that.setData({
+                avatarUrl: avatarUrl
+              })
+              // 更新全局数据
+              app.globalData.settings.avatarUrl = avatarUrl
+            }).catch(err => {
+              console.error('头像URL更新失败:', err)
+              Toast.fail('保存失败')
             })
           },
-          fail(error) {
-            console.error('上传失败:', error)
-            Toast.fail('修改失败: ' + (error.errMsg || '未知错误'))
+          fail: error => {
+            console.error('云存储上传失败:', error)
+            Toast.fail('上传失败: ' + (error.errMsg || '未知错误'))
           }
         })
       },
@@ -274,6 +293,9 @@ Page({
             nickName,
             avatarUrl
           })
+          // 更新全局数据
+          app.globalData.settings.nickName = nickName
+          app.globalData.settings.avatarUrl = avatarUrl
           Toast.success('登录成功')
         }).catch(err => console.error(err))
 
@@ -294,6 +316,23 @@ Page({
           title: '复制成功',
         })
       }
+    })
+  },
+
+  // 头像加载成功事件
+  onAvatarLoad: function(e) {
+    console.log("头像加载成功:", e.detail)
+    console.log("当前头像URL:", this.data.avatarUrl)
+  },
+
+  // 头像加载失败事件
+  onAvatarError: function(e) {
+    console.error("头像加载失败:", e.detail)
+    console.log("失败的头像URL:", this.data.avatarUrl)
+    wx.showToast({
+      icon: 'none',
+      title: '头像加载失败',
+      duration: 2000
     })
   },
 
@@ -633,6 +672,13 @@ Page({
     console.log("triggerCondition", triggerCondition)
     console.log("triggerTime", triggerTime)
     console.log(this.zeroPadding(triggerTime.minute))
+
+    // 调试头像信息
+    console.log("=== 头像调试信息 ===")
+    console.log("全局头像URL:", app.globalData.settings.avatarUrl)
+    console.log("页面头像URL:", this.data.avatarUrl)
+    console.log("昵称:", app.globalData.settings.nickName)
+    console.log("==================")
 
     this.setData({
       triggerCondition,

@@ -21,6 +21,15 @@ Page({
     canClickFinishBtn: true,
     hasUnfinishedtask: true,
     showSkipWordDialog: false,
+    showSkipWordPopup: false,
+    skipWordActions: [{
+      name: '本次跳过',
+      subname: '跳过这个单词，继续下一个'
+    }, {
+      name: '移出卡片',
+      subname: '从卡片中移除，不再出现',
+      color: '#f56565'
+    }],
     deleteWordInCardOption: false
   },
 
@@ -119,6 +128,14 @@ Page({
       showPopup: false,
       showOverlay: false,
       showSpellBar: false
+    })
+  },
+
+  onClickHideOverlayZIndex: function (e) {
+    this.setData({
+      showSearchBarSelfDef: false,
+      showOverlayZIndex: false,
+      keyboardHeight: 0
     })
   },
 
@@ -368,27 +385,93 @@ Page({
     let word = this.data.isFinished ? 'congratulation' : this.data.wordInfoList[this.data.wordIndex].word
     this._pronounce(word)
   },
-  onSkipWordDialogConfirm: function () {
-    let word = this.data.wordInfoList.splice(this.data.wordIndex, 1)
-    console.log(word)
-    let wordCardIDCheckedList = app.globalData.practiceInfo.wordCardIDCheckedList
-    if (this.data.deleteWordInCardOption) {
-      // 发请求
-      common.request({
-        url: `/userCard/word/delete-batch`,
-        method: 'DELETE',
-        data: {
-          cardIdArr: wordCardIDCheckedList,
-          word: word[0].word
-        }
-      })
+  // 处理跳过单词选项
+  onSelectSkipWordAction: function (e) {
+    this.setData({
+      showSkipWordDialog: false,
+      showSkipWordPopup: false
+    })
+    
+    if (e.detail.name === '本次跳过') {
+      this.onSkipCurrentWord()
+    } else if (e.detail.name === '永久删除') {
+      this.showDeleteConfirmation()
     }
+  },
+
+  // 显示删除确认弹窗
+  showDeleteConfirmation: function () {
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要永久删除这个单词吗？删除后将不会再出现在任何卡片中。',
+      showCancel: true,
+      cancelText: '取消',
+      confirmText: '删除',
+      confirmColor: '#f56565',
+      success: (res) => {
+        if (res.confirm) {
+          this.onDeleteWordFromCard()
+        }
+      }
+    })
+  },
+
+  // 本次跳过单词
+  onSkipCurrentWord: function () {
+    let word = this.data.wordInfoList.splice(this.data.wordIndex, 1)
+    console.log('Skip current word:', word)
+    
     this.setData({
       wordInfoList: this.data.wordInfoList,
       outerIndex: this.data.outerIndex == this.data.wordIndex && this.data.practiceMode == 'memorize' ? this.data.outerIndex : this.data.outerIndex - 1,
       innerIndex: 0,
     })
-    this._pronounce(this.data.wordInfoList[this.data.wordIndex].word)
+    
+    if (this.data.wordInfoList.length > 0) {
+      this._pronounce(this.data.wordInfoList[this.data.wordIndex].word)
+    }
+  },
+
+  // 永久删除单词
+  onDeleteWordFromCard: function () {
+    let word = this.data.wordInfoList.splice(this.data.wordIndex, 1)
+    console.log('Delete word from card:', word)
+    
+    let wordCardIDCheckedList = app.globalData.practiceInfo.wordCardIDCheckedList
+    // 发请求删除单词
+    common.request({
+      url: `/userCard/word/delete-batch`,
+      method: 'DELETE',
+      data: {
+        cardIdArr: wordCardIDCheckedList,
+        word: word[0].word
+      }
+    })
+    
+    this.setData({
+      wordInfoList: this.data.wordInfoList,
+      outerIndex: this.data.outerIndex == this.data.wordIndex && this.data.practiceMode == 'memorize' ? this.data.outerIndex : this.data.outerIndex - 1,
+      innerIndex: 0,
+    })
+    
+    if (this.data.wordInfoList.length > 0) {
+      this._pronounce(this.data.wordInfoList[this.data.wordIndex].word)
+    }
+    
+    Toast.success('已从卡片中删除')
+  },
+
+  // 取消跳过单词弹窗
+  onSkipWordDialogCancel: function () {
+    this.setData({
+      showSkipWordDialog: false,
+      showSkipWordPopup: false
+    })
+  },
+
+  // 保留原有的确认函数以防兼容性问题
+  onSkipWordDialogConfirm: function () {
+    this.onSkipCurrentWord()
   },
   /**
    * 删除事件 showWOrdCN
@@ -397,6 +480,7 @@ Page({
    */
   onDelete: function () {
     this.setData({
+      showSkipWordPopup: true,
       showSkipWordDialog: true
     })
 
@@ -494,7 +578,7 @@ Page({
    */
   onSelfDef: function () {
     this.setData({
-      showOverlay: true,
+      showOverlayZIndex: true,
       showSearchBarSelfDef: true
     })
   },
@@ -570,7 +654,7 @@ Page({
       })
       this.setData({
         showSearchBarSelfDef: false,
-        showOverlay: false
+        showOverlayZIndex: false
       })
 
       await common.request({
@@ -601,14 +685,9 @@ Page({
    * @event
    */
   onSearchBarSelfDefCancel: function () {
-    // 如果是从词典弹窗进入的自定义释义编辑，取消时也要关闭词典弹窗
-    const shouldCloseDicCard = this.data.showDicCard && this.data.showOverlayZIndex
-    
     this.setData({
       showSearchBarSelfDef: false,
-      showOverlay: shouldCloseDicCard ? false : this.data.showOverlay,
       showOverlayZIndex: false,
-      showDicCard: shouldCloseDicCard ? false : this.data.showDicCard,
       keyboardHeight: 0
     })
   },

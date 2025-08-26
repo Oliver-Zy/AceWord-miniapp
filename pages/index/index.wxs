@@ -3,4 +3,19 @@ module.exports = {
     if (checkedWordCardIDList == undefined) return false
     return checkedWordCardIDList.indexOf(wordCardID) == -1 ? false : true  
   },
+  
+  // 计算实际的单词总数（考虑删除的单词）
+  calculateTotalWordCount: function (todayCardList) {
+    if (!todayCardList || todayCardList.length === 0) return 0
+    if (todayCardList[0]._type === 'loading' || todayCardList[0]._type === 'blank') return 0
+    
+    var totalCount = 0
+    for (var i = 0; i < todayCardList.length; i++) {
+      var card = todayCardList[i]
+      if (card._type !== 'loading' && card._type !== 'blank' && card.wordList) {
+        totalCount += card.wordList.length
+      }
+    }
+    return totalCount
+  }
 }

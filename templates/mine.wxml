@@ -2,7 +2,7 @@
 
   <view class="avatar-bar">
     <view class="avatar-group">
-      <image class="avatar-img" src="{{avatarUrl == null ? './images/avatar.png' : avatarUrl}}" bindtap="modifyAvatar"></image>
+      <image class="avatar-img" src="{{avatarUrl == null ? './images/avatar.png' : avatarUrl}}" bindtap="modifyAvatar" binderror="onAvatarError" bindload="onAvatarLoad"></image>
       <view class="right-avatar-group">
         <text bindtap="modifyNickname">{{nickName == '' ? '点击登录' : nickName}}</text>
         <view class="down-right-avatar-group">

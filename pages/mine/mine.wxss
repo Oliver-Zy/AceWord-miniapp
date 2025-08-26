@@ -24,6 +24,48 @@
   box-shadow: 0px -4px 18px rgba(0, 0, 0, 0.04);
 }
 
+/* 时间显示样式优化 */
+.time-display {
+  margin-right: 10px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  min-width: 48px;
+  text-align: center;
+}
+
+.time-display text {
+  font-family: var(--sfpro);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.time-display-disabled {
+  background: #F3F4F6;
+}
+
+.time-display-disabled text {
+  color: #9CA3AF;
+}
+
+.time-display-default {
+  background: #EEF2FF;
+  border: 1px solid #C7D2FE;
+}
+
+.time-display-default text {
+  color: #6366F1;
+}
+
+.time-display-custom {
+  background: #F0FDF4;
+  border: 1px solid #BBF7D0;
+}
+
+.time-display-custom text {
+  color: #16A34A;
+}
+
 @media (prefers-color-scheme: dark) {
 
   /* DarkMode 下的样式 start */
@@ -77,5 +119,215 @@
     color: #CECFD6;
   }
 
+  /* 暗黑模式下的时间显示样式 */
+  .time-display-disabled {
+    background: #374151;
+  }
+
+  .time-display-disabled text {
+    color: #9CA3AF;
+  }
+
+  .time-display-default {
+    background: #312E81;
+    border-color: #4338CA;
+  }
+
+  .time-display-default text {
+    color: #A5B4FC;
+  }
+
+  .time-display-custom {
+    background: #14532D;
+    border-color: #16A34A;
+  }
+
+  .time-display-custom text {
+    color: #4ADE80;
+  }
+
   /* DarkMode 下的样式 end */
+}
+
+/* 订阅提醒弹窗样式 */
+.notification-popup-content {
+  padding: 24px 20px 20px;
+  background: #FFFFFF;
+  border-radius: 20px 20px 0 0;
+  min-height: 400px;
+}
+
+.popup-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.popup-title {
+  font-family: var(--sfpro);
+  font-weight: 600;
+  font-size: 20px;
+  color: #1F2937;
+  margin-bottom: 4px;
+}
+
+.popup-subtitle {
+  font-family: var(--simHei);
+  font-size: 14px;
+  color: #6B7280;
+}
+
+.popup-section {
+  margin-bottom: 20px;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: #F9FAFB;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+}
+
+.setting-label {
+  display: flex;
+  align-items: center;
+}
+
+.setting-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+}
+
+.setting-text {
+  font-family: var(--simHei);
+  font-weight: 500;
+  font-size: 16px;
+  color: #1F2937;
+}
+
+.section-title {
+  font-family: var(--simHei);
+  font-weight: 500;
+  font-size: 16px;
+  color: #374151;
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+
+.time-picker-container {
+  background: #F9FAFB;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  overflow: hidden;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.action-button {
+  flex: 1;
+  padding: 16px 12px;
+  background: linear-gradient(135deg, #EEF2FF 0%, #F0F9FF 100%);
+  border-radius: 12px;
+  border: 1px solid #C7D2FE;
+  text-align: center;
+  position: relative;
+}
+
+.action-button:active {
+  background: linear-gradient(135deg, #E0E7FF 0%, #E0F2FE 100%);
+  transform: scale(0.98);
+}
+
+.action-icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 8px;
+}
+
+.action-text {
+  display: block;
+  font-family: var(--simHei);
+  font-weight: 500;
+  font-size: 14px;
+  color: #4338CA;
+  margin-bottom: 2px;
+}
+
+.action-desc {
+  display: block;
+  font-family: var(--simHei);
+  font-size: 12px;
+  color: #6366F1;
+}
+
+.popup-footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #F3F4F6;
+}
+
+/* 暗黑模式下的弹窗样式 */
+@media (prefers-color-scheme: dark) {
+  .notification-popup-content {
+    background: #1F2937;
+  }
+
+  .popup-header {
+    border-bottom-color: #374151;
+  }
+
+  .popup-title {
+    color: #F9FAFB;
+  }
+
+  .popup-subtitle {
+    color: #9CA3AF;
+  }
+
+  .setting-item {
+    background: #374151;
+    border-color: #4B5563;
+  }
+
+  .setting-text {
+    color: #F9FAFB;
+  }
+
+  .section-title {
+    color: #D1D5DB;
+  }
+
+  .time-picker-container {
+    background: #374151;
+    border-color: #4B5563;
+  }
+
+  .action-button {
+    background: linear-gradient(135deg, #312E81 0%, #1E3A8A 100%);
+    border-color: #4338CA;
+  }
+
+  .action-button:active {
+    background: linear-gradient(135deg, #3730A3 0%, #1E40AF 100%);
+  }
+
+  .action-text {
+    color: #A5B4FC;
+  }
+
+  .action-desc {
+    color: #8B5CF6;
+  }
+
+  .popup-footer {
+    border-top-color: #374151;
+  }
 }
