@@ -13,18 +13,16 @@ Component({
         selectedIconPath: "../images/tab-bars/homepage-chosen.png",
         text: "首页"
       }, {
+        pagePath: "/pages/word-list/word-list",
+        iconPath: "../images/tab-bars/lab.png",
+        selectedIconPath: "../images/tab-bars/lab-chosen.png",
+        text: "列表"
+      }, {
         pagePath: "/pages/calendar/calendar",
         iconPath: "../images/tab-bars/calendar.png",
         selectedIconPath: "../images/tab-bars/calendar-chosen.png",
         text: "日历"
-      },
-      // {
-      //   pagePath: "/pages/lab/lab",
-      //   iconPath: "../images/tab-bars/lab.png",
-      //   selectedIconPath: "../images/tab-bars/lab-chosen.png",
-      //   text: "工作台"
-      // },
-      {
+      }, {
         pagePath: "/pages/mine/mine",
         iconPath: "../images/tab-bars/mine.png",
         selectedIconPath: "../images/tab-bars/mine-chosen.png",
@@ -49,18 +47,16 @@ Component({
               selectedIconPath: "../images/tab-bars/homepage-chosen-dark.png",
               text: "首页"
             }, {
+              pagePath: "/pages/word-list/word-list",
+              iconPath: "../images/tab-bars/lab-dark.png",
+              selectedIconPath: "../images/tab-bars/lab-chosen-dark.png",
+              text: "列表"
+            }, {
               pagePath: "/pages/calendar/calendar",
               iconPath: "../images/tab-bars/calendar-dark.png",
               selectedIconPath: "../images/tab-bars/calendar-chosen-dark.png",
               text: "日历"
-            },
-            // {
-            //   pagePath: "/pages/lab/lab",
-            //   iconPath: "../images/tab-bars/lab-dark.png",
-            //   selectedIconPath: "../images/tab-bars/lab-chosen-dark.png",
-            //   text: "工作台"
-            // },
-            {
+            }, {
               pagePath: "/pages/mine/mine",
               iconPath: "../images/tab-bars/mine-dark.png",
               selectedIconPath: "../images/tab-bars/mine-chosen-dark.png",

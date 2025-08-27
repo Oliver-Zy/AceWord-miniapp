@@ -120,11 +120,11 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    try {
+      this._setInitInfo()
 
-    this._setInitInfo()
-
-    // setData: userProfile
-    let settings = app.globalData.settings
+      // setData: userProfile
+      let settings = app.globalData.settings
     
     // 调试服务器返回的settings数据
     console.log("=== 服务器返回的完整settings数据 ===")
@@ -139,13 +139,24 @@ Page({
       vipExpireDate: settings.vipExpireDate
     })
 
-    // setData: learningInfo
-    let learningInfo = await common.request({
-      url: `/statistic/learning`
-    })
-    this.setData({
-      learningInfo
-    })
+      // setData: learningInfo
+      Toast.loading({ message: '加载中...' })
+      let learningInfo = await common.request({
+        url: `/statistic/learning`
+      })
+      
+      this.setData({
+        learningInfo
+      })
+      Toast.clear()
+    } catch (error) {
+      console.error('Mine page load failed:', error)
+      Toast.fail('页面加载失败')
+      // 设置默认数据避免页面崩溃
+      this.setData({
+        learningInfo: { totalLearnedNum: 0, totalReviewedNum: 0 }
+      })
+    }
   },
 
   /**
@@ -305,18 +316,27 @@ Page({
   },
 
   onCopyID: async function () {
-    let openID = await common.request({
-      url: `/openid`
-    })
-    wx.setClipboardData({
-      data: openID,
-      success(res) {
-        wx.showToast({
-          icon: "none",
-          title: '复制成功',
-        })
-      }
-    })
+    try {
+      Toast.loading({ message: '获取中...' })
+      let openID = await common.request({
+        url: `/openid`
+      })
+      Toast.clear()
+      
+      wx.setClipboardData({
+        data: openID,
+        success(res) {
+          Toast.success('复制成功')
+        },
+        fail(err) {
+          console.error('Copy failed:', err)
+          Toast.fail('复制失败')
+        }
+      })
+    } catch (error) {
+      Toast.fail('获取失败，请重试')
+      console.error('Copy ID failed:', error)
+    }
   },
 
   // 头像加载成功事件
@@ -471,11 +491,11 @@ Page({
 
     if (e.detail.name == '词书广场') {
       wx.navigateTo({
-        url: `/pages/wordbook-category/wordbook-category`
+        url: `/pages/wordbook-all/wordbook-all`
       })
     } else if (e.detail.name == '自定义词书') {
       wx.navigateTo({
-        url: `/pages/wordbook-new/wordbook-new?isCustom=${true}`
+        url: `/pages/wordbook-custom-app/wordbook-custom-app`
       })
     }
 
@@ -666,8 +686,22 @@ Page({
     const isDarkMode = wx.getSystemInfoSync().theme === 'dark'
     app.setStatusBarColor(isDarkMode)
     
+    // 检查全局数据是否存在，避免运行时错误
+    if (!app.globalData.settings) {
+      console.warn('Settings not initialized, redirecting to index')
+      wx.reLaunch({ url: '/pages/index/index' })
+      return
+    }
+    
     let triggerCondition = app.globalData.settings.triggerCondition
     let triggerTime = app.globalData.settings.triggerTime
+    
+    // 进一步检查关键数据是否存在
+    if (!triggerCondition || !triggerTime) {
+      console.warn('Settings data incomplete, using defaults')
+      triggerCondition = 'never'
+      triggerTime = { hour: '20', minute: '00' }
+    }
 
     console.log("triggerCondition", triggerCondition)
     console.log("triggerTime", triggerTime)
@@ -698,18 +732,42 @@ Page({
   },
 
   /**
+   * 通用错误处理方法
+   *
+   * @inner
+   */
+  _handlePageError: function(error, context = '') {
+    console.error('Mine page error:', { error, context, page: this.route })
+    
+    // 显示用户友好的错误信息
+    wx.showModal({
+      title: '页面异常',
+      content: '页面遇到问题，是否重新加载？',
+      success: (res) => {
+        if (res.confirm) {
+          wx.reLaunch({ url: '/pages/mine/mine' })
+        }
+      }
+    })
+  },
+
+  /**
    * 设置初始位置信息
    *
    * @inner
    */
   _setInitInfo: function () {
-    this.setData({
-      naviBarHeight: wx.getMenuButtonBoundingClientRect().bottom + 6,
-      scrollViewHeight: wx.getSystemInfoSync().windowHeight - (wx.getMenuButtonBoundingClientRect().bottom + 6) - 48 - (app.globalData.isIOS ? 30 : 0),
-      windowWidth: wx.getSystemInfoSync().windowWidth,
+    try {
+      this.setData({
+        naviBarHeight: wx.getMenuButtonBoundingClientRect().bottom + 6,
+        scrollViewHeight: wx.getSystemInfoSync().windowHeight - (wx.getMenuButtonBoundingClientRect().bottom + 6) - 48 - (app.globalData.isIOS ? 30 : 0),
+        windowWidth: wx.getSystemInfoSync().windowWidth,
 
-      isIOS: app.globalData.isIOS,
-      isDarkMode: getApp().globalData.isDarkMode,
-    })
+        isIOS: app.globalData.isIOS,
+        isDarkMode: getApp().globalData.isDarkMode,
+      })
+    } catch (error) {
+      this._handlePageError(error, '_setInitInfo')
+    }
   },
 })

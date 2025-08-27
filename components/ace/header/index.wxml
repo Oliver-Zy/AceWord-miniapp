@@ -42,8 +42,6 @@
     <text class="{{showMode==2 ? 'selected-btn-text' : 'btn-text'}}">{{showMode==0?'英':showMode==1?'中':'中英'}}</text>
   </view>
 
-
-  
   <view wx:if="{{iconType == 'selectAll'}}" class="{{isSelectAll ? 'selected-btn' : 'btn'}}" bind:tap="onBtn" data-type="selectAll">
     <image class="btn-img" src="/images/icons/{{isSelectAll ? 'check-white' : isDarkMode ? 'check-dark' : 'check'}}.png"></image>
     <text class="{{isSelectAll ? 'selected-btn-text' : 'btn-text'}}">全选</text>

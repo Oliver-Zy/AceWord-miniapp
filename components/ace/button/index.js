@@ -8,6 +8,7 @@ Component({
     text: String,
     textLeft: String,
     textRight: String,
+    isLowRemaining: Boolean,
   },
 
   /**

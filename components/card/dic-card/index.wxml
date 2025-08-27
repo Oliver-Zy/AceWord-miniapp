@@ -82,7 +82,7 @@
       <text>添加标记</text>
     </view>
     <view wx:if="{{showReplaceBtn}}" class="right-btn" catch:tap="onReplace">
-      <text>换一个词</text>
+      <text>{{replaceButtonText}}</text>
     </view>
   </view>
   <!-- E btn-group -->

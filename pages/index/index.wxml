@@ -23,8 +23,9 @@
       <word-card wordCard="{{item}}" isChecked="{{tools.isChecked(item.wordCardID, wordCardIDCheckedList)}}" bind:wordCardEvent="onWordCardEvent" data-index="{{index}}" />
     </block>
 
-    <view id="scrollBottom" style="padding:28px 0;display:flex;justify-content:center;">
+    <view id="scrollBottom" style="padding:28px 0;display:flex;justify-content:center;align-items:center;gap:12px;">
       <ace-button size="small" text="添加卡片" bind:btnEvent="onAddWordCard" />
+      <ace-button wx:if="{{showVipButton}}" size="vip-small" text="{{vipButtonText}}" isLowRemaining="{{isLowRemaining}}" bind:btnEvent="onShowVip" />
     </view>
 
     <view style="height:{{wordCardIDCheckedList.length != 0 ? 62 : 0}}px;"></view>
@@ -52,7 +53,7 @@
 
 <!-- S dic-card -->
 <view style="position:fixed;bottom:0;z-index:3;">
-  <dic-card wx:if="{{showDicCard}}" wordInfo="{{wordInfo}}" showReplaceBtn="{{false}}" showStyleBtn="{{false}}" bind:dicCardEvent="onDicCardEvent" />
+  <dic-card id="dic-card" wx:if="{{showDicCard}}" wordInfo="{{wordInfo}}" showReplaceBtn="{{false}}" showStyleBtn="{{false}}" bind:dicCardEvent="onDicCardEvent" />
   <view style="height:100px;" bind:tap="onClickHideOverlay"></view>
 </view>
 <!-- E dic-card -->

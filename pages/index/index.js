@@ -35,6 +35,10 @@ Page({
     }],
     wordCardIDCheckedList: [],
     isInit: false,
+    addCardButtonText: '添加卡片',
+    showVipButton: false,
+    vipButtonText: '剩余0张',
+    isLowRemaining: false,
   },
   onChangeRate(e) {
     let colorList = [
@@ -126,6 +130,9 @@ Page({
       let settings = homeData.settings
 
       app.globalData.settings = settings
+      
+      // 在设置完 globalData.settings 后更新按钮文案
+      this._updateAddCardButtonText(homeData.todayCardList)
 
       // setData: senCard
       let senCard = homeData.sentence
@@ -161,7 +168,16 @@ Page({
 
       wx.setStorageSync('todayCardList', todayCardList)
     }).catch(e => {
-      this.onLoad()
+      logger.error('Failed to load home data:', e)
+      Toast.fail('加载失败，请稍后重试')
+      
+      // 显示错误状态而不是递归调用，避免无限循环
+      this.setData({
+        todayCardList: [{ 
+          _type: 'error',
+          message: '网络连接失败，请下拉刷新重试'
+        }]
+      })
     })
   },
 
@@ -565,6 +581,13 @@ Page({
       this._pronounce(e.detail.word)
 
     } else if (e.detail.type == 'replace') {
+      // 检查换词限制 - 内测期间暂时注释
+      // const { dailyLimits } = require('../../utils/dailyLimits.js')
+      
+      // if (!dailyLimits.recordWordReplace()) {
+      //   // 已达到限制，dailyLimits会显示相应提示
+      //   return
+      // }
 
       Toast.loading({
         forbidClick: true
@@ -594,6 +617,9 @@ Page({
         [`todayCardList[${currentWordCardIndex}].wordList[${currentSwiperIndex}]`]: word,
         [`todayCardList[${currentWordCardIndex}]._relatedAction`]: 'replaceWord',
       })
+      
+      // 更新换词按钮文案
+      this._updateReplaceButtonText()
 
     } else if (e.detail.type == 'showStyleCard') {
 
@@ -851,6 +877,9 @@ Page({
         this.setData({
           toView: 'scrollBottom'
         })
+        
+        // 重新获取数据来更新按钮文案
+        this._refreshAddCardButtonText()
         return
       }
 
@@ -951,11 +980,11 @@ Page({
 
     if (e.detail.name == '词书广场') {
       wx.navigateTo({
-        url: `/pages/wordbook-category/wordbook-category`
+        url: `/pages/wordbook-all/wordbook-all`
       })
     } else if (e.detail.name == '自定义词书') {
       wx.navigateTo({
-        url: `/pages/wordbook-new/wordbook-new?isCustom=${true}`
+        url: `/pages/wordbook-custom-app/wordbook-custom-app`
       })
     }
   },
@@ -966,6 +995,15 @@ Page({
     } else {
       this.fetchUnSavePracticeData()
     }
+  },
+
+  /**
+   * 处理VIP按钮点击事件
+   */
+  onShowVip: function() {
+    wx.navigateTo({
+      url: '/pages/vip/vip?event=vip_wordcard'
+    })
   },
 
   /**
@@ -1220,5 +1258,88 @@ Page({
       }
     })
 
+  },
+
+  /**
+   * 更新添加卡片按钮文案和VIP按钮显示
+   */
+  _updateAddCardButtonText: function(todayCardListData) {
+    try {
+      // 内测期间暂时注释掉限制逻辑，所有用户都无限制
+      // const app = getApp()
+      // const isVip = app && app.globalData && app.globalData.settings && !app.globalData.settings.isVipExpired
+      
+      // 内测期间所有用户都无限制，不显示VIP按钮
+      this.setData({ 
+        addCardButtonText: '添加卡片',
+        showVipButton: false 
+      })
+      
+      // 注释掉原有的限制逻辑
+      // if (isVip) {
+      //   // VIP用户无限制，不显示VIP按钮
+      //   this.setData({ 
+      //     addCardButtonText: '添加卡片',
+      //     showVipButton: false 
+      //   })
+      //   return
+      // }
+      
+      // // 计算今日已创建的卡片数量
+      // let todayCardsCount = 0
+      // if (todayCardListData && todayCardListData.data) {
+      //   const today = new Date()
+      //   const todayStr = today.getFullYear().toString() + 
+      //                   (today.getMonth() < 9 ? '0' + (today.getMonth() + 1).toString() : (today.getMonth() + 1).toString()) + 
+      //                   (today.getDate() < 10 ? '0' + today.getDate() : today.getDate().toString())
+      //   
+      //   todayCardsCount = todayCardListData.data.filter(card => {
+      //     return card.createDate && card.createDate.trim() === todayStr
+      //   }).length
+      // }
+      
+      // const limit = 10 // 免费用户每日限制
+      // const remaining = Math.max(0, limit - todayCardsCount)
+      
+      // // 免费用户始终显示VIP按钮
+      // this.setData({
+      //   addCardButtonText: '添加卡片',
+      //   showVipButton: true,
+      //   vipButtonText: `今日余${remaining}张 · 升级无限制`,
+      //   isLowRemaining: remaining <= 3  // 用于样式判断
+      // })
+    } catch (error) {
+      console.error('Error updating add card button text:', error)
+      this.setData({
+        addCardButtonText: '添加卡片',
+        showVipButton: false
+      })
+    }
+  },
+
+  /**
+   * 刷新添加卡片按钮文案（重新获取服务端数据）
+   */
+  _refreshAddCardButtonText: async function() {
+    try {
+      const homeData = await common.request({ url: `/homedata` })
+      this._updateAddCardButtonText(homeData.todayCardList)
+    } catch (error) {
+      console.error('Failed to refresh add card button text:', error)
+    }
+  },
+
+  /**
+   * 更新换词按钮文案
+   */
+  _updateReplaceButtonText: function() {
+    // 通过全局事件通知所有dic-card组件更新按钮文案
+    wx.eventBus = wx.eventBus || {}
+    wx.eventBus.updateReplaceButtonText = true
+    
+    // 延迟执行，确保组件能接收到事件
+    setTimeout(() => {
+      wx.eventBus.updateReplaceButtonText = false
+    }, 100)
   },
 })

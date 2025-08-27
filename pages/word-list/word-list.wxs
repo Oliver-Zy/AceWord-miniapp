@@ -1,0 +1,18 @@
+// 工具函数
+function isSelected(selectedWordIds, wordId) {
+  if (!selectedWordIds || selectedWordIds.length === 0) {
+    return false
+  }
+  
+  for (var i = 0; i < selectedWordIds.length; i++) {
+    if (selectedWordIds[i] === wordId) {
+      return true
+    }
+  }
+  
+  return false
+}
+
+module.exports = {
+  isSelected: isSelected
+}

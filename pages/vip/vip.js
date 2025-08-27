@@ -79,9 +79,8 @@ Page({
     //   })
     // } else {
       let chosenIndex = this.data.chosenIndex
-      let priceList = [68, 25, 12, 128]
+      let priceList = [128, 88, 25] // 永久会员128元，年度会员88元，月度会员25元
       let price = priceList[chosenIndex]
-      // 28 88 18
 
       let that = this
       Toast.loading()
@@ -98,10 +97,29 @@ Page({
           timeStamp: res.timestamp,
           success: async function () {
             Toast.success('支付成功')
+            
+            // 修复轮询逻辑，避免无限循环
+            let retryCount = 0
+            const maxRetries = 10 // 最多重试10次
             let payStatus = 0
-            while (payStatus == 0) {
-              payStatus = await that.checkPayStatus()
-              setTimeout(() => {}, 1000)
+            
+            while (payStatus == 0 && retryCount < maxRetries) {
+              try {
+                payStatus = await that.checkPayStatus()
+                if (payStatus !== 0) break
+                
+                // 正确的延迟实现
+                await new Promise(resolve => setTimeout(resolve, 1000))
+                retryCount++
+              } catch (error) {
+                console.error('Check pay status failed:', error)
+                break
+              }
+            }
+            
+            if (retryCount >= maxRetries) {
+              Toast.fail('支付状态检查超时，请稍后在"我的"页面查看会员状态')
+              return
             }
 
             http.request({
@@ -114,7 +132,11 @@ Page({
               that.setData({
                 vipExpireDate: that.data.settings.vipExpireDate
               })
-            }).catch(err => console.error(err))
+              Toast.success('会员开通成功')
+            }).catch(err => {
+              console.error('Update settings failed:', err)
+              Toast.fail('状态更新失败，请重启应用')
+            })
 
           },
           fail: (err) => {

@@ -1,0 +1,104 @@
+<wxs module="tools" src="./word-list.wxs"></wxs>
+
+<!-- S container -->
+<view class="container">
+
+  <!-- S scroll-view -->
+  <scroll-view 
+    scroll-y="true" 
+    refresher-enabled="true" 
+    refresher-triggered="{{isRefresherTriggered}}" 
+    style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" 
+    bind:refresherrefresh="onScrollViewRefresh">
+    
+    <!-- S header -->
+    <view style="height: 20px;"></view>
+    <ace-header 
+      wx:if="{{wordList.length != 0}}" 
+      titleType="textWithCount" 
+      text="今日新学计划" 
+      arrLen="{{wordList.length}}" 
+      iconType="selectAll" 
+      isSelectAll="{{selectedWordIds.length === wordList.length && wordList.length > 0}}"
+      bind:headerEvent="onHeaderEvent" />
+    <!-- E header -->
+
+    <!-- S word list -->
+    <view wx:if="{{wordList.length > 0}}" class="word-list-container">
+      <block wx:for="{{wordList}}" wx:key="wordName">
+        <view class="word-item" 
+              bind:tap="onMeaningTap" 
+              data-word-id="{{item.wordId}}"
+              hover-class="none">
+          <!-- S word item content -->
+          <view class="word-item-content">
+            <!-- S left content -->
+            <view class="word-item-left">
+              <view class="word-name" catchtap="onWordItemTap" data-index="{{index}}" hover-class="none">{{item.wordName}}</view>              
+              <view style="height:4px;"></view>
+              <view class="word-name meaning-text {{visibleMeanings[item.wordId] ? '' : 'blurred'}}">
+                {{item.selfDef || item.wordCN || '暂无释义'}}
+              </view>
+            </view>
+            <!-- E left content -->
+
+            <!-- S right content -->
+            <view class="word-item-right">
+              <image 
+                class="check-img {{tools.isSelected(selectedWordIds, item.wordId) ? '' : 'unchecked'}}" 
+                src="/components/card/word-card/images/checked.png" 
+                catchtap="onCheckboxTap"
+                data-word-id="{{item.wordId}}"
+                data-index="{{index}}" />
+            </view>
+            <!-- E right content -->
+          </view>
+          <!-- E word item content -->
+
+          <!-- S divider -->
+          <view wx:if="{{index < wordList.length - 1}}" class="divider"></view>
+          <!-- E divider -->
+        </view>
+      </block>
+    </view>
+    <view style="height:22px;"></view>
+    <!-- E word list -->
+    
+    <!-- S empty state -->
+    <view wx:if="{{isLoaded && wordList.length == 0}}" class="empty-state">
+      <view class="empty-text">暂无今日新学单词</view>
+      <view class="empty-subtext">去首页添加一些单词卡片吧</view>
+    </view>
+    <!-- E empty state -->
+
+    <view style="height:{{selectedWordIds.length != 0 ? 62 : 0}}px;"></view>
+  </scroll-view>
+  <!-- E scroll-view -->
+
+</view>
+<!-- E container -->
+
+<!-- S practice button -->
+<view wx:if="{{selectedWordIds.length != 0}}" style="display:flex;justify-content:center;position:absolute;left:50%;transform:translate(-50%);bottom:{{ isIOS ? 100 : 70}}px;overflow: hidden;">
+  <ace-button size="large" text="开始练习" bind:btnEvent="onPractice" />
+</view>
+<!-- E practice button -->
+
+<!-- S dic-card -->
+<view style="position:fixed;bottom:0;z-index:3;">
+  <dic-card id="dic-card" wx:if="{{showDicCard}}" wordInfo="{{wordInfo}}" showReplaceBtn="{{false}}" showStyleBtn="{{false}}" bind:dicCardEvent="onDicCardEvent" />
+  <view style="height:100px;" bind:tap="onClickHideOverlay"></view>
+</view>
+<!-- E dic-card -->
+
+<!-- S overlay -->
+<view wx:if="{{showOverlay}}" class="overlay" bind:tap="onClickHideOverlay"></view>
+<!-- E overlay -->
+
+<!-- S ace components -->
+<ace-navi-bar type="back" title="单词列表" backgroundColor="rgba(0,0,0,0)" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
+<!-- E ace components -->
+
+<!-- S vant components -->
+<van-toast id="van-toast" />
+<!-- E vant components -->

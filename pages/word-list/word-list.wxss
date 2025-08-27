@@ -1,0 +1,186 @@
+.container {
+  width: 100%;
+  height: 100vh;
+  background-image: linear-gradient(180deg, #EDE9FE -10%, #F9FAFB 30%);
+  /* 与紫色系统协调的淡紫色渐变背景，与首页保持一致 */
+}
+
+/* 单词列表容器 */
+.word-list-container {
+  margin: 12px 16px 0 16px;
+  background: #FFFFFF;
+  border: 1px solid #F1F3F4;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* 单词项 */
+.word-item {
+  position: relative;
+}
+
+.word-item-content {
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 左侧内容 */
+.word-item-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.word-name {
+  font-family: var(--inter-medium);
+  font-size: 16px;
+  font-weight: 500;
+  color: #1D2129;
+  margin-bottom: 4px;
+}
+
+.meaning-text {
+  font-family: var(--simHei);
+  font-size: 13px;
+  color: #86909C;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: inline-block;
+}
+
+.meaning-text.blurred {
+  filter: blur(4px);
+  -webkit-filter: blur(4px);
+  color: #C9CDD4;
+}
+
+.word-info {
+  display: flex;
+  align-items: center;
+}
+
+.practice-count {
+  font-family: var(--simHei);
+  font-size: 12px;
+  color: #86909C;
+}
+
+.word-book-name {
+  font-family: var(--simHei);
+  font-size: 12px;
+  color: #C9CDD4;
+}
+
+/* 右侧内容 */
+.word-item-right {
+  display: flex;
+  align-items: center;
+}
+
+/* 选择图标 - 与首页保持一致 */
+.check-img {
+  width: 24px;
+  height: 24px;
+}
+
+.unchecked {
+  opacity: 0.2;
+  filter: grayscale(95%);
+}
+
+/* 分割线 */
+.divider {
+  height: 1px;
+  margin: 0 18px;
+  background: #F2F3F5;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+.empty-text {
+  font-family: var(--simHei);
+  font-size: 16px;
+  font-weight: 500;
+  color: #86909C;
+  margin-bottom: 8px;
+}
+
+.empty-subtext {
+  font-family: var(--simHei);
+  font-size: 14px;
+  color: #C9CDD4;
+}
+
+/* 暗色模式 */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: linear-gradient(180deg, #1E1B4B -10%, #1F2937 30%);
+    /* 深色模式下与紫色系统协调的渐变，与首页保持一致 */
+  }
+
+  .word-list-container {
+    background: #2A2D3A;
+    border: 1px solid #3A3F4B;
+  }
+
+  .word-name {
+    color: #EEF1F7;
+  }
+
+  .meaning-text {
+    color: #9598A9;
+  }
+
+  .meaning-text.blurred {
+    color: #6B7280;
+  }
+
+
+
+  .practice-count {
+    color: #9598A9;
+  }
+
+  .word-book-name {
+    color: #6B7280;
+  }
+
+  .checkbox-unchecked {
+    border: 1.5px solid #4B5563;
+    background: #374151;
+  }
+
+  .divider {
+    background: #374151;
+  }
+
+  .empty-text {
+    color: #9598A9;
+  }
+
+  .empty-subtext {
+    color: #6B7280;
+  }
+}
+
+/* overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}

@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/word-list/word-list",
     "pages/wordbook-custom-app/wordbook-custom-app",
     "pages/calendar/calendar",
     "pages/mine/mine",
@@ -16,6 +17,7 @@
     "pages/web-view/web-view",
     "pages/wordbook-category/wordbook-category",
     "pages/wordbook-new/wordbook-new",
+    "pages/wordbook-all/wordbook-all",
     "pages/sentence/sentence",
     "pages/vip/vip",
     "pages/wordbook-word-list/wordbook-word-list",
@@ -34,10 +36,13 @@
         "text": "首页"
       },
       {
+        "pagePath": "pages/word-list/word-list",
+        "text": "列表"
+      },
+      {
         "pagePath": "pages/calendar/calendar",
         "text": "日历"
       },
-
       {
         "pagePath": "pages/mine/mine",
         "text": "我的"

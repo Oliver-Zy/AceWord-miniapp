@@ -125,6 +125,14 @@ class IndexService {
    * 添加单词卡片
    */
   async addWordCard() {
+    // 检查每日限制 - 内测期间暂时注释
+    // const { dailyLimits } = require('../../utils/dailyLimits.js')
+    
+    // if (!dailyLimits.recordCardCreation()) {
+    //   // 已达到限制，dailyLimits会显示相应提示
+    //   throw new Error('Daily card limit reached')
+    // }
+    
     try {
       const wordCard = await common.request({
         url: '/wordcard',

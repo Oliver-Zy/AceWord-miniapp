@@ -3,7 +3,8 @@
 .container {
   width: 100%;
   height: 100%;
-  background-image: linear-gradient(180deg, #C5D6FA -10%, #F3F4F7 30%)
+  background-image: linear-gradient(180deg, #EDE9FE -10%, #F9FAFB 30%);
+  /* 与首页保持一致的紫色系渐变背景 */
 } 
 .empty{
   text-align: center;
@@ -15,13 +16,12 @@ scroll-view {
 }
 
 @media (prefers-color-scheme: dark) {
-
   /* DarkMode 下的样式 start */
   .container {
     width: 100%;
     height: 100%;
-    background: #1D1E30;
+    background: linear-gradient(180deg, #1E1B4B -10%, #1F2937 30%);
+    /* 深色模式下与首页协调的紫色系渐变 */
   }
   /* DarkMode 下的样式 end */
-  
 }

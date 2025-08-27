@@ -16,9 +16,18 @@ scroll-view {
   height: 88px;
   margin: 16px 16px 0 0;
   background: #FFFFFF;
-  border-radius: 8px;
+  border-radius: 12px;
   display: inline-flex;
   align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  border: 1px solid #F1F3F4;
+}
+
+.wordBookCategory:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+  border-color: #6366F1;
 }
 
 .bookCover-img {
@@ -42,8 +51,9 @@ scroll-view {
 
 .right-wordBookCategory text:nth-child(3) {
   font-family: var(--simHei);
-  font-size: 14px;
-  color: #929499;
+  font-size: 13px;
+  color: #6B7280;
+  font-weight: 500;
 }
 @media (prefers-color-scheme: dark) {
   .container {
@@ -59,9 +69,20 @@ scroll-view {
 
   .wordBookCategory {
     background: #27283A;
+    border-color: #3A3F4B;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .wordBookCategory:active {
+    box-shadow: 0 4px 12px rgba(165, 180, 252, 0.2);
+    border-color: #A5B4FC;
   }
 
-  .right-wordBookCategory text:nth-child(1){
-    color:white;
+  .right-wordBookCategory text:nth-child(1) {
+    color: white;
+  }
+  
+  .right-wordBookCategory text:nth-child(3) {
+    color: #9CA3AF;
   }
 }

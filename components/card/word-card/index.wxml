@@ -58,3 +58,14 @@
   <view class="loader"></view>
 </view>
 <!-- E container ifLoading == true -->
+
+<!-- S container _type == 'error' -->
+<view wx:if="{{wordCard._type == 'error'}}" class="error-container">
+  <image src="./images/error-icon.png"></image>
+  <view class="error-text-container">
+    <text class="chinese">{{wordCard.message || '加载失败'}}</text>
+  </view>
+  <view style="height:4px;"></view>
+  <text class="english">Please try again later.</text>
+</view>
+<!-- E container _type == 'error' -->

@@ -1,0 +1,115 @@
+<wxs module="tools" src="./wordbook-all.wxs"></wxs>
+
+<!-- S container -->
+<view class="container">
+
+  <!-- S scroll-view -->
+  <scroll-view 
+    scroll-y="true" 
+    refresher-enabled="true" 
+    refresher-triggered="{{isRefresherTriggered}}" 
+    style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" 
+    bind:refresherrefresh="onScrollViewRefresh">
+    
+    <!-- S wordbook categories -->
+    <van-collapse 
+      value="{{ activeNames }}" 
+      bind:change="onCollapseChange"
+      border="{{ false }}">
+      
+      <block wx:for="{{wordBookCategories}}" wx:key="categoryCode">
+        <van-collapse-item 
+          title="{{item.categoryName}} ({{item.wordBooks.length}}本)" 
+          name="{{item.categoryCode}}"
+          custom-class="collapse-item">
+          
+          <!-- S wordbook list -->
+          <view class="wordbook-list">
+            <block wx:for="{{item.wordBooks}}" wx:for-item="book" wx:key="wordBookCode">
+              
+              <van-cell 
+                title="{{book.wordBookName}}"
+                label="{{book.totalWordNum}}个单词 · {{book.userNum}}人在学"
+                is-link
+                border="{{ false }}"
+                custom-class="wordbook-cell {{book.wordBookCode === currentWordBookCode ? 'current-cell' : ''}}"
+                bind:click="onSelectWordBook"
+                data-book="{{book}}">
+                
+
+                
+                <!-- S right content -->
+                <view slot="right-icon" class="cell-right">
+                  <!-- S tags -->
+                  <view class="tags">
+                    <van-tag 
+                      wx:if="{{book.isHot}}" 
+                      type="warning" 
+                      size="mini" 
+                      plain>热门</van-tag>
+                    <van-tag 
+                      wx:if="{{book.isNew}}" 
+                      type="success" 
+                      size="mini" 
+                      plain>新书</van-tag>
+                    <van-tag 
+                      wx:if="{{book.wordBookCode === currentWordBookCode}}" 
+                      type="primary" 
+                      size="mini">当前</van-tag>
+                  </view>
+                  <!-- E tags -->
+                  
+                  <!-- S progress -->
+                  <view class="progress-info">
+                    <text class="progress-text">{{tools.formatProgress(book.userProgressNum, book.totalWordNum)}}</text>
+                    <van-progress 
+                      percentage="{{tools.calculateProgress(book.userProgressNum, book.totalWordNum)}}" 
+                      stroke-width="4" 
+                      color="linear-gradient(90deg, #6366F1 0%, #8B5CF6 100%)"
+                      track-color="#F2F3F5"
+                      show-pivot="{{ false }}" />
+                  </view>
+                  <!-- E progress -->
+                </view>
+                <!-- E right content -->
+                
+              </van-cell>
+              
+            </block>
+          </view>
+          <!-- E wordbook list -->
+          
+        </van-collapse-item>
+      </block>
+      
+    </van-collapse>
+    <!-- E wordbook categories -->
+    
+    <!-- S empty state -->
+    <view wx:if="{{isLoaded && wordBookCategories.length === 0}}" class="empty-state">
+      <van-empty description="暂无词书数据" />
+    </view>
+    <!-- E empty state -->
+    
+    <view style="height: 30px;"></view>
+    
+  </scroll-view>
+  <!-- E scroll-view -->
+
+</view>
+<!-- E container -->
+
+
+
+<!-- S ace components -->
+<ace-navi-bar 
+  type="back" 
+  title="选择词书" 
+  showDivider="{{showNaviBarDivider}}" 
+  style="width:100%;position:fixed;top:0;" />
+<!-- E ace components -->
+
+<!-- S vant components -->
+<van-toast id="van-toast" />
+<van-dialog id="van-dialog" />
+<!-- E vant components -->

@@ -1,0 +1,11 @@
+// components/ace/button/index.wxs
+var hasAddCardText = function (text) {
+  if (!text || typeof text !== 'string') {
+    return false;
+  }
+  return text.indexOf('添加卡片') > -1 || text === '今日已达上限';
+}
+
+module.exports = {
+  hasAddCardText: hasAddCardText
+};

@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "ace-navi-bar": "../../components/ace/navibar/index",
+    "ace-header": "../../components/ace/header/index",
+    "ace-button": "../../components/ace/button/index",
+    "dic-card": "../../components/card/dic-card/index",
+    "van-toast": "@vant/weapp/toast/index"
+  }
+}

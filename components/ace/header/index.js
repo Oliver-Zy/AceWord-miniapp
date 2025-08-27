@@ -3,7 +3,7 @@ Component({
    * 组件的属性列表
    */
   properties: {
-    titleType: String, // ['text', 'wordCard', 'wordGroup']
+    titleType: String, // ['text', 'textWithCount', 'wordCard', 'wordGroup']
     text: String, // [titleType == 'text']
     date: String, // [titleType == 'wordCard']
     arrLen: Number, // [titleType == 'wordCard'、'wordGroup']

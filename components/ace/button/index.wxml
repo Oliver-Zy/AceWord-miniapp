@@ -1,6 +1,8 @@
+<wxs module="tools" src="./index.wxs"></wxs>
+
 <view wx:if="{{ size == 'small' }}" class="small-btn ripple" bind:tap="onTap" data-name="addWordCard">
-  <image wx:if="{{ text == '添加卡片' }}" src="/images/icons/{{ isDarkMode ? 'add-dark' : 'add'}}.png"></image>
-  <text wx:if="{{ text == '添加卡片' }}">{{text}}</text>
+  <image wx:if="{{ tools.hasAddCardText(text) }}" src="/images/icons/{{ isDarkMode ? 'add-dark' : 'add'}}.png"></image>
+  <text wx:if="{{ tools.hasAddCardText(text) }}">{{text}}</text>
 
   <image wx:if="{{ text == '展开更多' }}" src="/images/icons/{{isDarkMode ? 'expand-dark' : 'expand'}}.png"></image>
   <text wx:if="{{ text == '展开更多' }}">{{text}}</text>
@@ -12,6 +14,12 @@
   <text wx:if="{{ text == '加载更多' }}">{{text}}</text>
 
   <text wx:if="{{ text == '已加载全部' }}" class="small-btn-text">{{text}}</text>
+</view>
+
+<!-- VIP风格的剩余卡片按钮 -->
+<view wx:if="{{ size == 'vip-small' }}" class="vip-small-btn{{isLowRemaining ? ' vip-small-btn-warning' : ''}} ripple" bind:tap="onTap" data-name="showVip">
+  <image src="/images/icons/vip.png"></image>
+  <text>{{text}}</text>
 </view>
 
 <view wx:if="{{ size == 'large' }}" class="large-btn" bind:tap="onTap" data-name="startLearning">

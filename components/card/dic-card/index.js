@@ -15,6 +15,7 @@ Component({
   data: {
     defListIndex: 0,
     isCollected: false,
+    replaceButtonText: '换一个词',
   },
 
   lifetimes: {
@@ -24,6 +25,20 @@ Component({
         pronType: getApp().globalData.settings.pronType,
         isDarkMode: getApp().globalData.isDarkMode
       })
+      this._updateReplaceButtonText()
+      
+      // 监听全局事件
+      this._checkGlobalEvent = setInterval(() => {
+        if (wx.eventBus && wx.eventBus.updateReplaceButtonText) {
+          this._updateReplaceButtonText()
+        }
+      }, 50)
+    },
+    
+    detached: function () {
+      if (this._checkGlobalEvent) {
+        clearInterval(this._checkGlobalEvent)
+      }
     },
   },
 
@@ -123,6 +138,26 @@ Component({
     */
     onShowStyleCard: function() {
       this.triggerEvent('dicCardEvent', { type:'showStyleCard', word: this.data.wordInfo.word })
+    },
+
+    /**
+     * 更新换词按钮文案
+     */
+    _updateReplaceButtonText: function() {
+      // 内测期间暂时注释掉限制逻辑
+      // const { dailyLimits } = require('../../../utils/dailyLimits.js')
+      // const check = dailyLimits.canReplaceWord()
+      
+      let buttonText = '换一个词'
+      // if (!check.allowed) {
+      //   buttonText = '今日已达上限'
+      // } else if (check.limit > 0 && check.remaining <= 3) {
+      //   buttonText = `换词 (剩余${check.remaining}次)`
+      // }
+      
+      this.setData({
+        replaceButtonText: buttonText
+      })
     },
   }
 })

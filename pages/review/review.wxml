@@ -51,7 +51,7 @@
 <!-- E practice-btn -->
 
 <!-- S ace-components -->
-<ace-navi-bar type="back" title="推荐复习计划" backgroundColor="rgba(0,0,0,0)" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
+<ace-navi-bar type="back" title="推荐复习计划" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
 <ace-search-bar wx:if="{{showSearchBarSelfDef}}" style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" placeholder="添加单词的自定义释义" bind:focus="onSearchBarFocus" bind:cancel="onSearchBarCancelSelfDef" bind:confirm="onSearchBarConfirmSelfDef" />
 <ace-popup wx:if="{{showPopup}}" type="wordGroup" wordGroupList="{{wordGroupList}}" style="width:100%;position:fixed;bottom:0;z-index:100;" bind:addWordGroup="onAddWordGroup" bind:collectToWordGroup="onCollectToWordGroup" bind:cancel="onClickHideOverlayZIndex" />
 <!-- E ace-components -->

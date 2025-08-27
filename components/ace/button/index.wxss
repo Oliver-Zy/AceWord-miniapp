@@ -29,6 +29,42 @@
   color: #86909C;
 }
 
+/* VIP风格的小按钮 - 与添加卡片按钮样式保持一致 */
+.vip-small-btn {
+  height: 28px;
+  padding: 0 9px;
+  background: #F7F8FA;
+  border: 1px solid #E5E6EB;
+  border-radius: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vip-small-btn image {
+  width: 16px;
+  height: 16px;
+  padding-right: 6px;
+}
+
+.vip-small-btn text {
+  font-family: var(--simHei);
+  font-weight: 400;
+  font-size: 12px;
+  color: #86909C;
+}
+
+/* VIP按钮警告状态 - 剩余数量较少时 */
+.vip-small-btn-warning {
+  background: #FFF7ED;
+  border: 1px solid #FB923C;
+}
+
+.vip-small-btn-warning text {
+  color: #EA580C;
+  font-weight: 500;
+}
+
 .large-btn {
   height: 40px;
   padding: 0 30px;
@@ -99,7 +135,27 @@
     font-weight: 400;
     font-size: 12px;
     color: #86909C;
-  }  
+  }
+
+  /* VIP按钮在深色模式下与添加卡片按钮保持一致 */
+  .vip-small-btn {
+    background: #303344;    
+    border: 1px solid #303344;
+  }
+
+  .vip-small-btn text {
+    color: #86909C;
+  }
+
+  /* VIP按钮警告状态 - 深色模式 */
+  .vip-small-btn-warning {
+    background: #451A03;
+    border: 1px solid #EA580C;
+  }
+
+  .vip-small-btn-warning text {
+    color: #FB923C;
+  }
   
   /* DarkMode 下的样式 end */
 }
