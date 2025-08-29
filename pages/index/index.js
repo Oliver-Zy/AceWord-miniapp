@@ -1036,11 +1036,17 @@ Page({
 
   /**
    * 处理VIP按钮点击事件
+   * 内测阶段：注释VIP按钮功能
    */
   onShowVip: function() {
+    // 内测阶段暂时注释VIP按钮功能
+    console.log('VIP button clicked - disabled during beta testing')
+    
+    /* 原VIP按钮逻辑，内测期间暂时注释
     wx.navigateTo({
       url: '/pages/vip/vip?event=vip_wordcard'
     })
+    */
   },
 
   /**
@@ -1299,8 +1305,17 @@ Page({
 
   /**
    * 更新添加卡片按钮文案和VIP按钮显示
+   * 内测阶段：注释VIP限制，隐藏VIP按钮
    */
   _updateAddCardButtonText: function(todayCardListData) {
+    // 内测阶段暂时注释VIP限制，隐藏VIP按钮
+    this.setData({ 
+      addCardButtonText: '添加卡片',
+      showVipButton: false,
+      isLowRemaining: false
+    })
+    
+    /* 原VIP限制逻辑，内测期间暂时注释
     try {
       const isVip = app && app.globalData && app.globalData.settings && !app.globalData.settings.isVipExpired
       if (isVip) {
@@ -1327,6 +1342,7 @@ Page({
         showVipButton: false
       })
     }
+    */
   },
 
   /**

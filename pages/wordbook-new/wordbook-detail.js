@@ -184,7 +184,7 @@ Page({
     try {
       Toast.loading({ message: '切换中...', forbidClick: true })
       
-      // 调用真实API切换词书
+      // 调用真实API切换词书（与原逻辑保持一致）
       await common.request({
         url: '/settings',
         method: 'PUT',
@@ -193,8 +193,22 @@ Page({
         }
       })
       
-      // 更新全局数据
+      // 设置词书为学习计划（与原逻辑保持一致）
+      await common.request({
+        url: '/wordbook',
+        method: 'PUT',
+        data: {
+          wordBookCode: book.wordBookCode,
+          isInLearningPlan: true
+        }
+      })
+      
+      // 更新全局数据（与原逻辑保持一致）
       app.globalData.settings.currentWordBookCode = book.wordBookCode
+      
+      // 更新词书状态（与原逻辑保持一致）
+      book.isInLearningPlan = true
+      book.userNum = book.userNum + 1
       
       // 更新当前页面状态
       this.setData({
