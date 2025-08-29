@@ -68,7 +68,7 @@
         <view style="height:6px;"></view>
         <view style="position: relative;right: 4px;">
           <image src="./images/rmb.png" style="width:16px;height:14px;"></image>
-          <text class="price-text">25</text>
+          <text class="price-text">35</text>
         </view>
         <view style="height:6px;"></view>
         <text class="original-price">￥45</text>
@@ -81,7 +81,7 @@
 
     <view style="height:24px;"></view>
     <view class="pay-btn" style="width:{{bgContainerWidth}}px;height:52px;" bind:tap="onPay">
-      <text wx:if="{{ !isIOS }}" class="pay-btn-text">立即以{{chosenIndex == 0 ? 128 : chosenIndex == 1 ? 88 : 25}}元开通</text>
+      <text wx:if="{{ !isIOS }}" class="pay-btn-text">立即以{{chosenIndex == 0 ? 128 : chosenIndex == 1 ? 88 : 35}}元开通</text>
       <text wx:else class="pay-btn-text">现在开通</text>
     </view>
     <view wx:if="{{ !isIOS }}" style="padding-top:12px;width:100%;display:flex;justify-content:center;">

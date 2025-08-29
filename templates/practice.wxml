@@ -1,10 +1,11 @@
 <!--
   naviBarHeight: Number,
   isCollected: Boolean,
+  isFinished: Boolean,
 -->
 <template name="header">
   <view style="height:{{naviBarHeight}}px;"></view>
-  <view class="header">
+  <view class="header" style="{{isFinished ? 'visibility: hidden;' : ''}}">
     <image src="/images/icons/{{isCollected ? 'star-fill' : isDarkMode ? 'star-dark' : 'star'}}.png" mut-bind:tap="onCollect" bind:longpress="onWordGroup"></image>
     <view>
       <image src="./images/{{isDarkMode ? 'spell-dark' : 'spell'}}.png" mut-bind:tap="onSpell"></image>

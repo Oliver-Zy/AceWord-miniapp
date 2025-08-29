@@ -5,6 +5,7 @@
     "pages/wordbook-custom-app/wordbook-custom-app",
     "pages/calendar/calendar",
     "pages/mine/mine",
+
     "pages/wordgroup-folder/wordgroup-folder",
     "pages/wordgroup/wordgroup",
     "pages/review/review",
@@ -16,7 +17,7 @@
     "pages/today/today",
     "pages/web-view/web-view",
     "pages/wordbook-category/wordbook-category",
-    "pages/wordbook-new/wordbook-new",
+    "pages/wordbook-new/wordbook-detail",
     "pages/wordbook-all/wordbook-all",
     "pages/sentence/sentence",
     "pages/vip/vip",
@@ -35,6 +36,7 @@
         "pagePath": "pages/index/index",
         "text": "首页"
       },
+
       {
         "pagePath": "pages/word-list/word-list",
         "text": "列表"

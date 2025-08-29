@@ -6,7 +6,7 @@
 
     <block wx:for="{{wordBookCategoryList}}" wx:key="categoryName">
 
-      <view class="wordBookCategory" style="width:{{wordBookCategoryWidth}}px;" bind:tap="onWordBookCategory" data-wordbookCategoryCode="{{item.wordBookCategoryCode}}">
+      <view class="wordBookCategory" style="width:{{wordBookCategoryWidth}}px;" bind:tap="onWordBookCategory" data-wordbookCategoryCode="{{item.wordBookCategoryCode}}" data-wordbookCategoryName="{{item.wordBookCategoryName}}">
         <image src="./images/bookCover-{{item.wordBookCategoryCode}}.png" class="bookCover-img"></image>
         <view class="right-wordBookCategory">
           <text>{{item.wordBookCategoryName}}</text>

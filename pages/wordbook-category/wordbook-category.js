@@ -32,7 +32,10 @@ Page({
   */
   onWordBookCategory: function (e) {
     let wordBookCategoryCode = e.currentTarget.dataset.wordbookcategorycode
-    wx.navigateTo({ url: `../wordbook-new/wordbook-new?isCustom=${false}&wordBookCategoryCode=${wordBookCategoryCode}` })
+    let wordBookCategoryName = e.currentTarget.dataset.wordbookcategoryname || ''
+    wx.navigateTo({ 
+      url: `../wordbook-new/wordbook-detail?isCustom=${false}&categoryCode=${wordBookCategoryCode}&categoryName=${encodeURIComponent(wordBookCategoryName)}` 
+    })
   },
 
   /**

@@ -30,7 +30,9 @@ Page({
       subname: '从卡片中移除，不再出现',
       color: '#f56565'
     }],
-    deleteWordInCardOption: false
+    deleteWordInCardOption: false,
+    // 单词顺序设置：true为乱序，false为顺序
+    isWordOrderRandom: true
   },
 
   /**
@@ -59,16 +61,29 @@ Page({
       })
     } else {
       console.log(app.globalData.practiceInfo)
+      // 获取单词顺序设置，默认为乱序
+      const isWordOrderRandom = app.globalData.settings?.isWordOrderRandom !== undefined 
+        ? app.globalData.settings.isWordOrderRandom 
+        : true;
+      
+      // 根据设置决定是否打乱单词顺序
+      const wordInfoList = this._filter(
+        isWordOrderRandom 
+          ? this._shuffle(app.globalData.practiceInfo.wordInfoList)
+          : app.globalData.practiceInfo.wordInfoList
+      );
+      
       this.setData({
         naviBarHeight: wx.getMenuButtonBoundingClientRect().bottom + 6,
         entryPage: options.entryPage,
-        wordInfoList: this._filter(this._shuffle(app.globalData.practiceInfo.wordInfoList)),
+        wordInfoList: wordInfoList,
         practiceMode: app.globalData.practiceInfo.practiceMode,
         innerIndex: app.globalData.practiceInfo.practiceMode == 'memorize' ? 0 : 1,
         pronType: app.globalData.settings.pronType,
         showCountDown: app.globalData.settings.showCountDown,
         showProgress: true,
         isDarkMode: getApp().globalData.isDarkMode,
+        isWordOrderRandom: isWordOrderRandom,
       })
       if (this.data.practiceMode == 'spell') this.onSpell()
       if (this.data.practiceMode == 'memorize') this._showGuideOfTapToCancelCountDown()
@@ -394,7 +409,7 @@ Page({
     
     if (e.detail.name === '本次跳过') {
       this.onSkipCurrentWord()
-    } else if (e.detail.name === '永久删除') {
+    } else if (e.detail.name === '移出卡片') {
       this.showDeleteConfirmation()
     }
   },
@@ -402,11 +417,11 @@ Page({
   // 显示删除确认弹窗
   showDeleteConfirmation: function () {
     wx.showModal({
-      title: '确认删除',
-      content: '确定要永久删除这个单词吗？删除后将不会再出现在任何卡片中。',
+      title: '移出卡片',
+      content: '移除后将不会再出现在当前卡片中',
       showCancel: true,
       cancelText: '取消',
-      confirmText: '删除',
+      confirmText: '移出',
       confirmColor: '#f56565',
       success: (res) => {
         if (res.confirm) {
@@ -433,32 +448,43 @@ Page({
   },
 
   // 永久删除单词
-  onDeleteWordFromCard: function () {
+  onDeleteWordFromCard: async function () {
     let word = this.data.wordInfoList.splice(this.data.wordIndex, 1)
     console.log('Delete word from card:', word)
     
     let wordCardIDCheckedList = app.globalData.practiceInfo.wordCardIDCheckedList
-    // 发请求删除单词
-    common.request({
-      url: `/userCard/word/delete-batch`,
-      method: 'DELETE',
-      data: {
-        cardIdArr: wordCardIDCheckedList,
-        word: word[0].word
+    
+    try {
+      // 发请求删除单词
+      await common.request({
+        url: `/userCard/word/delete-batch`,
+        method: 'DELETE',
+        data: {
+          cardIdArr: wordCardIDCheckedList,
+          word: word[0].word
+        }
+      })
+      
+      this.setData({
+        wordInfoList: this.data.wordInfoList,
+        outerIndex: this.data.outerIndex == this.data.wordIndex && this.data.practiceMode == 'memorize' ? this.data.outerIndex : this.data.outerIndex - 1,
+        innerIndex: 0,
+      })
+      
+      if (this.data.wordInfoList.length > 0) {
+        this._pronounce(this.data.wordInfoList[this.data.wordIndex].word)
       }
-    })
-    
-    this.setData({
-      wordInfoList: this.data.wordInfoList,
-      outerIndex: this.data.outerIndex == this.data.wordIndex && this.data.practiceMode == 'memorize' ? this.data.outerIndex : this.data.outerIndex - 1,
-      innerIndex: 0,
-    })
-    
-    if (this.data.wordInfoList.length > 0) {
-      this._pronounce(this.data.wordInfoList[this.data.wordIndex].word)
+      
+      Toast.success('移出成功')
+    } catch (error) {
+      console.error('删除单词失败:', error)
+      // 如果删除失败，需要将单词重新加回数组
+      this.data.wordInfoList.splice(this.data.wordIndex, 0, word[0])
+      this.setData({
+        wordInfoList: this.data.wordInfoList
+      })
+      Toast.fail('移出失败，请重试')
     }
-    
-    Toast.success('已从卡片中删除')
   },
 
   // 取消跳过单词弹窗
@@ -527,6 +553,8 @@ Page({
         name: `${app.globalData.settings.showCountDown ? '关闭' : '开启'}提示倒计时`
       }, {
         name: `${app.globalData.settings.isResultShownWhenTapRemember ? '点击记得不显示释义' : '点击记得显示释义'}`
+      }, {
+        name: `${this.data.isWordOrderRandom ? '切换为顺序练习' : '切换为乱序练习'}`
       }]
     })
   },
@@ -566,6 +594,36 @@ Page({
         }
       })
       Toast.success('设置成功')
+
+    } else if (e.detail.name.indexOf('练习') != -1) {
+
+      this.onCancelActionSheet()
+      const newOrderRandom = e.detail.name == '切换为乱序练习' ? true : false
+      
+      // 更新本地状态
+      this.setData({
+        isWordOrderRandom: newOrderRandom
+      })
+      
+      // 更新全局设置
+      if (!app.globalData.settings) {
+        app.globalData.settings = {}
+      }
+      app.globalData.settings.isWordOrderRandom = newOrderRandom
+      
+      // 保存到服务器
+      common.request({
+        url: `/settings`,
+        method: 'PUT',
+        data: {
+          isWordOrderRandom: newOrderRandom
+        }
+      })
+      
+      // 重新排序当前单词列表
+      this._reorderWordList(newOrderRandom)
+      
+      Toast.success(newOrderRandom ? '切换为乱序' : '切换为顺序')
 
     }
 
@@ -1172,6 +1230,33 @@ Page({
     }
 
     return arr
+  },
+
+  /**
+   * 重新排序单词列表
+   * @param {boolean} isRandom 是否随机排序
+   */
+  _reorderWordList: function(isRandom) {
+    // 获取原始单词列表（从全局数据中）
+    const originalWordList = [...app.globalData.practiceInfo.wordInfoList];
+    
+    // 根据设置重新排序
+    const newWordList = this._filter(
+      isRandom ? this._shuffle([...originalWordList]) : originalWordList
+    );
+    
+    // 重置练习状态
+    this.setData({
+      wordInfoList: newWordList,
+      wordIndex: 0,
+      outerIndex: 0,
+      innerIndex: this.data.practiceMode == 'memorize' ? 0 : 1
+    });
+    
+    // 发音第一个单词
+    if (newWordList.length > 0) {
+      this._pronounce(newWordList[0].word);
+    }
   },
 
   _filter: function (arr) {

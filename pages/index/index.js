@@ -8,6 +8,7 @@ const {
   ShareCardHandler
 } = require('../../models/handler.js')
 const { logger } = require('../../utils/logger.js')
+const { dailyLimits } = require('../../utils/dailyLimits.js')
 
 const common = new Common()
 const http = new HTTP()
@@ -119,6 +120,17 @@ Page({
     // !!! Test Only !!!
     // let token = await common.request({ url: `/tokenFromOpenid?openid=o4nOp5Kn8M67yz1Oc7m9BBe5Cn4A` })
     // console.log(token)
+    
+    // 获取当前用户的openid并在控制台输出
+    try {
+      let openID = await common.request({
+        url: `/openid`
+      })
+      console.log('当前用户的openid:', openID)
+    } catch (error) {
+      console.error('获取openid失败:', error)
+    }
+    
     this._setInitInfo()
     // 获取首页数据
     common.request({
@@ -581,13 +593,10 @@ Page({
       this._pronounce(e.detail.word)
 
     } else if (e.detail.type == 'replace') {
-      // 检查换词限制 - 内测期间暂时注释
-      // const { dailyLimits } = require('../../utils/dailyLimits.js')
-      
-      // if (!dailyLimits.recordWordReplace()) {
-      //   // 已达到限制，dailyLimits会显示相应提示
-      //   return
-      // }
+      // 恢复换词每日限制
+      if (!dailyLimits.recordWordReplace()) {
+        return
+      }
 
       Toast.loading({
         forbidClick: true
@@ -884,6 +893,12 @@ Page({
       }
 
       // 正常情况：添加一张loading卡片，然后回调本函数，实际新增的逻辑放在loading中
+      // 额度预检查
+      const check = dailyLimits.canCreateCard()
+      if (!check.allowed) {
+        dailyLimits.showLimitReached('cards')
+        return
+      }
       todayCardList.forEach((item, index) => todayCardList[index]._relatedAction = 'addWordCard')
       todayCardList.push({
         _type: 'loading'
@@ -943,6 +958,10 @@ Page({
 
       this._onSelectActionSheetPractice(e)
 
+    } else if (actionSheetType == 'categorySelection') {
+
+      this._onSelectActionSheetCategorySelection(e)
+
     }
   },
 
@@ -974,20 +993,38 @@ Page({
   },
 
   _onSelectActionSheetChangeDic: function (e) {
-    setTimeout(() => {
-      this.onCancelActionSheet()
-    }, 400)
-
     if (e.detail.name == '词书广场') {
+      setTimeout(() => {
+        this.onCancelActionSheet()
+      }, 400)
       wx.navigateTo({
-        url: `/pages/wordbook-all/wordbook-all`
+        url: `/pages/wordbook-category/wordbook-category`
       })
     } else if (e.detail.name == '自定义词书') {
+      setTimeout(() => {
+        this.onCancelActionSheet()
+      }, 400)
       wx.navigateTo({
         url: `/pages/wordbook-custom-app/wordbook-custom-app`
       })
     }
   },
+
+  _onSelectActionSheetCategorySelection: function (e) {
+    setTimeout(() => {
+      this.onCancelActionSheet()
+    }, 400)
+
+    const selectedAction = this.data.actions.find(action => action.name === e.detail.name)
+    
+    if (selectedAction && selectedAction.categoryCode) {
+      // 跳转到对应分类的词书详情页
+      wx.navigateTo({
+        url: `/pages/wordbook-new/wordbook-detail?categoryCode=${selectedAction.categoryCode}&categoryName=${encodeURIComponent(selectedAction.name)}`
+      })
+    }
+  },
+
   catchDoubleBtnEvent: function (e) {
     let eventName = e.detail.name
     if (eventName == 'startLearning') {
@@ -1265,49 +1302,24 @@ Page({
    */
   _updateAddCardButtonText: function(todayCardListData) {
     try {
-      // 内测期间暂时注释掉限制逻辑，所有用户都无限制
-      // const app = getApp()
-      // const isVip = app && app.globalData && app.globalData.settings && !app.globalData.settings.isVipExpired
-      
-      // 内测期间所有用户都无限制，不显示VIP按钮
-      this.setData({ 
+      const isVip = app && app.globalData && app.globalData.settings && !app.globalData.settings.isVipExpired
+      if (isVip) {
+        this.setData({ 
+          addCardButtonText: '添加卡片',
+          showVipButton: false,
+          isLowRemaining: false
+        })
+        return
+      }
+
+      const check = dailyLimits.canCreateCard()
+      const remaining = check.remaining
+      this.setData({
         addCardButtonText: '添加卡片',
-        showVipButton: false 
+        showVipButton: true,
+        vipButtonText: `今日余${remaining}张 · 升级无限制`,
+        isLowRemaining: remaining <= 3
       })
-      
-      // 注释掉原有的限制逻辑
-      // if (isVip) {
-      //   // VIP用户无限制，不显示VIP按钮
-      //   this.setData({ 
-      //     addCardButtonText: '添加卡片',
-      //     showVipButton: false 
-      //   })
-      //   return
-      // }
-      
-      // // 计算今日已创建的卡片数量
-      // let todayCardsCount = 0
-      // if (todayCardListData && todayCardListData.data) {
-      //   const today = new Date()
-      //   const todayStr = today.getFullYear().toString() + 
-      //                   (today.getMonth() < 9 ? '0' + (today.getMonth() + 1).toString() : (today.getMonth() + 1).toString()) + 
-      //                   (today.getDate() < 10 ? '0' + today.getDate() : today.getDate().toString())
-      //   
-      //   todayCardsCount = todayCardListData.data.filter(card => {
-      //     return card.createDate && card.createDate.trim() === todayStr
-      //   }).length
-      // }
-      
-      // const limit = 10 // 免费用户每日限制
-      // const remaining = Math.max(0, limit - todayCardsCount)
-      
-      // // 免费用户始终显示VIP按钮
-      // this.setData({
-      //   addCardButtonText: '添加卡片',
-      //   showVipButton: true,
-      //   vipButtonText: `今日余${remaining}张 · 升级无限制`,
-      //   isLowRemaining: remaining <= 3  // 用于样式判断
-      // })
     } catch (error) {
       console.error('Error updating add card button text:', error)
       this.setData({

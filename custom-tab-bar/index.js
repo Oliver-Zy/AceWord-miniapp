@@ -47,6 +47,11 @@ Component({
               selectedIconPath: "../images/tab-bars/homepage-chosen-dark.png",
               text: "首页"
             }, {
+              pagePath: "/pages/reading/reading",
+              iconPath: "../images/tab-bars/lab-dark.png",
+              selectedIconPath: "../images/tab-bars/lab-chosen-dark.png",
+              text: "阅读"
+            }, {
               pagePath: "/pages/word-list/word-list",
               iconPath: "../images/tab-bars/lab-dark.png",
               selectedIconPath: "../images/tab-bars/lab-chosen-dark.png",

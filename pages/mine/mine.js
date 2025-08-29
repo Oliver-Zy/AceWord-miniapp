@@ -475,6 +475,10 @@ Page({
 
       this._onSelectActionSheetFeedback(e)
 
+    } else if (actionSheetType == 'categorySelection') {
+
+      this._onSelectActionSheetCategorySelection(e)
+
     }
   },
 
@@ -485,20 +489,36 @@ Page({
   },
 
   _onSelectActionSheetChangeDic: function (e) {
-    setTimeout(() => {
-      this.onCancelActionSheet()
-    }, 400)
-
     if (e.detail.name == '词书广场') {
+      setTimeout(() => {
+        this.onCancelActionSheet()
+      }, 400)
       wx.navigateTo({
-        url: `/pages/wordbook-all/wordbook-all`
+        url: `/pages/wordbook-category/wordbook-category`
       })
     } else if (e.detail.name == '自定义词书') {
+      setTimeout(() => {
+        this.onCancelActionSheet()
+      }, 400)
       wx.navigateTo({
         url: `/pages/wordbook-custom-app/wordbook-custom-app`
       })
     }
+  },
 
+  _onSelectActionSheetCategorySelection: function (e) {
+    setTimeout(() => {
+      this.onCancelActionSheet()
+    }, 400)
+
+    const selectedAction = this.data.actions.find(action => action.name === e.detail.name)
+    
+    if (selectedAction && selectedAction.categoryCode) {
+      // 跳转到对应分类的词书详情页
+      wx.navigateTo({
+        url: `/pages/wordbook-new/wordbook-detail?categoryCode=${selectedAction.categoryCode}&categoryName=${encodeURIComponent(selectedAction.name)}`
+      })
+    }
   },
 
   _onSelectActionSheetFeedback: function (e) {
@@ -726,7 +746,7 @@ Page({
     if (typeof this.getTabBar === 'function' &&
       this.getTabBar()) {
       this.getTabBar().setData({
-        selected: 2
+        selected: 3
       })
     }
   },

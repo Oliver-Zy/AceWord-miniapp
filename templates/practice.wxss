@@ -90,7 +90,7 @@
   box-sizing: border-box;
   width: 100%;
   margin-top: 30px;
-  padding: 0 40px 30px 40px;
+  padding: 0 30px 30px 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -100,7 +100,7 @@
 
 .right-btn {
   box-sizing: border-box;
-  width: 128px;
+  width: 148px;
   height: 40px;
   display: flex;
   justify-content: center;
@@ -111,7 +111,7 @@
 
 .left-btn {
   box-sizing: border-box;
-  width: 128px;
+  width: 148px;
   height: 40px;
   display: flex;
   justify-content: center;

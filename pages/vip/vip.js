@@ -79,7 +79,7 @@ Page({
     //   })
     // } else {
       let chosenIndex = this.data.chosenIndex
-      let priceList = [128, 88, 25] // 永久会员128元，年度会员88元，月度会员25元
+      let priceList = [128, 88, 35] // 永久会员128元，年度会员88元，月度会员35元
       let price = priceList[chosenIndex]
 
       let that = this

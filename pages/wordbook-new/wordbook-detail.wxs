@@ -1,0 +1,18 @@
+// 工具函数
+function calculateProgress(userProgressNum, totalWordNum) {
+  if (!totalWordNum || totalWordNum === 0) {
+    return 0
+  }
+  var progress = (userProgressNum || 0) / totalWordNum * 100
+  return Math.round(progress * 10) / 10 // 保留一位小数
+}
+
+function formatProgress(userProgressNum, totalWordNum) {
+  var progress = calculateProgress(userProgressNum, totalWordNum)
+  return progress + '%'
+}
+
+module.exports = {
+  calculateProgress: calculateProgress,
+  formatProgress: formatProgress
+}

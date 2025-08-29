@@ -1,12 +1,13 @@
+/* 词书详情页样式 - 完全参照原版wordbook-all的样式 */
+
 .container {
   width: 100%;
   height: 100vh;
   background-image: linear-gradient(180deg, #EDE9FE -10%, #F9FAFB 30%);
-  /* 与项目整体保持一致的紫色系渐变背景 */
 }
 
-/* 分类卡片 */
-.category-card {
+/* 子分类卡片 */
+.subcategory-card {
   margin: 0 16px;
   background: #FFFFFF;
   border-radius: 12px;
@@ -21,8 +22,8 @@
   --collapse-item-content-padding: 0;
 }
 
-/* 分类数量 */
-.category-count {
+/* 子分类数量 */
+.subcategory-count {
   font-size: 13px;
   color: #86909C;
   font-weight: 500;
@@ -86,16 +87,15 @@
 @media (prefers-color-scheme: dark) {
   .container {
     background: linear-gradient(180deg, #1E1B4B -10%, #1F2937 30%);
-    /* 深色模式下与项目协调的紫色系渐变 */
   }
 
-  .category-card {
+  .subcategory-card {
     background: #2A2D3A;
     border-color: #3A3F4B;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
-  .category-count {
+  .subcategory-count {
     color: #9598A9;
   }
 

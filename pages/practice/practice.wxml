@@ -17,7 +17,7 @@
       bind:cancel="onSkipWordDialogCancel"
       bind:click-overlay="onSkipWordDialogCancel" />
   </van-popup>
-  <template is="header" data="{{naviBarHeight, isCollected: wordInfoList[wordIndex].isCollected, isDarkMode}}" />
+  <template is="header" data="{{naviBarHeight, isCollected: wordInfoList[wordIndex].isCollected, isDarkMode, isFinished}}" />
   <template is="wordAndipa-container" data="{{entryPage: 'practice', word: wordInfoList[wordIndex].word, isWordBlur, isFinished, pronType, ipa: pronType == 'US' ? wordInfoList[wordIndex].ipaUS : wordInfoList[wordIndex].ipaUK, isDarkMode}}" />
   <!-- template -->
 

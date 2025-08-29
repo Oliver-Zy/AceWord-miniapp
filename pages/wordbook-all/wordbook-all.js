@@ -44,10 +44,14 @@ Page({
     const systemInfo = wx.getSystemInfoSync()
     const menuButton = wx.getMenuButtonBoundingClientRect()
     
+    // 确保获取最新的当前词书代码
+    const currentWordBookCode = app.globalData.settings?.currentWordBookCode || ''
+    console.log('Init current wordbook code:', currentWordBookCode)
+    
     this.setData({
       naviBarHeight: menuButton.bottom + 6,
       scrollViewHeight: systemInfo.windowHeight - (menuButton.bottom + 6) - (app.globalData.isIOS ? 30 : 0),
-      currentWordBookCode: app.globalData.settings?.currentWordBookCode || ''
+      currentWordBookCode: currentWordBookCode
     })
   },
 
@@ -88,12 +92,26 @@ Page({
       // 过滤掉空分类
       const filteredCategories = wordBookCategories.filter(cat => cat.wordBooks.length > 0)
       
-      // 默认展开第一个分类
-      const activeNames = filteredCategories.length > 0 ? [filteredCategories[0].categoryCode] : []
-
+      // 将"计划"分类排在最前面
+      const sortedCategories = filteredCategories.sort((a, b) => {
+        const aIsPlan = a.categoryName === '计划' || a.categoryCode === 'plan'
+        const bIsPlan = b.categoryName === '计划' || b.categoryCode === 'plan'
+        
+        if (aIsPlan && !bIsPlan) return -1
+        if (!aIsPlan && bIsPlan) return 1
+        return 0
+      })
+      
+      console.log('Categories sorted with plan first:')
+      console.log('Sorted categories:', sortedCategories.map(cat => ({
+        name: cat.categoryName,
+        code: cat.categoryCode
+      })))
+      
+      // 默认不展开任何分类
       this.setData({
-        wordBookCategories: filteredCategories,
-        activeNames,
+        wordBookCategories: sortedCategories,
+        activeNames: [],
         isLoaded: true,
         isRefresherTriggered: false
       })

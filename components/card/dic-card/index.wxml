@@ -77,7 +77,7 @@
   <!-- E inner-container -->
 
   <!-- S btn-group -->
-  <view class="btns-group">
+  <view wx:if="{{showStyleBtn || showReplaceBtn}}" class="btns-group">
     <view wx:if="{{showStyleBtn}}" class="left-btn" style="width:{{showReplaceBtn ? '45%' : '100%'}};" catch:tap="onShowStyleCard">
       <text>添加标记</text>
     </view>

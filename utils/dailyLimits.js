@@ -97,6 +97,10 @@ class DailyLimits {
    * 检查是否可以创建新卡片
    */
   canCreateCard() {
+    // 内测阶段暂时注释VIP限制，所有用户都可以无限使用
+    return { allowed: true, remaining: -1, limit: -1 }
+    
+    /* 原VIP限制逻辑，内测期间暂时注释
     try {
       const app = getApp()
       const isVip = app && app.globalData && app.globalData.settings && !app.globalData.settings.isVipExpired
@@ -129,12 +133,17 @@ class DailyLimits {
         remaining: remaining
       }
     }
+    */
   }
 
   /**
    * 检查是否可以换词
    */
   canReplaceWord() {
+    // 内测阶段暂时注释VIP限制，所有用户都可以无限使用
+    return { allowed: true, remaining: -1, limit: -1 }
+    
+    /* 原VIP限制逻辑，内测期间暂时注释
     try {
       const app = getApp()
       const isVip = app && app.globalData && app.globalData.settings && !app.globalData.settings.isVipExpired
@@ -167,6 +176,7 @@ class DailyLimits {
         remaining: remaining
       }
     }
+    */
   }
 
   /**
@@ -228,6 +238,10 @@ class DailyLimits {
    * 记录卡片创建
    */
   recordCardCreation() {
+    // 内测阶段暂时注释VIP限制，直接返回成功
+    return true
+    
+    /* 原VIP限制逻辑，内测期间暂时注释
     const check = this.canCreateCard()
     if (!check.allowed) {
       this.showLimitReached('cards')
@@ -243,12 +257,17 @@ class DailyLimits {
     }
     
     return true
+    */
   }
 
   /**
    * 记录换词操作
    */
   recordWordReplace() {
+    // 内测阶段暂时注释VIP限制，直接返回成功
+    return true
+    
+    /* 原VIP限制逻辑，内测期间暂时注释
     const check = this.canReplaceWord()
     if (!check.allowed) {
       this.showLimitReached('replaces')
@@ -264,12 +283,29 @@ class DailyLimits {
     }
     
     return true
+    */
   }
 
   /**
    * 获取使用统计信息（用于"我的"页面显示）
    */
   getUsageStats() {
+    // 内测阶段暂时注释VIP限制，返回无限制状态
+    return {
+      isVip: true, // 内测期间所有用户都按VIP处理
+      cards: {
+        used: 0,
+        limit: -1, // 无限制
+        percentage: 0
+      },
+      replaces: {
+        used: 0,
+        limit: -1, // 无限制
+        percentage: 0
+      }
+    }
+    
+    /* 原VIP限制逻辑，内测期间暂时注释
     try {
       const app = getApp()
       const isVip = app && app.globalData && app.globalData.settings && !app.globalData.settings.isVipExpired
@@ -306,6 +342,7 @@ class DailyLimits {
         }
       }
     }
+    */
   }
 }
 
