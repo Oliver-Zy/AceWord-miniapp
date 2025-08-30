@@ -1,6 +1,6 @@
 .container {
   box-sizing: border-box;
-  padding: 24px 16px 22px;
+  padding: 24px 16px 12px;
   margin: 8px 16px 0 16px;
   background: #FFFFFF;
   border-radius: 12px;
@@ -74,6 +74,7 @@
 
 .calendar-group {
   width: 28px;
+  margin-bottom: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -92,97 +93,21 @@
   font-size: 14px;
 }
 
-.dot-group {
-  width: 30px;
-  height: 4px;
-  padding-top: 6px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: center;
+.date-done-icon {
+  width: 16px;
+  height: 16px;
+  /* 使用图标原本颜色，不添加滤镜 */
 }
 
-.blue-dot {
-  width: 4px;
-  height: 4px;
-  margin: 0 1px;
-  background: #5C46E6;
-  border-radius: 18px;
+.today-container {
+  /* 今天的容器样式，主要通过内联样式设置边框 */
 }
 
-.red-dot {
-  width: 4px;
-  height: 4px;
-  margin: 0 1px;
-  background: #F99234;
-  border-radius: 18px;
+.completed-container {
+  /* 完成状态的容器样式，主要通过内联样式设置背景 */
 }
 
-.footer {
-  width: 100%;
-  padding-top: 14px;
-  display: flex;
-  align-items: center;
-}
 
-.left-footer{
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-}
-
-.up-left-footer {
-  display: flex;
-  align-items: center;
-}
-
-.left-dot {
-  width: 6px;
-  height: 6px;
-  margin-right: 8px;
-  background: #5C46E6;
-  border-radius: 18px;
-}
-
-.right-dot {
-  width: 6px;
-  height: 6px;
-  margin-right: 8px;
-  background: #F99234;
-  border-radius: 18px;
-}
-
-.footer view view text{
-  font-family: var(--simHei);
-  font-weight: 400;
-  font-size: 11px;
-  color: #86909C;
-}
-
-.progress-group {
-  width: 50%;
-  margin-top: 6px;
-  display: flex;
-  flex-direction: column;
-}
-
-.progress-group {
-  width: 106px;
-  height: 4px;
-  background: #E5E6EB;
-  border-radius: 10px;
-}
-
-.left-progress {
-  height: 4px;
-  background: #5C46E6;
-  border-radius: 10px;
-}
-
-.right-progress {
-  height: 4px;
-  background: #F99234;
-  border-radius: 10px;
-}
 
 .loader-container {
   height: 126px;

@@ -223,6 +223,22 @@ Page({
       }
     })
   },
+  /**
+   * 编辑资料 - 提供头像和昵称修改选项
+   */
+  editProfile: function() {
+    wx.showActionSheet({
+      itemList: ['修改头像', '修改昵称'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          this.modifyAvatar()
+        } else if (res.tapIndex === 1) {
+          this.modifyNickname()
+        }
+      }
+    })
+  },
+
   modifyAvatar: function () {
     console.log('modifyAvatar 被调用')
     let that = this
@@ -238,38 +254,38 @@ Page({
           message: '上传中...',
           forbidClick: true
         })
-        // 尝试使用微信云存储上传头像
-        wx.cloud.uploadFile({
-          cloudPath: `avatars/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.jpg`,
+        
+        // 使用base64方式上传头像
+        wx.getFileSystemManager().readFile({
           filePath: res.tempFiles[0].tempFilePath,
-          success: cloudRes => {
-            console.log('云存储上传成功:', cloudRes)
-            let avatarUrl = cloudRes.fileID
+          encoding: 'base64',
+          success: (fileRes) => {
+            const base64Data = 'data:image/jpeg;base64,' + fileRes.data
             
-            // 通过settings API更新头像URL
+            // 通过settings API更新头像（使用base64）
             common.request({
               url: '/settings',
               method: 'PUT',
               data: {
-                avatarUrl: avatarUrl
+                avatarUrl: base64Data
               }
             }).then(settingsRes => {
-              console.log('头像URL更新成功:', settingsRes)
+              console.log('头像更新成功:', settingsRes)
               Toast.success('修改成功')
               // 更新页面数据
               that.setData({
-                avatarUrl: avatarUrl
+                avatarUrl: base64Data
               })
               // 更新全局数据
-              app.globalData.settings.avatarUrl = avatarUrl
+              app.globalData.settings.avatarUrl = base64Data
             }).catch(err => {
-              console.error('头像URL更新失败:', err)
+              console.error('头像更新失败:', err)
               Toast.fail('保存失败')
             })
           },
-          fail: error => {
-            console.error('云存储上传失败:', error)
-            Toast.fail('上传失败: ' + (error.errMsg || '未知错误'))
+          fail: (error) => {
+            console.error('读取文件失败:', error)
+            Toast.fail('读取图片失败')
           }
         })
       },
@@ -672,16 +688,27 @@ Page({
    * @event
    */
   onOpenVip: function () {
-    // 判断是不是ios 
-    if (app.globalData.isIOS) {
-      wx.showToast({
-        icon: "none",
-        title: '由于相关规范，iOS功能暂不可用',
-      })
-      return
-    }
-    wx.navigateTo({
-      url: `/pages/vip/vip?event=${'vip'}`
+    // 小程序限制，直接弹出modal提示
+    wx.showModal({
+      title: '温馨提示',
+      content: '受微信限制，iOS暂无法开通',
+      showCancel: true,
+      confirmText: '联系客服',
+      cancelText: '我知道了',
+      success: (res) => {
+        if (res.confirm) {
+          // 复制客服微信号
+          wx.setClipboardData({
+            data: 'MiddleRain_',
+            success: () => {
+              wx.showToast({
+                title: '客服微信号已复制',
+                icon: 'success'
+              })
+            }
+          })
+        }
+      }
     })
   },
 

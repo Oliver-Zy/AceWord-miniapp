@@ -17,7 +17,9 @@ Page({
     showOverlay: false,
     wordInfo: {},
     // 释义显示状态
-    visibleMeanings: {} // 用于记录哪些单词的释义是可见的
+    visibleMeanings: {}, // 用于记录哪些单词的释义是可见的
+    // 选择功能
+    selectedWordIds: [] // 选中的单词ID列表
   },
 
   /**
@@ -137,6 +139,39 @@ Page({
   },
 
   /**
+   * 监听header事件（全选/取消全选）
+   */
+  onHeaderEvent: function (e) {
+    if (e.detail.type === 'selectAll') {
+      if (this.data.selectedWordIds.length === this.data.wordList.length) {
+        // 当前是全选状态，执行取消全选
+        this.setData({
+          selectedWordIds: []
+        })
+      } else {
+        // 当前不是全选状态，执行全选
+        const allWordIds = this.data.wordList.map(item => item.wordId)
+        this.setData({
+          selectedWordIds: allWordIds
+        })
+      }
+    }
+  },
+
+  /**
+   * 监听释义点击事件（显示/隐藏释义）
+   */
+  onMeaningTap: function (e) {
+    const wordId = e.currentTarget.dataset.wordId
+    const visibleMeanings = { ...this.data.visibleMeanings }
+    visibleMeanings[wordId] = !visibleMeanings[wordId]
+    
+    this.setData({
+      visibleMeanings
+    })
+  },
+
+  /**
    * 监听开始练习按钮
    */
   onPractice: async function () {
@@ -182,20 +217,27 @@ Page({
   },
 
   /**
-   * 加载今日单词数据
+   * 加载今日练习单词数据
    */
   _loadTodayWords: async function () {
     try {
       Toast.loading()
       
-      // 获取今日单词卡片数据
-      const homeData = await common.request({ url: `/homedata` })
-      const pageInfo = homeData.todayCardList
+      // 获取今日练习单词卡片数据（参考calendar页面）
+      const pageInfo = await common.request({
+        url: `/wordcards/practice?date=${app.globalData.todayDate}`
+      })
+      
+      // 获取词书映射信息
+      const wordBookCodeToName = await common.request({
+        url: `/wordbooks-map`
+      })
       
       // 处理单词列表数据
-      const wordList = this._processWordList(pageInfo.data, homeData.bookMap)
+      const wordList = this._processWordList(pageInfo.data, wordBookCodeToName)
       
-      // 获取词书信息
+      // 获取基本设置信息
+      const homeData = await common.request({ url: `/homedata` })
       const settings = homeData.settings
       const currentWordBook = settings.currentWordBook
       const wordBookMyInfo = {
@@ -217,13 +259,53 @@ Page({
       
       Toast.clear()
     } catch (error) {
-      console.error('Failed to load today words:', error)
+      console.error('Failed to load practice words:', error)
       Toast.fail('加载失败，请稍后重试')
       this.setData({
         isRefresherTriggered: false,
         isLoaded: true
       })
     }
+  },
+
+  /**
+   * 隐藏弹窗
+   */
+  onClickHideOverlay: function () {
+    this.setData({
+      showDicCard: false,
+      showOverlay: false
+    })
+    this.getTabBar().setData({
+      show: true
+    })
+  },
+
+  /**
+   * 处理dic-card事件
+   */
+  onDicCardEvent: function (e) {
+    // 处理dic-card的各种事件
+    console.log('dic-card event:', e.detail)
+  },
+
+  /**
+   * 设置初始信息
+   */
+  _setInitInfo: function () {
+    this.setData({
+      naviBarHeight: wx.getMenuButtonBoundingClientRect().bottom + 6,
+      isIOS: app.globalData.isIOS
+    })
+  },
+
+  /**
+   * 发音功能
+   */
+  _pronounce: function (word) {
+    const innerAudioContext = wx.createInnerAudioContext()
+    innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=1`
+    innerAudioContext.play()
   },
 
   /**

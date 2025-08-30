@@ -55,7 +55,7 @@
 }
 
 .edit-profile-btn {
-  width: 104px;
+  width: 96px;
   height: 26px;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 51px;
@@ -63,7 +63,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  left: 28px;
+  left: 24px;
   backdrop-filter: blur(10px);
 }
 

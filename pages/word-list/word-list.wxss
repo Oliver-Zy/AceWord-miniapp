@@ -49,17 +49,17 @@
   line-height: 1.4;
 }
 
-/* 释义文本样式 - 现在在右侧 */
+/* 释义文本样式 - 现在在左侧单词名下方 */
 .meaning-text {
   font-family: var(--simHei);
   font-size: 13px;
   color: #86909C;
-  text-align: right;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 200px;
   line-height: 1.4;
+  margin-top: 2px;
 }
 
 .meaning-text.blurred {
@@ -90,7 +90,6 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  flex: 1;
   margin-left: 16px;
 }
 
@@ -148,7 +147,9 @@
     color: #6B7280;
   }
 
-
+  .proficiency-text {
+    color: #9598A9;
+  }
 
   .practice-count {
     color: #9598A9;

@@ -55,18 +55,37 @@ class Common {
    * @return { Promise } 
    */
   async uploadFile({ url, filePath, name }) {
-    return new Promise(resolve => {
+    const token = wx.getStorageSync('token')
+    return new Promise((resolve, reject) => {
       try {
         wx.uploadFile({
-          url: url,
+          url: config.api_base_url + url,
           filePath: filePath,
           name: name,
+          header: {
+            'Authorization': token
+          },
           success(res) {
-            resolve(res)
+            console.log('Upload response:', res)
+            try {
+              const data = JSON.parse(res.data)
+              if (data.errcode === 0) {
+                resolve(data.data)
+              } else {
+                reject(data)
+              }
+            } catch (parseError) {
+              reject({ message: '响应解析失败', data: res.data })
+            }
+          },
+          fail(error) {
+            console.error('Upload failed:', error)
+            reject(error)
           }
         })
       } catch (err) {
-        console.error(err)
+        console.error('Upload error:', err)
+        reject(err)
       }
     })
   }

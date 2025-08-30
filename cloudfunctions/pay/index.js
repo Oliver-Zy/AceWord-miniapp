@@ -12,7 +12,7 @@ exports.main = async (event, context) => {
     "outTradeNo" : event.outTradeNo,
     "body" : "AceWord 会员",
     "spbillCreateIp" : "127.0.0.1",
-    "totalFee" : 1,
+    "totalFee" : event.totalFee,
     "tradeType": "JSAPI",
   })
   return res

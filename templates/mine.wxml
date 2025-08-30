@@ -2,7 +2,7 @@
 
   <view class="avatar-bar">
     <view class="avatar-group">
-      <image class="avatar-img" src="{{avatarUrl == null ? './images/avatar.png' : avatarUrl}}" bindtap="modifyAvatar" binderror="onAvatarError" bindload="onAvatarLoad"></image>
+      <image class="avatar-img" src="{{avatarUrl == null ? '/pages/mine/images/avatar.png' : avatarUrl}}" bindtap="modifyAvatar" binderror="onAvatarError" bindload="onAvatarLoad"></image>
       <view class="right-avatar-group">
         <text bindtap="modifyNickname">{{nickName == '' ? '点击登录' : nickName}}</text>
         <view class="down-right-avatar-group">
@@ -11,7 +11,7 @@
         </view>
       </view>
     </view>
-    <view class="edit-profile-btn">
+    <view class="edit-profile-btn" bindtap="editProfile">
       <text>编辑资料</text>
       <image class="edit-arrow" src="./images/right.png"></image>
     </view>

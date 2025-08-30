@@ -14,8 +14,8 @@ Component({
         text: "首页"
       }, {
         pagePath: "/pages/word-list/word-list",
-        iconPath: "../images/tab-bars/lab.png",
-        selectedIconPath: "../images/tab-bars/lab-chosen.png",
+        iconPath: "../images/tab-bars/list.png",
+        selectedIconPath: "../images/tab-bars/list-chosen.png",
         text: "列表"
       }, {
         pagePath: "/pages/calendar/calendar",
@@ -47,14 +47,9 @@ Component({
               selectedIconPath: "../images/tab-bars/homepage-chosen-dark.png",
               text: "首页"
             }, {
-              pagePath: "/pages/reading/reading",
-              iconPath: "../images/tab-bars/lab-dark.png",
-              selectedIconPath: "../images/tab-bars/lab-chosen-dark.png",
-              text: "阅读"
-            }, {
               pagePath: "/pages/word-list/word-list",
-              iconPath: "../images/tab-bars/lab-dark.png",
-              selectedIconPath: "../images/tab-bars/lab-chosen-dark.png",
+              iconPath: "../images/tab-bars/list-dark.png",
+              selectedIconPath: "../images/tab-bars/list-chosen-dark.png",
               text: "列表"
             }, {
               pagePath: "/pages/calendar/calendar",

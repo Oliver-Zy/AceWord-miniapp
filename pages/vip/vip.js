@@ -76,22 +76,35 @@ Page({
    *
    * @event
    */
-  onPay: function (e) {
+    onPay: function (e) {
+    // iOS支付限制检查
+    if (this.data.isIOS) {
+      wx.showModal({
+        title: '温馨提示',
+        content: '由于苹果应用商店政策限制，iOS用户暂时无法在小程序内购买会员。您可以通过以下方式开通：\n\n1. 使用安卓设备打开小程序购买\n2. 联系客服获取其他开通方式',
+        showCancel: true,
+        confirmText: '联系客服',
+        cancelText: '我知道了',
+        success: (res) => {
+          if (res.confirm) {
+            // 复制客服微信号
+            wx.setClipboardData({
+              data: 'MiddleRain_',
+              success: () => {
+                wx.showToast({
+                  title: '客服微信号已复制',
+                  icon: 'success'
+                })
+              }
+            })
+          }
+        }
+      })
+      return
+    }
 
-    // // iOS不支持虚拟支付
-    // if (this.data.isIOS) {
-    //   // if (false) {
- 
-    //   wx.showModal({
-    //     title: '提示',
-    //     content: '因微信限制，iOS版本AceWord暂时无法快速解锁',
-    //     showCancel: false,
-    //     confirmText: '好的',
-    //   })
-    // } else {
-      let chosenIndex = this.data.chosenIndex
-      let priceList = [128, 88, 35] // 永久会员128元，年度会员88元，月度会员35元
-      let price = priceList[chosenIndex]
+    // 固定价格：98元终身会员
+    let price = 98
 
       let that = this
       Toast.loading()

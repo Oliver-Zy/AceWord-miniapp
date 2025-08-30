@@ -7,7 +7,7 @@
   <!-- S background-container -->
   <view class="background-container" style="width:{{bgContainerWidth}}px;height:{{bgContainerHeight}}px;position:fixed;top:{{naviBarHeight + 16}}px;">
     <view class="avatar-group">
-      <image class="avatar-img" src="{{avatarUrl == null ? './images/avatar.png' : avatarUrl}}"></image>
+      <image class="avatar-img" src="{{avatarUrl == null ? '/pages/mine/images/avatar.png' : avatarUrl}}"></image>
       <view class="right-avatar-group">
         <text class="right-avatar-group-text">{{nickName == '' ? '点击登录' : nickName}}</text>
         <view class="down-right-avatar-group">

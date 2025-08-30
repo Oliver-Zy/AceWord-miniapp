@@ -16,7 +16,7 @@
     <ace-header 
       wx:if="{{wordList.length != 0}}" 
       titleType="textWithCount" 
-      text="今日新学计划" 
+      text="今日练习" 
       arrLen="{{wordList.length}}" 
       iconType="selectAll" 
       isSelectAll="{{selectedWordIds.length === wordList.length && wordList.length > 0}}"
@@ -35,15 +35,15 @@
             <!-- S left content -->
             <view class="word-item-left">
               <view class="word-name" catchtap="onWordItemTap" data-index="{{index}}" hover-class="none">{{item.wordName}}</view>              
-              <view class="proficiency-text">{{item.proficiencyText}}</view>
+              <view class="meaning-text {{visibleMeanings[item.wordId] ? '' : 'blurred'}}">
+                {{item.selfDef || item.wordCN || '暂无释义'}}
+              </view>
             </view>
             <!-- E left content -->
 
             <!-- S right content -->
             <view class="word-item-right">
-              <view class="meaning-text {{visibleMeanings[item.wordId] ? '' : 'blurred'}}" bind:tap="onMeaningTap" data-word-id="{{item.wordId}}">
-                {{item.selfDef || item.wordCN || '暂无释义'}}
-              </view>
+              <view class="proficiency-text">{{item.proficiencyText}}</view>
             </view>
             <!-- E right content -->
           </view>
@@ -60,8 +60,8 @@
     
     <!-- S empty state -->
     <view wx:if="{{isLoaded && wordList.length == 0}}" class="empty-state">
-      <view class="empty-text">暂无今日新学单词</view>
-      <view class="empty-subtext">去首页添加一些单词卡片吧</view>
+      <view class="empty-text">暂无今日练习单词</view>
+      <view class="empty-subtext">今天的练习已全部完成</view>
     </view>
     <!-- E empty state -->
 
