@@ -381,8 +381,37 @@ Page({
    * @event
    */
   onChangeDic: function () {
-    // 直接弹出主分类选择
-    this._showCategorySelection()
+    // 先弹出词书类型选择
+    this._showWordbookTypeSelection()
+  },
+
+  /**
+   * 显示词书类型选择
+   */
+  _showWordbookTypeSelection: function() {
+    const actions = [
+      { 
+        name: '分类词书', 
+        subname: '按学习阶段和考试类型分类的词书',
+        type: 'category'
+      },
+      { 
+        name: '真题词书', 
+        subname: '【会员专享】考研英语真题词汇，带真题例句',
+        type: 'exam'
+      }
+    ]
+
+    this.setData({
+      showPopupVant: true,
+      actionSheetType: 'wordbookType',
+      showActionSheet: true,
+      actionSheetDesc: '选择词书类型',
+      actions: actions
+    })
+    this.getTabBar().setData({
+      show: false
+    })
   },
 
   /**
@@ -982,6 +1011,14 @@ Page({
 
       this._onSelectActionSheetCategorySelection(e)
 
+    } else if (actionSheetType == 'wordbookType') {
+
+      this._onSelectActionSheetWordbookType(e)
+
+    } else if (actionSheetType == 'examWordbook') {
+
+      this._onSelectActionSheetExamWordbook(e)
+
     }
   },
 
@@ -1041,6 +1078,78 @@ Page({
       // 跳转到词书广场页面，传递分类信息
       wx.navigateTo({
         url: `/pages/wordbook-all/wordbook-all?categoryCode=${selectedAction.categoryCode}&categoryName=${encodeURIComponent(selectedAction.name)}`
+      })
+    }
+  },
+
+  /**
+   * 处理词书类型选择
+   */
+  _onSelectActionSheetWordbookType: function (e) {
+    setTimeout(() => {
+      this.onCancelActionSheet()
+    }, 400)
+
+    const selectedAction = this.data.actions.find(action => action.name === e.detail.name)
+    
+    if (selectedAction) {
+      if (selectedAction.type === 'category') {
+        // 选择了分类词书，显示原来的分类选择
+        setTimeout(() => {
+          this._showCategorySelection()
+        }, 500)
+      } else if (selectedAction.type === 'exam') {
+        // 选择了真题词书，显示真题词书选择
+        setTimeout(() => {
+          this._showExamWordbookSelection()
+        }, 500)
+      }
+    }
+  },
+
+  /**
+   * 显示真题词书选择
+   */
+  _showExamWordbookSelection: function() {
+    const examActions = [
+      { 
+        name: '考研英语一真题', 
+        subname: '2010-2024年考研英语一真题词汇',
+        examType: 'kaoyan1'
+      },
+      { 
+        name: '考研英语二真题', 
+        subname: '2010-2024年考研英语二真题词汇',
+        examType: 'kaoyan2'
+      }
+    ]
+
+    this.setData({
+      showPopupVant: true,
+      actionSheetType: 'examWordbook',
+      showActionSheet: true,
+      actionSheetDesc: '选择真题词书',
+      actions: examActions
+    })
+    this.getTabBar().setData({
+      show: false
+    })
+  },
+
+  /**
+   * 处理真题词书选择
+   */
+  _onSelectActionSheetExamWordbook: function (e) {
+    setTimeout(() => {
+      this.onCancelActionSheet()
+    }, 400)
+
+    const selectedAction = this.data.actions.find(action => action.name === e.detail.name)
+    
+    if (selectedAction && selectedAction.examType) {
+      // 跳转到真题词书页面
+      wx.navigateTo({
+        url: `/pages/exam-wordbook/exam-wordbook?examType=${selectedAction.examType}&examName=${encodeURIComponent(selectedAction.name)}`
       })
     }
   },
