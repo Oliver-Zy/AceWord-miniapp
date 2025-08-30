@@ -47,6 +47,15 @@ Component({
    */
   methods: {
     /**
+     * 查看更多真题例句
+     */
+    onViewMoreExamples: function() {
+      this.triggerEvent('dicCardEvent', {
+        eventName: 'viewMoreExamples',
+        wordInfo: this.data.wordInfo
+      })
+    },
+    /**
      * 监听收藏单词
      *
      * @event 

@@ -20,75 +20,41 @@
   <!-- E background-container -->
 
   <!-- S scroll-view -->
-  <scroll-view scroll-y="true" style="padding-top:24px;height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight + 16 + 120}}px;background:#fff;border-radius:16px;padding-left:16px;box-sizing:border-box;">
+  <scroll-view scroll-y="true" style="padding:24px 16px 0 16px;height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight + 16 + 120}}px;background:#fff;border-radius:16px;box-sizing:border-box;">
     <text wx:if="{{ !isIOS }}" class="title-text">解锁会员</text>
     <view wx:if="{{ !isIOS }}" style="height:20px;"></view>
     <!-- <view wx:if="{{ !isIOS }}" class="price-container" style="width:{{bgContainerWidth}}px;"> -->
     <!-- <text class="title-text">解锁会员</text>
     <view style="height:20px;"></view> -->
-    <!-- 会员方案 -->
-    <view class="price-container" style="width:{{bgContainerWidth}}px;">
-      <!-- 永久会员 -->
-      <view class="price-block{{chosenIndex == 0 ? '-chosen' : ''}}" style="flex:1;" bind:tap="onPriceBlock" data-index="0">
-        <text class="desc-text">永久会员</text>
-        <view style="height:6px;"></view>
-        <view style="position:relative;right:4px;">
-          <image src="./images/rmb.png" style="width:16px;height:14px;"></image>
-          <text class="price-text">128</text>
-        </view>
-        <view style="height:6px;"></view>
-        <text class="original-price">￥298</text>
-        <view style="height:10px;"></view>
-        <view class="lable">
-          <text class="lable-text">限时特惠</text>
-        </view>
-        <image wx:if="{{chosenIndex == 0}}" src="./images/check.png" style="width:24px;height:20px;position:absolute;top:-1px;right:-1px;"></image>
+    <!-- 永久会员方案 -->
+    <view class="lifetime-vip-card">
+      <view class="vip-badge">
+        <text class="vip-badge-text">AceWord VIP</text>
       </view>
-
-      <!-- 年度会员 -->
-      <view class="price-block{{chosenIndex == 1 ? '-chosen' : ''}}" style="flex:1;" bind:tap="onPriceBlock" data-index="1">
-        <text class="desc-text">年度会员</text>
-        <view style="height:6px;"></view>
-        <view style="position: relative;right: 4px;">
-          <image src="./images/rmb.png" style="width:16px;height:14px;"></image>
-          <text class="price-text">88</text>
-        </view>
-        <view style="height:6px;"></view>
-        <text class="original-price">￥168</text>
-        <view style="height:10px;"></view>
-        <view class="lable">
-          <text class="lable-text">7.3元/月</text>
-        </view>
-        <image wx:if="{{chosenIndex == 1}}" src="./images/check.png" style="width:24px;height:20px;position:absolute;top:-1px;right:-1px;"></image>
+      <view class="lifetime-content">
+        <text class="lifetime-title">永久会员</text>
+        <text class="lifetime-promo">限时促销中，距结束 01:21:30</text>
       </view>
-
-      <!-- 月度会员 -->
-      <view class="price-block{{chosenIndex == 2 ? '-chosen' : ''}}" style="flex:1;" bind:tap="onPriceBlock" data-index="2">
-        <text class="desc-text">月度会员</text>
-        <view style="height:6px;"></view>
-        <view style="position: relative;right: 4px;">
-          <image src="./images/rmb.png" style="width:16px;height:14px;"></image>
-          <text class="price-text">35</text>
+      <view class="lifetime-price">
+        <view class="price-row">
+          <text class="price-symbol">¥</text>
+          <text class="price-number">98</text>
         </view>
-        <view style="height:6px;"></view>
-        <text class="original-price">￥45</text>
-        <view style="height:34px;"></view>
-        <image wx:if="{{chosenIndex == 2}}" src="./images/check.png" style="width:24px;height:20px;position:absolute;top:-1px;right:-1px;"></image>
+        <text class="original-price-text">原价¥298</text>
       </view>
+      <image class="lifetime-corner" src="/images/icons/corner.png"></image>
     </view>
 
 
 
     <view style="height:24px;"></view>
-    <view class="pay-btn" style="width:{{bgContainerWidth}}px;height:52px;" bind:tap="onPay">
-      <text wx:if="{{ !isIOS }}" class="pay-btn-text">立即以{{chosenIndex == 0 ? 128 : chosenIndex == 1 ? 88 : 35}}元开通</text>
+    <view class="pay-btn" bind:tap="onPay">
+      <text wx:if="{{ !isIOS }}" class="pay-btn-text">立即以98元开通</text>
       <text wx:else class="pay-btn-text">现在开通</text>
     </view>
     <view wx:if="{{ !isIOS }}" style="padding-top:12px;width:100%;display:flex;justify-content:center;">
-
-      <!-- <view style="padding-top:12px;width:100%;display:flex;justify-content:center;"> -->
-      <text style="font-size:14px;color:#787878;">开通代表接受</text>
-      <text style="font-size:14px;color:#BB8247;" bind:tap="onVipProtocol">《AceWord会员协议》</text>
+      <text style="font-size:14px;color:#787878;">开通会员代表接受</text>
+      <text style="font-size:14px;color:#FAB220;" bind:tap="onVipProtocol">《会员协议》</text>
     </view>
 
     <!-- <view wx:if="{{ !isIOS }}" style="height:24px;"></view> -->

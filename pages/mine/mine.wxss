@@ -6,8 +6,6 @@
   /* 统一紫色系渐变背景 */
 }
 
-
-
 .down-container {
   background: rgba(255, 255, 255, 0.8);
   box-sizing: border-box;

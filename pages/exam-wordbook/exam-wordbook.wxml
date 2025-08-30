@@ -1,0 +1,90 @@
+<wxs module="tools" src="./exam-wordbook.wxs"></wxs>
+
+<!-- S container -->
+<view class="container">
+
+  <!-- S scroll-view -->
+  <scroll-view 
+    scroll-y="true" 
+    refresher-enabled="true" 
+    refresher-triggered="{{isRefresherTriggered}}" 
+    style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" 
+    bind:refresherrefresh="onScrollViewRefresh"
+    bind:scroll="onScroll">
+    
+    <!-- S year groups -->
+    <view style="height: 16px;"></view>
+    
+    <block wx:for="{{yearGroups}}" wx:key="year">
+      <view class="year-card">
+        <van-collapse 
+          value="{{ activeNames }}" 
+          bind:change="onCollapseChange"
+          border="{{ false }}">
+          
+          <van-collapse-item 
+            title="{{item.yearName}} ({{item.wordCount}}词)" 
+            name="{{item.year}}"
+            custom-class="collapse-item">
+            
+            <!-- S word list -->
+            <view class="word-list-container">
+              <block wx:for="{{item.words}}" wx:for-item="word" wx:key="id">
+                
+                <view class="word-item">
+                  <view class="word-content">
+                    <text class="word-text">{{word.word}}</text>
+                    <text class="meaning-text">{{word.meaning}}</text>
+                  </view>
+                </view>
+                
+              </block>
+            </view>
+            <!-- E word list -->
+            
+          </van-collapse-item>
+          
+        </van-collapse>
+      </view>
+      
+      <view style="height: 12px;"></view>
+    </block>
+    <!-- E year groups -->
+    
+    <!-- S empty state -->
+    <view wx:if="{{isLoaded && yearGroups.length === 0}}" class="empty-state">
+      <van-empty description="暂无词汇数据" />
+    </view>
+    <!-- E empty state -->
+    
+    <view style="padding-bottom: 100px;"></view>
+    
+  </scroll-view>
+  <!-- E scroll-view -->
+
+</view>
+<!-- E container -->
+
+<!-- S add button -->
+<view class="add-button-container">
+  <view class="add-button" bind:tap="onAddToWordbook">
+    <image src="/images/icons/vip.png" class="vip-icon"></image>
+    <text class="add-text">立即添加</text>
+  </view>
+</view>
+<!-- E add button -->
+
+
+
+<!-- S ace components -->
+<ace-navi-bar 
+  type="back" 
+  title="{{examName}}" 
+  showDivider="{{showNaviBarDivider}}" 
+  style="width:100%;position:fixed;top:0;" />
+<!-- E ace components -->
+
+<!-- S vant components -->
+<van-toast id="van-toast" />
+<van-dialog id="van-dialog" />
+<!-- E vant components -->

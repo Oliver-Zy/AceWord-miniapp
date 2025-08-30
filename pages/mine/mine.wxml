@@ -10,7 +10,7 @@
     <view style="height:14px;"></view>
     <view class="up-container">
       <template is="avatar-bar" data="{{avatarUrl, nickName, vipExpireDate}}" />
-      <template is="statistic-bar" data="{{learningInfo}}" />
+      <template is="vip-card" />
     </view>
     <view class="down-container">
 
@@ -88,12 +88,12 @@
     <view class="popup-section">
       <view class="action-buttons">
         <view class="action-button" bind:tap="navigateToGZH">
-          <image class="action-icon" src="/images/icons/{{isDarkMode ? 'wechat-dark' : 'wechat'}}.png"></image>
+          <image class="action-icon" src="/images/logos/wechat.png"></image>
           <text class="action-text">关注公众号</text>
           <text class="action-desc">接收提醒消息</text>
         </view>
         <view class="action-button" bind:tap="testNotify">
-          <image class="action-icon" src="/images/icons/{{isDarkMode ? 'test-dark' : 'test'}}.png"></image>
+          <image class="action-icon" src="/images/icons/{{isDarkMode ? 'question-dark' : 'question'}}.png"></image>
           <text class="action-text">测试提醒</text>
           <text class="action-desc">验证接收状态</text>
         </view>

@@ -22,6 +22,7 @@
     "pages/sentence/sentence",
     "pages/vip/vip",
     "pages/wordbook-word-list/wordbook-word-list",
+    "pages/exam-wordbook/exam-wordbook",
     "pages/lab/lab",
     "pages/review-rules/review-rules"
   ],

@@ -11,9 +11,26 @@
         </view>
       </view>
     </view>
-    <image bindtap="onOpenVip" class="openvip-img" src="./images/{{vipExpireDate == '00000000' ? 'openVip' : 'renewVip'}}.png"></image>
+    <view class="edit-profile-btn">
+      <text>编辑资料</text>
+      <image class="edit-arrow" src="./images/right.png"></image>
+    </view>
   </view>
 
+</template>
+
+<template name="vip-card">
+  <view class="vip-card" bindtap="onOpenVip">
+    <view class="vip-card-content">
+      <view class="vip-text-content">
+        <text class="vip-title">开通AceWord VIP</text>
+        <text class="vip-subtitle">无限卡片额度｜真题词书例句</text>
+      </view>
+      <view class="vip-btn">
+        <text>立即开通</text>
+      </view>
+    </view>
+  </view>
 </template>
 
 <template name="statistic-bar">

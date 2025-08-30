@@ -54,15 +54,160 @@
   color: #9FA7B5;
 }
 
-.openvip-img {
+.edit-profile-btn {
   width: 104px;
-  height: 29px;
-  border-radius: 20px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 51px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  left: 34px;
+  left: 28px;
+  backdrop-filter: blur(10px);
+}
+
+.edit-profile-btn text {
+  font-family: MiSans;
+  font-size: 12px;
+  font-weight: 400;
+  color: #4E5969;
+  margin-right: 8px;
+}
+
+.edit-arrow {
+  width: 10px;
+  height: 10px;
 }
 
 /* ---------- E avatarBar---------- */
+
+/* ---------- S vipCard---------- */
+.vip-card {
+  width: calc(100% - 28px);
+  height: 68px;
+  margin: 14px 14px 0;
+  background: linear-gradient(213deg, #464D66 0%, #252E49 100%);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.vip-card-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 26px 0 26px;
+  box-sizing: border-box;
+}
+
+.vip-text-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.vip-title {
+  font-family: MiSans;
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+  line-height: 22px;
+  margin-bottom: 2px;
+}
+
+.vip-subtitle {
+  font-family: Urbanist;
+  font-size: 11px;
+  font-weight: 500;
+  color: #ADB2BF;
+}
+
+.vip-btn {
+  width: 74px;
+  height: 26px;
+  background: linear-gradient(0deg, #FAB220 0%, #FAB220 100%);
+  border-radius: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vip-btn text {
+  font-family: MiSans;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  text-transform: capitalize;
+  line-height: 18px;
+}
+
+.vip-bg-effects {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.vip-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(11.5px);
+}
+
+.vip-circle-1 {
+  width: 62.11px;
+  height: 62.11px;
+  background: #FED955;
+  top: -31px;
+  right: 94px;
+  box-shadow: 5px 5px 5px rgba(254, 217, 85, 0.3);
+  filter: blur(2.5px);
+}
+
+.vip-circle-2 {
+  width: 62.11px;
+  height: 62.11px;
+  background: #FFA235;
+  top: -11px;
+  right: 3px;
+  box-shadow: 23px 23px 23px rgba(255, 162, 53, 0.3);
+}
+
+.vip-circle-3 {
+  width: 57.78px;
+  height: 57.78px;
+  background: #FD9B09;
+  top: -37px;
+  right: 37px;
+  box-shadow: 24px 24px 24px rgba(253, 155, 9, 0.3);
+  filter: blur(12px);
+}
+
+.vip-circle-4 {
+  width: 99.67px;
+  height: 62.11px;
+  background: #FFA235;
+  bottom: -40px;
+  right: 5px;
+  box-shadow: 23px 23px 23px rgba(255, 162, 53, 0.3);
+}
+
+.vip-circle-5 {
+  width: 62.11px;
+  height: 47.67px;
+  background: #FF902A;
+  top: -39px;
+  right: 53px;
+  box-shadow: 34px 34px 34px rgba(255, 144, 42, 0.3);
+  filter: blur(17px);
+}
+/* ---------- E vipCard---------- */
 
 /* ---------- S statisticBar---------- */
 .statistic-bar {

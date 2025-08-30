@@ -4,6 +4,7 @@
  */
 
 const { HTTP } = require('../utils/http')
+const { addExamExamplesToWordInfo } = require('../data/examExamplesData')
 const http = new HTTP()
 
 class Common {
@@ -19,6 +20,20 @@ class Common {
       try {
         http.request({ url: url, method: method, data: data }).then(res => {
           // console.log(res)
+          
+          // 如果是获取单词信息的请求，自动添加真题例句
+          if (url.includes('/wordinfo/search') && res && res.word) {
+            res = addExamExamplesToWordInfo(res)
+          }
+          // 如果是获取多个单词信息的请求，为每个单词添加真题例句
+          else if (url.includes('/wordinfos/search') && Array.isArray(res)) {
+            res = res.map(wordInfo => {
+              if (wordInfo && wordInfo.word) {
+                return addExamExamplesToWordInfo(wordInfo)
+              }
+              return wordInfo
+            })
+          }
     
           resolve(res)
           

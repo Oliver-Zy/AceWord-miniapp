@@ -1,0 +1,36 @@
+module.exports = {
+  /**
+   * 格式化频次显示
+   */
+  formatFrequency: function(frequency) {
+    if (!frequency) return '0'
+    return frequency.toString()
+  },
+  
+  /**
+   * 获取年份显示文本
+   */
+  getYearText: function(year) {
+    return year + '年真题'
+  },
+  
+  /**
+   * 检查是否全选
+   */
+  isAllSelected: function(words) {
+    if (!words || words.length === 0) return false
+    return words.every(function(word) {
+      return word.isSelected
+    })
+  },
+  
+  /**
+   * 获取选中数量
+   */
+  getSelectedCount: function(words) {
+    if (!words || words.length === 0) return 0
+    return words.filter(function(word) {
+      return word.isSelected
+    }).length
+  }
+}

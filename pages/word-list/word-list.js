@@ -10,7 +10,6 @@ Page({
    */
   data: {
     wordList: [],
-    selectedWordIds: [], // 改为选择单词ID列表
     wordBookMyInfo: {},
     isLoaded: false, // 标记是否已完成加载
     // 单词弹窗相关
@@ -49,24 +48,7 @@ Page({
     })
   },
 
-  /**
-   * 监听标题栏事件
-   */
-  onHeaderEvent: function (e) {
-    let isSelectAll = e.detail.isSelectAll
 
-    if (e.detail.type == 'selectAll' && isSelectAll) {
-      // 选择所有单词
-      const allWordIds = this.data.wordList.map(item => item.wordId)
-      this.setData({
-        selectedWordIds: allWordIds
-      })
-    } else if (e.detail.type == 'selectAll' && !isSelectAll) {
-      this.setData({
-        selectedWordIds: []
-      })
-    }
-  },
 
   /**
    * 监听单词项点击事件（显示单词弹窗）
@@ -272,13 +254,32 @@ Page({
             // 添加自定义释义和完整的wordInfo数据
             selfDef: wordInfo.selfDef || wordInfo.wordCN || '',
             wordCN: wordInfo.wordCN || '',
-            wordInfo: wordInfo
+            wordInfo: wordInfo,
+            // 添加熟练度文案
+            proficiencyText: this._getProficiencyText(wordCard.realPracticeNum || 0)
           })
         })
       }
     })
 
     return wordList
+  },
+
+  /**
+   * 根据练习次数获取熟练度文案
+   */
+  _getProficiencyText: function(practiceNum) {
+    if (practiceNum === 0) {
+      return '非常陌生'
+    } else if (practiceNum <= 2) {
+      return '初步了解'
+    } else if (practiceNum <= 5) {
+      return '比较熟悉'
+    } else if (practiceNum <= 10) {
+      return '相当熟练'
+    } else {
+      return '完全掌握'
+    }
   },
 
   /**

@@ -41,15 +41,25 @@
   margin-bottom: 4px;
 }
 
+/* 熟练度文本样式 */
+.proficiency-text {
+  font-family: var(--simHei);
+  font-size: 13px;
+  color: #86909C;
+  line-height: 1.4;
+}
+
+/* 释义文本样式 - 现在在右侧 */
 .meaning-text {
   font-family: var(--simHei);
   font-size: 13px;
   color: #86909C;
+  text-align: right;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
-  display: inline-block;
+  max-width: 200px;
+  line-height: 1.4;
 }
 
 .meaning-text.blurred {
@@ -79,17 +89,9 @@
 .word-item-right {
   display: flex;
   align-items: center;
-}
-
-/* 选择图标 - 与首页保持一致 */
-.check-img {
-  width: 24px;
-  height: 24px;
-}
-
-.unchecked {
-  opacity: 0.2;
-  filter: grayscale(95%);
+  justify-content: flex-end;
+  flex: 1;
+  margin-left: 16px;
 }
 
 /* 分割线 */

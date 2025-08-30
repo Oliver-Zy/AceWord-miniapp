@@ -16,6 +16,7 @@ Page({
    */
   data: {
     chosenIndex: 0,
+    selectedPayment: 'wechat', // 默认选择微信支付
   },
 
   /**
@@ -57,6 +58,16 @@ Page({
     let index = e.currentTarget.dataset.index
     this.setData({
       chosenIndex: index
+    })
+  },
+
+  /**
+   * 选择支付方式
+   */
+  selectPayment: function(e) {
+    const type = e.currentTarget.dataset.type
+    this.setData({
+      selectedPayment: type
     })
   },
 

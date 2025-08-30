@@ -35,21 +35,15 @@
             <!-- S left content -->
             <view class="word-item-left">
               <view class="word-name" catchtap="onWordItemTap" data-index="{{index}}" hover-class="none">{{item.wordName}}</view>              
-              <view style="height:4px;"></view>
-              <view class="word-name meaning-text {{visibleMeanings[item.wordId] ? '' : 'blurred'}}">
-                {{item.selfDef || item.wordCN || '暂无释义'}}
-              </view>
+              <view class="proficiency-text">{{item.proficiencyText}}</view>
             </view>
             <!-- E left content -->
 
             <!-- S right content -->
             <view class="word-item-right">
-              <image 
-                class="check-img {{tools.isSelected(selectedWordIds, item.wordId) ? '' : 'unchecked'}}" 
-                src="/components/card/word-card/images/checked.png" 
-                catchtap="onCheckboxTap"
-                data-word-id="{{item.wordId}}"
-                data-index="{{index}}" />
+              <view class="meaning-text {{visibleMeanings[item.wordId] ? '' : 'blurred'}}" bind:tap="onMeaningTap" data-word-id="{{item.wordId}}">
+                {{item.selfDef || item.wordCN || '暂无释义'}}
+              </view>
             </view>
             <!-- E right content -->
           </view>

@@ -1,0 +1,14 @@
+{
+  "usingComponents": {
+    "ace-navi-bar": "../../components/ace/navibar/index",
+    "van-collapse": "../../miniprogram_npm/@vant/weapp/collapse/index",
+    "van-collapse-item": "../../miniprogram_npm/@vant/weapp/collapse-item/index",
+    "van-empty": "../../miniprogram_npm/@vant/weapp/empty/index",
+    "van-toast": "../../miniprogram_npm/@vant/weapp/toast/index",
+    "van-dialog": "../../miniprogram_npm/@vant/weapp/dialog/index"
+  },
+  "navigationBarTitleText": "真题词汇",
+  "navigationStyle": "custom",
+  "backgroundColor": "#EDE9FE",
+  "backgroundTextStyle": "dark"
+}
