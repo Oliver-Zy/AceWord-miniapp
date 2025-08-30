@@ -381,16 +381,36 @@ Page({
    * @event
    */
   onChangeDic: function () {
+    // 直接弹出主分类选择
+    this._showCategorySelection()
+  },
+
+  /**
+   * 显示分类选择
+   */
+  _showCategorySelection: function() {
+    // 从mock数据读取主分类
+    const categories = [
+      { name: '基础教育阶段', code: '01', description: '小学至高中英语教材词汇，夯实基础' },
+      { name: '大学英语考试', code: '02', description: '四六级、专四专八，大学必备' },
+      { name: '研究生考试', code: '03', description: '考研考博词汇，学术深造必选' },
+      { name: '出国留学考试', code: '04', description: '托福雅思GRE，留学申请利器' },
+      { name: '成人继续教育', code: '05', description: '专升本自考PETS，提升学历必备' }
+    ]
+
+    const actions = categories.map(cat => ({
+      name: cat.name,
+      subname: cat.description,
+      categoryCode: cat.code,
+      description: cat.description
+    }))
+
     this.setData({
       showPopupVant: true,
-      actionSheetType: 'changeDic',
+      actionSheetType: 'categorySelection',
       showActionSheet: true,
-      actionSheetDesc: '更换词书',
-      actions: [{
-        name: '词书广场'
-      }, {
-        name: '自定义词书'
-      }]
+      actionSheetDesc: '选择词书分类',
+      actions: actions
     })
     this.getTabBar().setData({
       show: false
@@ -1018,9 +1038,9 @@ Page({
     const selectedAction = this.data.actions.find(action => action.name === e.detail.name)
     
     if (selectedAction && selectedAction.categoryCode) {
-      // 跳转到对应分类的词书详情页
+      // 跳转到词书广场页面，传递分类信息
       wx.navigateTo({
-        url: `/pages/wordbook-new/wordbook-detail?categoryCode=${selectedAction.categoryCode}&categoryName=${encodeURIComponent(selectedAction.name)}`
+        url: `/pages/wordbook-all/wordbook-all?categoryCode=${selectedAction.categoryCode}&categoryName=${encodeURIComponent(selectedAction.name)}`
       })
     }
   },

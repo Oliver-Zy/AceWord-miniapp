@@ -82,6 +82,27 @@
   padding: 60px 20px;
 }
 
+/* 子分类头部 */
+.subcategory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px 8px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #ebedf0;
+}
+
+.subcategory-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #323233;
+}
+
+.subcategory-count {
+  font-size: 12px;
+  color: #969799;
+}
+
 /* 暗色模式 - 与项目保持一致 */
 @media (prefers-color-scheme: dark) {
   .container {

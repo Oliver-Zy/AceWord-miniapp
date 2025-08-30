@@ -30,7 +30,11 @@ Page({
     const { categoryCode, categoryName } = options
     this.setData({
       categoryCode: categoryCode,
-      categoryName: decodeURIComponent(categoryName || '')
+      categoryName: decodeURIComponent(categoryName || ''),
+      // 重置页面状态，清除之前的数据
+      activeNames: [],
+      subCategories: [],
+      isLoaded: false
     })
     
     this._setInitInfo()
@@ -44,6 +48,35 @@ Page({
     // 设置状态栏颜色
     const isDarkMode = wx.getSystemInfoSync().theme === 'dark'
     app.setStatusBarColor(isDarkMode)
+    
+    // 确保清除任何残留的Toast状态
+    Toast.clear()
+    
+    // 强制重置折叠面板状态，防止状态残留
+    this.setData({
+      activeNames: []
+    })
+  },
+
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide: function () {
+    // 清除可能存在的Toast
+    Toast.clear()    
+    // 页面隐藏时重置折叠面板状态，防止下次进入时状态冲突
+    this.setData({
+      activeNames: [],
+      isLoaded: false
+    })
+  },
+
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload: function () {
+    // 清除可能存在的Toast
+    Toast.clear()
   },
 
   /**
@@ -68,6 +101,11 @@ Page({
    */
   _loadCategoryDetail: async function () {
     try {
+      // 检查页面是否还存在，避免异步竞争
+      if (!this.data) return
+      
+      // 先清除可能存在的Toast，然后显示新的加载状态
+      Toast.clear()
       Toast.loading({ message: '加载中...', forbidClick: true })
       
       // 调用真实API获取词书列表
@@ -116,20 +154,31 @@ Page({
         return subCategory
       }).filter(subCat => subCat.books && subCat.books.length > 0)
       
+      // 先设置数据，暂时不展开任何分类
       this.setData({
         subCategories: processedSubCategories,
-        activeNames: processedSubCategories.length > 0 ? [processedSubCategories[0].subCategory] : [], // 默认展开第一个
+        activeNames: [],
         isLoaded: true
       })
       
       Toast.clear()
+      
+      // 延迟一下确保组件状态完全重置，然后再设置默认展开
+      setTimeout(() => {
+        if (this.data && this.data.subCategories && this.data.subCategories.length > 0) {
+          this.setData({
+            activeNames: [this.data.subCategories[0].subCategory]
+          })
+        }
+      }, 100)
     } catch (error) {
       console.error('Failed to load category detail:', error)
       Toast.clear()
       Toast.fail('加载失败，请稍后重试')
       this.setData({
         isLoaded: true,
-        subCategories: []
+        subCategories: [],
+        activeNames: [] // 确保错误时也重置展开状态
       })
     }
   },
@@ -226,6 +275,7 @@ Page({
       
     } catch (error) {
       console.error('Failed to switch wordbook:', error)
+      Toast.clear()
       Toast.fail('切换失败，请稍后重试')
     }
   },

@@ -1,6 +1,7 @@
 import { Common } from '../../models/common.js'
 import Toast from '../../miniprogram_npm/@vant/weapp/toast/toast'
 import Dialog from '../../miniprogram_npm/@vant/weapp/dialog/dialog'
+import mockDataService from '../../services/mockDataService.js'
 
 const common = new Common()
 const app = getApp()
@@ -13,6 +14,8 @@ Page({
     wordBookCategories: [],
     activeNames: [], // 展开的分类
     currentWordBookCode: '',
+    selectedCategoryCode: '', // 选中的分类代码
+    selectedCategoryName: '', // 选中的分类名称
     isLoaded: false,
     isRefresherTriggered: false,
     naviBarHeight: 44,
@@ -25,6 +28,21 @@ Page({
    */
   onLoad: async function (options) {
     this._setInitInfo()
+    
+    // 获取传递的分类参数
+    const categoryCode = options.categoryCode || ''
+    const categoryName = decodeURIComponent(options.categoryName || '')
+    
+    this.setData({
+      selectedCategoryCode: categoryCode,
+      selectedCategoryName: categoryName,
+      // 重置页面状态，清除之前的数据
+      activeNames: [],
+      wordBookCategories: [],
+      isLoaded: false,
+      isRefresherTriggered: false
+    })
+    
     await this._loadWordBookData()
   },
 
@@ -35,6 +53,36 @@ Page({
     // 设置状态栏颜色
     const isDarkMode = wx.getSystemInfoSync().theme === 'dark'
     app.setStatusBarColor(isDarkMode)
+    
+    // 确保清除任何残留的Toast状态
+    Toast.clear()
+    
+    // 强制重置折叠面板状态，防止状态残留
+    this.setData({
+      activeNames: []
+    })
+  },
+
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide: function () {
+    // 清除可能存在的Toast
+    Toast.clear()
+    
+    // 页面隐藏时重置折叠面板状态，防止下次进入时状态冲突
+    this.setData({
+      activeNames: [],
+      isLoaded: false
+    })
+  },
+
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload: function () {
+    // 清除可能存在的Toast
+    Toast.clear()
   },
 
   /**
@@ -60,71 +108,119 @@ Page({
    */
   _loadWordBookData: async function () {
     try {
+      // 检查页面是否还存在，避免异步竞争
+      if (!this.data) return
+      
+      // 先清除可能存在的Toast，然后显示新的加载状态
+      Toast.clear()
       Toast.loading({ message: '加载中...', forbidClick: true })
       
-      // 获取所有词书分类
-      const categories = await common.request({ url: '/wordbook-categories' })
+      // 使用mock数据
+      const mockData = await this._loadMockData()
       
-      // 为每个分类加载词书列表
-      const wordBookCategories = await Promise.all(
-        categories.map(async (category) => {
-          try {
-            const wordBookListInfo = await common.request({
-              url: `/wordbooks-official?wordbook-category-code=${category.wordBookCategoryCode}`
-            })
-            
-            return {
-              categoryCode: category.wordBookCategoryCode,
-              categoryName: category.wordBookCategoryName,
-              wordBooks: this._processWordBooks(wordBookListInfo.wordBookList || [])
-            }
-          } catch (error) {
-            console.error(`Failed to load wordbooks for category ${category.wordBookCategoryCode}:`, error)
-            return {
-              categoryCode: category.wordBookCategoryCode,
-              categoryName: category.wordBookCategoryName,
-              wordBooks: []
-            }
-          }
-        })
-      )
-
-      // 过滤掉空分类
-      const filteredCategories = wordBookCategories.filter(cat => cat.wordBooks.length > 0)
+      // 如果有选中的分类，只显示该分类下的子分类
+      let wordBookCategories = []
       
-      // 将"计划"分类排在最前面
-      const sortedCategories = filteredCategories.sort((a, b) => {
-        const aIsPlan = a.categoryName === '计划' || a.categoryCode === 'plan'
-        const bIsPlan = b.categoryName === '计划' || b.categoryCode === 'plan'
+      if (this.data.selectedCategoryCode) {
+        // 过滤出选中分类的词书
+        const selectedCategory = mockData.categories.main_categories.find(
+          cat => cat.code === this.data.selectedCategoryCode
+        )
         
-        if (aIsPlan && !bIsPlan) return -1
-        if (!aIsPlan && bIsPlan) return 1
-        return 0
-      })
+        if (selectedCategory) {
+          // 获取该分类下的所有子分类，每个子分类作为一个折叠项
+          const subCategories = mockData.categories.sub_categories.filter(
+            subCat => subCat.parent_code === selectedCategory.code
+          )
+          
+          // 每个子分类作为一个独立的分类项
+          wordBookCategories = subCategories.map(subCat => ({
+            categoryCode: subCat.code,
+            categoryName: subCat.name,
+            wordBooks: this._getWordBooksByCategory(mockData.wordbooks, selectedCategory.name, subCat.name)
+          })).filter(cat => cat.wordBooks.length > 0)
+        }
+      } else {
+        // 显示所有子分类（扁平化显示）
+        const allSubCategories = []
+        
+        mockData.categories.main_categories.forEach(category => {
+          const subCategories = mockData.categories.sub_categories.filter(
+            subCat => subCat.parent_code === category.code
+          )
+          
+          subCategories.forEach(subCat => {
+            const wordBooks = this._getWordBooksByCategory(mockData.wordbooks, category.name, subCat.name)
+            if (wordBooks.length > 0) {
+              allSubCategories.push({
+                categoryCode: subCat.code,
+                categoryName: subCat.name,
+                parentCategoryName: category.name,
+                wordBooks: wordBooks
+              })
+            }
+          })
+        })
+        
+        wordBookCategories = allSubCategories
+      }
       
-      console.log('Categories sorted with plan first:')
-      console.log('Sorted categories:', sortedCategories.map(cat => ({
-        name: cat.categoryName,
-        code: cat.categoryCode
-      })))
-      
-      // 默认不展开任何分类
+      // 先设置数据，不展开任何分类
       this.setData({
-        wordBookCategories: sortedCategories,
+        wordBookCategories: wordBookCategories,
         activeNames: [],
         isLoaded: true,
         isRefresherTriggered: false
       })
       
       Toast.clear()
+      
+      // 延迟一下确保组件状态完全重置
+      setTimeout(() => {
+        if (this.data && this.data.wordBookCategories) {
+          this.setData({
+            activeNames: []
+          })
+        }
+      }, 100)
     } catch (error) {
       console.error('Failed to load wordbook data:', error)
+      Toast.clear()
       Toast.fail('加载失败，请稍后重试')
       this.setData({
         isLoaded: true,
         isRefresherTriggered: false
       })
     }
+  },
+
+  /**
+   * 加载mock数据
+   */
+  _loadMockData: async function() {
+    return await mockDataService.loadMockData()
+  },
+
+  /**
+   * 根据分类获取词书
+   */
+  _getWordBooksByCategory: function(wordbooks, categoryName, subCategoryName) {
+    // 从mock数据服务获取词书
+    const books = mockDataService.getWordBooksByCategory(categoryName, subCategoryName)
+    
+    // 转换数据格式以匹配现有的处理逻辑
+    const formattedBooks = books.map(book => ({
+      wordBookCode: book.code,
+      wordBookName: book.name,
+      description: book.description,
+      totalWordNum: book.total_word_num,
+      userNum: book.userNum || 0,
+      createTime: book.createTime,
+      isHot: book.isHot,
+      isNew: book.isNew
+    }))
+    
+    return this._processWordBooks(formattedBooks)
   },
 
   /**
@@ -220,6 +316,7 @@ Page({
       
     } catch (error) {
       console.error('Failed to switch wordbook:', error)
+      Toast.clear()
       Toast.fail('切换失败，请稍后重试')
     }
   },

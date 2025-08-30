@@ -6,16 +6,40 @@ module.exports = {
   
   // 计算复习日期组中的实际单词总数
   calculateReviewWordCount: function (reviewDateItem) {
-    if (!reviewDateItem || !reviewDateItem.wordCardList) return 0
+    if (!reviewDateItem) return 0
     
-    var totalCount = 0
-    for (var i = 0; i < reviewDateItem.wordCardList.length; i++) {
-      var card = reviewDateItem.wordCardList[i]
-      if (card.wordList && card.wordList.length > 0) {
-        totalCount += card.wordList.length
+    // 如果已展开，使用实际的wordCardList计算
+    if (reviewDateItem.isExpanded && reviewDateItem.wordCardList) {
+      var totalCount = 0
+      for (var i = 0; i < reviewDateItem.wordCardList.length; i++) {
+        var card = reviewDateItem.wordCardList[i]
+        if (card.wordList && card.wordList.length > 0) {
+          totalCount += card.wordList.length
+        } else if (card.wordInfoList && card.wordInfoList.length > 0) {
+          totalCount += card.wordInfoList.length
+        }
+      }
+      return totalCount
+    }
+    
+    // 如果未展开，根据已有数据估算
+    if (reviewDateItem.wordCardList && reviewDateItem.wordCardList.length > 0) {
+      var firstCard = reviewDateItem.wordCardList[0]
+      var wordsPerCard = 0
+      
+      if (firstCard.wordList && firstCard.wordList.length > 0) {
+        wordsPerCard = firstCard.wordList.length
+      } else if (firstCard.wordInfoList && firstCard.wordInfoList.length > 0) {
+        wordsPerCard = firstCard.wordInfoList.length
+      }
+      
+      // 使用第一张卡片的单词数 × 总卡片数来估算
+      if (wordsPerCard > 0 && reviewDateItem.totalCardNum) {
+        return wordsPerCard * reviewDateItem.totalCardNum
       }
     }
-    return totalCount
+    
+    return 0
   },
   
   // 日期格式化函数 - 中文格式

@@ -41,8 +41,6 @@
                   bind:click="onSelectWordBook"
                   data-book="{{book}}">
                   
-
-                  
                   <!-- S right content -->
                   <view slot="right-icon" class="book-tags">
                     <van-tag 
@@ -55,7 +53,6 @@
                       type="success" 
                       size="mini" 
                       plain>新书</van-tag>
-
                   </view>
                   <!-- E right content -->
                   
@@ -93,7 +90,7 @@
 <!-- S ace components -->
 <ace-navi-bar 
   type="back" 
-  title="选择词书" 
+  title="{{selectedCategoryName || '词书广场'}}" 
   showDivider="{{showNaviBarDivider}}" 
   style="width:100%;position:fixed;top:0;" />
 <!-- E ace components -->

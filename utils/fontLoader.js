@@ -48,14 +48,28 @@ class FontLoader {
           clearTimeout(timeout)
           this.loadedFonts.add(fontFamily)
           this.loadingPromises.delete(fontFamily)
+          if (!silent) {
+            console.log(`✅ 字体加载成功: ${fontFamily}`)
+          }
           resolve()
         },
         fail: (error) => {
           clearTimeout(timeout)
           this.loadingPromises.delete(fontFamily)
-          if (!silent) {
+          
+          // 根据错误类型决定是否显示警告
+          const isNetworkError = error && (
+            error.errMsg?.includes('net::') || 
+            error.errMsg?.includes('ERR_CACHE_MISS') ||
+            error.errMsg?.includes('ERR_NETWORK')
+          )
+          
+          if (!silent && !isNetworkError) {
             console.warn(`字体加载失败: ${fontFamily}`, error)
+          } else if (!silent && isNetworkError) {
+            console.log(`🌐 网络字体暂时无法加载: ${fontFamily}，将使用系统默认字体`)
           }
+          
           // 字体加载失败不应该阻塞应用，所以resolve而不是reject
           resolve()
         }
@@ -80,10 +94,27 @@ class FontLoader {
   }
 
   /**
+   * 检查是否为开发环境
+   */
+  isDevelopmentEnvironment() {
+    try {
+      const accountInfo = wx.getAccountInfoSync()
+      return accountInfo.miniProgram.envVersion === 'develop'
+    } catch (error) {
+      return false
+    }
+  }
+
+  /**
    * 预加载核心字体
    * @param {boolean} silent 是否静默加载
    */
   async preloadCorefonts(silent = true) {
+    // 开发环境下更加宽松的处理
+    const isDev = this.isDevelopmentEnvironment()
+    if (isDev) {
+      silent = true // 开发环境强制静默模式
+    }
     const coreFonts = [
       {
         family: 'inter-medium',
@@ -107,6 +138,11 @@ class FontLoader {
    * @param {boolean} silent 是否静默加载
    */
   async loadCardFonts(silent = true) {
+    // 开发环境下更加宽松的处理
+    const isDev = this.isDevelopmentEnvironment()
+    if (isDev) {
+      silent = true // 开发环境强制静默模式
+    }
     const cardFonts = [
       {
         family: 'barlow-medium',
@@ -183,6 +219,11 @@ class FontLoader {
    * @param {boolean} silent 是否静默加载
    */
   async loadSpecialFonts(silent = true) {
+    // 开发环境下更加宽松的处理
+    const isDev = this.isDevelopmentEnvironment()
+    if (isDev) {
+      silent = true // 开发环境强制静默模式
+    }
     const specialFonts = [
       {
         family: 'sfpro-bold',

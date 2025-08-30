@@ -96,7 +96,7 @@
 <!-- E overlay -->
 
 <!-- S ace components -->
-<ace-navi-bar type="back" title="单词列表" backgroundColor="rgba(0,0,0,0)" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
+<ace-navi-bar type="calendar" title="单词列表" backgroundColor="rgba(0,0,0,0)" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
 <!-- E ace components -->
 
 <!-- S vant components -->

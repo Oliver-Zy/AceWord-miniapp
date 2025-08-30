@@ -75,13 +75,13 @@ App({
       const isDev = accountInfo.miniProgram.envVersion === 'develop'
       
       // 开发环境字体加载策略
-      const DEV_FONT_STRATEGY = 'silent' // 可选: 'skip', 'silent', 'normal'
+      const DEV_FONT_STRATEGY = 'skip' // 可选: 'skip', 'silent', 'normal'
       // 'skip' - 完全跳过字体加载
       // 'silent' - 静默加载字体，不显示错误
       // 'normal' - 正常加载字体，显示所有信息
       
       if (isDev && DEV_FONT_STRATEGY === 'skip') {
-        console.log('🎨 开发环境跳过字体加载，避免网络错误提示')
+        // console.log('🎨 开发环境跳过字体加载，避免网络错误提示')
         return
       }
       
