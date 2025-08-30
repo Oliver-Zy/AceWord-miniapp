@@ -13,7 +13,7 @@
     <view style="height: 20px;"></view>
     <block wx:for="{{reviewCardDateList}}" wx:key="groupDate">
 
-      <ace-header titleType="wordCard" date="{{item.date}}" arrLen="{{item.totalCardNum}}" iconType="selectAll" bind:headerEvent="onHeaderEvent" data-outerIndex="{{index}}" />
+      <ace-header titleType="textWithCount" text="{{tools.formatChineseDate(item.date)}}" arrLen="{{tools.calculateReviewWordCount(item)}}" iconType="selectAll" bind:headerEvent="onHeaderEvent" data-outerIndex="{{index}}" />
       <block wx:for="{{item.wordCardList}}" wx:for-item="_item" wx:for-index="_index">
         <word-card wordCard="{{_item}}" isChecked="{{tools.isChecked(_item.wordCardID, wordCardIDCheckedList)}}" bind:wordCardEvent="onWordCardEvent" data-outerIndex="{{index}}" data-innerIndex="{{_index}}" />
       </block>

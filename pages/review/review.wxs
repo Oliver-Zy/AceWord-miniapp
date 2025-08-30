@@ -3,4 +3,26 @@ module.exports = {
     if (checkedWordCardIDList == undefined) return false
     return checkedWordCardIDList.indexOf(wordCardID+"") == -1 ? false : true  
   },
+  
+  // 计算复习日期组中的实际单词总数
+  calculateReviewWordCount: function (reviewDateItem) {
+    if (!reviewDateItem || !reviewDateItem.wordCardList) return 0
+    
+    var totalCount = 0
+    for (var i = 0; i < reviewDateItem.wordCardList.length; i++) {
+      var card = reviewDateItem.wordCardList[i]
+      if (card.wordList && card.wordList.length > 0) {
+        totalCount += card.wordList.length
+      }
+    }
+    return totalCount
+  },
+  
+  // 日期格式化函数 - 中文格式
+  formatChineseDate: function (date) {
+    if (!date) return ''
+    var month = parseInt(date.slice(4, 6))
+    var day = parseInt(date.slice(6, 8))
+    return month + '月' + day + '日'
+  }
 }
