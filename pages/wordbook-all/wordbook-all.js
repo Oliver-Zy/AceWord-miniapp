@@ -1,6 +1,5 @@
 import { Common } from '../../models/common.js'
 import Toast from '../../miniprogram_npm/@vant/weapp/toast/toast'
-import Dialog from '../../miniprogram_npm/@vant/weapp/dialog/dialog'
 
 const common = new Common()
 const app = getApp()
@@ -19,7 +18,17 @@ Page({
     isRefresherTriggered: false,
     naviBarHeight: 44,
     scrollViewHeight: 600,
-    showNaviBarDivider: false
+    showNaviBarDivider: false,
+    // 搜索相关
+    showSearchBar: false,
+    showOverlay: false,
+    keyboardHeight: 0,
+    wordInfo: null,
+    showDicCard: false,
+    // 搜索结果
+    searchResults: [],
+    isSearching: false,
+    searchKeyword: ''
   },
 
   /**
@@ -116,10 +125,10 @@ Page({
       
       // 根据分类代码选择不同的API
       let wordBookListInfo
-      if (this.data.selectedCategoryCode === '00') {
+      if (this.data.selectedCategoryCode === '99') {
         // 我的词书使用专门的接口
         wordBookListInfo = await common.request({
-          url: `/wordbooks-official?wordbook-category-code=00`
+          url: `/wordbooks-official?wordbook-category-code=99`
         })
       } else {
         // 其他分类使用原有接口
@@ -128,28 +137,70 @@ Page({
         })
       }
       
-      // 处理真实API返回的词书数据，按子分类分组
+      // 处理真实API返回的词书数据
       const wordBookList = wordBookListInfo.wordBookList || []
       const subCategoryMap = new Map()
       
-      // 按子分类分组词书
-      wordBookList.forEach(book => {
-        const subCategoryCode = book.wordBookSubCategoryCode || 'default'
-        const subCategoryName = book.wordBookSubCategoryName || '其他'
-        
-        if (!subCategoryMap.has(subCategoryCode)) {
-          subCategoryMap.set(subCategoryCode, {
-            categoryCode: subCategoryCode,
-            categoryName: subCategoryName,
-            wordBooks: []
-          })
-        }
-        
-        subCategoryMap.get(subCategoryCode).wordBooks.push(book)
-      })
+      // 如果是我的词书，按学习状态分组
+      if (this.data.selectedCategoryCode === '99') {
+        // 按学习状态分组我的词书
+        wordBookList.forEach(book => {
+          // 判断学习状态
+          const isCompleted = book.userProgressNum >= book.totalWordNum
+          const isLearning = book.userProgressNum > 0 && book.userProgressNum < book.totalWordNum
+          
+          let statusCode, statusName
+          if (isCompleted) {
+            statusCode = 'completed'
+            statusName = '已学完'
+          } else if (isLearning) {
+            statusCode = 'learning'
+            statusName = '正在学习'
+          } else {
+            // 未开始学习的词书不显示，或者归类到"未开始"
+            return // 跳过未开始的词书
+          }
+          
+          if (!subCategoryMap.has(statusCode)) {
+            subCategoryMap.set(statusCode, {
+              categoryCode: statusCode,
+              categoryName: statusName,
+              wordBooks: []
+            })
+          }
+          
+          subCategoryMap.get(statusCode).wordBooks.push(book)
+        })
+      } else {
+        // 其他分类按原有逻辑分组
+        wordBookList.forEach(book => {
+          const subCategoryCode = book.wordBookSubCategoryCode || 'default'
+          const subCategoryName = book.wordBookSubCategoryName || '其他'
+          
+          if (!subCategoryMap.has(subCategoryCode)) {
+            subCategoryMap.set(subCategoryCode, {
+              categoryCode: subCategoryCode,
+              categoryName: subCategoryName,
+              wordBooks: []
+            })
+          }
+          
+          subCategoryMap.get(subCategoryCode).wordBooks.push(book)
+        })
+      }
       
       // 处理子分类数据
-      const wordBookCategories = Array.from(subCategoryMap.values()).map(category => {
+      let wordBookCategories = Array.from(subCategoryMap.values())
+      
+      // 如果是我的词书，按学习状态排序：正在学习 -> 已学完
+      if (this.data.selectedCategoryCode === '99') {
+        wordBookCategories.sort((a, b) => {
+          const order = { 'learning': 0, 'completed': 1 }
+          return (order[a.categoryCode] || 999) - (order[b.categoryCode] || 999)
+        })
+      }
+      
+      wordBookCategories = wordBookCategories.map(category => {
         if (category.wordBooks) {
           const processedBooks = category.wordBooks.map(book => ({
             ...book,
@@ -220,6 +271,116 @@ Page({
     })
   },
 
+  /**
+   * 搜索相关方法
+   */
+  onSearchBoxTap: function () {
+    this.setData({
+      showSearchBar: true,
+      showOverlay: true
+    })
+  },
+
+  onSearchBarFocus: function (e) {
+    this.setData({
+      keyboardHeight: e.detail.height
+    })
+  },
+
+  onSearchBarCancel: function () {
+    this.setData({
+      showSearchBar: false,
+      showOverlay: false,
+      keyboardHeight: 0,
+      searchResults: [],
+      isSearching: false,
+      searchKeyword: ''
+    })
+  },
+
+  onSearchBarConfirm: async function (e) {
+    const keyword = e.detail.value.trim()
+    if (!keyword) {
+      Toast('请输入搜索关键词')
+      return
+    }
+
+    console.log('搜索词书关键词:', keyword)
+    
+    try {
+      Toast.loading({ message: '搜索中...', forbidClick: true })
+      
+      // 搜索词书
+      const searchParams = {
+        'name-like': keyword
+      }
+      
+      // 如果不是"我的词书"，添加分类码参数
+      if (this.data.selectedCategoryCode !== '99') {
+        searchParams['wordbook-category-code'] = this.data.selectedCategoryCode
+      }
+      
+      const queryString = Object.keys(searchParams)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(searchParams[key])}`)
+        .join('&')
+      
+      const searchResult = await common.request({
+        url: `/wordbooks/search?${queryString}`
+      })
+      
+      if (searchResult && searchResult.wordBookList) {
+        // 显示搜索结果
+        this.setData({
+          searchResults: searchResult.wordBookList,
+          isSearching: true,
+          searchKeyword: keyword,
+          showSearchBar: false,
+          showOverlay: false
+        })
+      } else {
+        Toast('未找到相关词书')
+        this.setData({
+          searchResults: [],
+          isSearching: true,
+          searchKeyword: keyword,
+          showSearchBar: false,
+          showOverlay: false
+        })
+      }
+      
+      Toast.clear()
+    } catch (error) {
+      console.error('搜索词书失败:', error)
+      Toast.clear()
+      Toast.fail('搜索失败，请重试')
+    }
+  },
+
+  onClickHideOverlay: function () {
+    this.setData({
+      showSearchBar: false,
+      showOverlay: false,
+      showDicCard: false,
+      keyboardHeight: 0
+    })
+  },
+
+  /**
+   * 清空搜索结果
+   */
+  onClearSearch: function () {
+    this.setData({
+      isSearching: false,
+      searchResults: [],
+      searchKeyword: ''
+    })
+  },
+
+  onDicCardEvent: function (e) {
+    // 处理词典卡片事件，可以根据需要扩展
+    console.log('词典卡片事件:', e.detail)
+  },
+
 
 
   /**
@@ -233,15 +394,16 @@ Page({
       return
     }
 
-    Dialog.confirm({
+    wx.showModal({
       title: '切换词书',
-      message: `确定要切换到「${book.wordBookName}」吗？`,
-      confirmButtonText: '确定切换',
-      cancelButtonText: '取消'
-    }).then(() => {
-      this._switchWordBook(book)
-    }).catch(() => {
-      // 用户取消
+      content: `确定要切换到「${book.wordBookName}」吗？`,
+      confirmText: '确定切换',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm) {
+          this._switchWordBook(book)
+        }
+      }
     })
   },
 
@@ -252,17 +414,32 @@ Page({
     try {
       Toast.loading({ message: '切换中...', forbidClick: true })
       
-      // 调用切换词书接口
+      // 使用与分类词书相同的API调用方式
+      // 1. 更新用户设置中的当前词书
       await common.request({
-        url: '/user/switch-wordbook',
-        method: 'POST',
+        url: '/settings',
+        method: 'PUT',
         data: {
-          wordBookCode: book.wordBookCode
+          currentWordBookCode: book.wordBookCode
+        }
+      })
+      
+      // 2. 设置词书为学习计划
+      await common.request({
+        url: '/wordbook',
+        method: 'PUT',
+        data: {
+          wordBookCode: book.wordBookCode,
+          isInLearningPlan: true
         }
       })
       
       // 更新全局数据
       app.globalData.settings.currentWordBookCode = book.wordBookCode
+      
+      // 更新词书状态
+      book.isInLearningPlan = true
+      book.userNum = book.userNum + 1
       
       // 更新当前页面状态
       this.setData({
@@ -284,6 +461,21 @@ Page({
   },
 
 
+
+  /**
+   * 发音功能
+   */
+  _pronounce: function (word) {
+    if (!word) return
+    
+    const innerAudioContext = wx.createInnerAudioContext()
+    innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=${app.globalData.settings?.pronType == 'US' ? 0 : 1}`
+    innerAudioContext.play()
+    
+    innerAudioContext.onError((res) => {
+      console.error('音频播放失败:', res)
+    })
+  },
 
   /**
    * 下拉刷新

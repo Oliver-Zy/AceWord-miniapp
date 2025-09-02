@@ -9,6 +9,18 @@
 </view>
 <!-- E container type == 'search' -->
 
+<!-- S container type == 'search-with-back' -->
+<view wx:if="{{type == 'search-with-back'}}" class="container" style="height:{{naviBarHeight}}px;box-shadow:{{showDivider && !isDarkMode ? '0px 4px 14px rgba(31, 32, 34, 0.08)'  :''}};">
+  <view class="search-with-back-container">
+    <image class="back-img" src="../../../images/icons/{{isDarkMode ? 'back-dark' : 'back'}}.png" bind:tap="onBack" data-type="back"></image>
+    <view class="search-container-inner" style="width:{{searchBarWithBackWidth}}px; height:{{searchBarHeight}}px;" bind:tap="onSearch">
+      <image class="search-img" src="../../../images/icons/{{isDarkMode ? 'search-dark' : 'search'}}.png"></image>
+      <text class="search-container-inner-text">搜索单词</text>
+    </view>
+  </view>
+</view>
+<!-- E container type == 'search-with-back' -->
+
 <!-- S container type == 'back' -->
 <view wx:if="{{type == 'back'}}" class="container" style="height:{{naviBarHeight}}px;position:fixed;background-color:{{isDarkMode ? '#323346' : backgroundColor}};box-shadow:{{showDivider && !isDarkMode ? '0px 4px 14px rgba(31, 32, 34, 0.08)'  :''}};">
   <view class="inner-container" style="height:{{searchBarHeight}}px;">

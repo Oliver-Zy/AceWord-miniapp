@@ -12,7 +12,31 @@ function formatProgress(userProgressNum, totalWordNum) {
   return progress + '%'
 }
 
+function formatStudyStatus(userProgressNum, totalWordNum) {
+  var progress = calculateProgress(userProgressNum, totalWordNum)
+  if (progress >= 100) {
+    return '已完成'
+  } else if (progress > 0) {
+    return progress + '%'
+  } else {
+    return '未开始'
+  }
+}
+
+function getStatusColor(userProgressNum, totalWordNum) {
+  var progress = calculateProgress(userProgressNum, totalWordNum)
+  if (progress >= 100) {
+    return '#52c41a' // 绿色 - 已完成
+  } else if (progress > 0) {
+    return '#1890ff' // 蓝色 - 进行中
+  } else {
+    return '#d9d9d9' // 灰色 - 未开始
+  }
+}
+
 module.exports = {
   calculateProgress: calculateProgress,
-  formatProgress: formatProgress
+  formatProgress: formatProgress,
+  formatStudyStatus: formatStudyStatus,
+  getStatusColor: getStatusColor
 }

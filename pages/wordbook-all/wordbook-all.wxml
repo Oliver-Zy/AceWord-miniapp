@@ -14,7 +14,50 @@
     <!-- S wordbook categories -->
     <view style="height: 16px;"></view>
     
-    <block wx:for="{{wordBookCategories}}" wx:key="categoryCode">
+    <!-- S search container -->
+    <view class="search-container-fixed" wx:if="{{selectedCategoryCode !== '99'}}">
+      <view class="search-box" bind:tap="onSearchBoxTap">
+        <image class="search-icon" src="../../images/icons/search.png"></image>
+        <text class="search-placeholder">搜索词书</text>
+      </view>
+    </view>
+    <!-- E search container -->
+    
+    <!-- S search results -->
+    <view wx:if="{{isSearching}}" class="search-results-container">
+      <van-cell-group wx:if="{{searchResults.length > 0}}" custom-class="search-results-group">
+        <block wx:for="{{searchResults}}" wx:for-item="book" wx:key="wordBookCode">
+          <van-cell 
+            title="{{book.wordBookName}}"
+            value="{{tools.formatStudyStatus(book.userProgressNum, book.totalWordNum)}}"
+            label="{{book.totalWordNum}}个单词 · 已学{{book.userProgressNum || 0}}个"
+            is-link
+            custom-class="wordbook-cell"
+            data-book="{{book}}"
+            bind:click="onSelectWordBook">
+            
+            <view slot="icon" class="wordbook-icon">
+              <view class="status-dot" style="background-color: {{tools.getStatusColor(book.userProgressNum, book.totalWordNum)}};"></view>
+            </view>
+            
+            <view slot="right-icon" class="wordbook-right">
+              <view wx:if="{{book.wordBookCode === currentWordBookCode}}" class="current-tag">
+                <van-tag type="primary" size="mini">当前</van-tag>
+              </view>
+              <image class="arrow-icon" src="../../images/icons/right.png"></image>
+            </view>
+            
+          </van-cell>
+        </block>
+      </van-cell-group>
+      
+      <van-empty wx:if="{{searchResults.length === 0}}" 
+        image="search" 
+        description="未找到相关词书" />
+    </view>
+    <!-- E search results -->
+    
+    <block wx:if="{{!isSearching}}" wx:for="{{wordBookCategories}}" wx:key="categoryCode">
       <view class="category-card">
         <van-collapse 
           value="{{ activeNames }}" 
@@ -34,8 +77,8 @@
                 
                 <van-cell 
                   title="{{book.wordBookName}}"
-                  value="{{tools.formatProgress(book.userProgressNum, book.totalWordNum)}}"
-                  label="{{book.totalWordNum}}个单词 · {{book.userNum}}人在学"
+                  value="{{tools.formatStudyStatus(book.userProgressNum, book.totalWordNum)}}"
+                  label="{{book.totalWordNum}}个单词 · 已学{{book.userProgressNum || 0}}个"
                   is-link
                   custom-class="wordbook-cell"
                   bind:click="onSelectWordBook"
@@ -93,6 +136,24 @@
   title="{{selectedCategoryName || '词书广场'}}" 
   showDivider="{{showNaviBarDivider}}" 
   style="width:100%;position:fixed;top:0;" />
+<ace-search-bar 
+  wx:if="{{showSearchBar}}" 
+  style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" 
+  placeholder="搜索词书" 
+  confirmtype="search" 
+  bind:focus="onSearchBarFocus" 
+  bind:cancel="onSearchBarCancel" 
+  bind:confirm="onSearchBarConfirm" />
+<dic-card 
+  wx:if="{{showDicCard}}" 
+  wordInfo="{{wordInfo}}" 
+  style="position:fixed;bottom:100px;z-index:20;" 
+  showReplaceBtn="{{false}}" 
+  showStyleBtn="{{false}}" 
+  bind:dicCardEvent="onDicCardEvent" />
+<van-overlay 
+  show="{{showOverlay}}" 
+  bind:click="onClickHideOverlay" />
 <!-- E ace components -->
 
 <!-- S vant components -->

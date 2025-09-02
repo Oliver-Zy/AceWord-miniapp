@@ -36,6 +36,26 @@
   color: #86909C;
 }
 
+.search-with-back-container {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  bottom: 6px;
+  width: 100%;
+}
+
+.search-with-back-container .back-img {
+  width: 24px;
+  height: 24px;
+  margin: 0 8px 0 16px;
+  flex-shrink: 0;
+}
+
+.search-with-back-container .search-container-inner {
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
 .inner-container {
   width: 100%;
   display: flex;

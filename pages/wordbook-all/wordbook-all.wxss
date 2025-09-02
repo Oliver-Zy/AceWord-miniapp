@@ -5,6 +5,47 @@
   /* 与项目整体保持一致的紫色系渐变背景 */
 }
 
+/* 搜索框 */
+.search-container-fixed {
+  margin: 0 16px 16px 16px;
+  padding: 0;
+}
+
+.search-box {
+  height: 36px;
+  background: #FFFFFF;
+  border: 0.5px solid #E9ECF2;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.search-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.search-placeholder {
+  font-size: 14px;
+  color: #86909C;
+  font-weight: 400;
+}
+
+/* 搜索结果 */
+.search-results-container {
+  margin: 0 16px 16px 16px;
+}
+
+.search-results-group {
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #F1F3F4;
+  overflow: hidden;
+}
+
 /* 分类卡片 */
 .category-card {
   margin: 0 16px;
@@ -103,25 +144,30 @@
   color: #969799;
 }
 
-/* 暗色模式 - 与项目保持一致 */
+/* 深色模式适配 */
 @media (prefers-color-scheme: dark) {
   .container {
-    background: linear-gradient(180deg, #1E1B4B -10%, #1F2937 30%);
-    /* 深色模式下与项目协调的紫色系渐变 */
+    background-image: linear-gradient(180deg, #1E1B4B -10%, #1F2937 30%);
   }
 
-  .category-card {
-    background: #2A2D3A;
-    border-color: #3A3F4B;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  .search-box {
+    background: #282A3D;
+    border: 0.5px solid #3A3D50;
   }
 
-  .category-count {
+  .search-placeholder {
     color: #9598A9;
   }
 
-  .current-wordbook {
-    background: linear-gradient(135deg, #312E81 0%, #3730A3 100%) !important;
-    border-left-color: #A5B4FC !important;
+  .search-results-group {
+    background: #282A3D;
+    border: 1px solid #3A3D50;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .category-card {
+    background: #282A3D;
+    border: 1px solid #3A3D50;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 }

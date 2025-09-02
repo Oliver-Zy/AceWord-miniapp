@@ -392,12 +392,12 @@ Page({
     const actions = [
       { 
         name: '我的词书', 
-        subname: '我收藏和创建的个人词书',
+        subname: '正在学习和已学完的词书',
         type: 'my'
       },
       { 
         name: '分类词书', 
-        subname: '按学习阶段和考试类型分类的词书',
+        subname: '按学习阶段和考试类型分类',
         type: 'category'
       }
       // { 

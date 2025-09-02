@@ -29,6 +29,8 @@ Component({
       this.setData({
         naviBarHeight: capsuleInfo.bottom + 6,
         searchBarWidth: capsuleInfo.right - capsuleInfo.width - 20 - 16,
+        // 带返回按钮的搜索框宽度：需要减去返回按钮宽度(24px) + 左右间距(16px + 8px + 8px + 16px)
+        searchBarWithBackWidth: capsuleInfo.right - capsuleInfo.width - 20 - 16 - 24 - 32,
         searchBarHeight: capsuleInfo.height,
         windowHeight: wx.getSystemInfoSync().windowHeight,
         
