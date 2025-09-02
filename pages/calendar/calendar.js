@@ -899,7 +899,7 @@ Page({
     if (typeof this.getTabBar === 'function' &&
       this.getTabBar()) {
       this.getTabBar().setData({
-        selected: 2
+        selected: 1  // 调整：移除word-list后，calendar从索引2改为1
       })
     }
   },

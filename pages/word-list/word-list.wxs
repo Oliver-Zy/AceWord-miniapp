@@ -33,6 +33,19 @@ function formatChineseDate(date, todayDate) {
 }
 
 /**
+ * 格式化日期显示 - 月日格式
+ */
+function formatDateDisplay(dateString) {
+  if (!dateString) return ''
+  
+  // dateString 格式：YYYYMMDD
+  var month = dateString.slice(4, 6)
+  var day = dateString.slice(6, 8)
+  
+  return parseInt(month) + '月' + parseInt(day) + '日'
+}
+
+/**
  * 检查某个日期分组的单词是否全部被选中
  */
 function isDateGroupAllSelected(dateGroup, selectedWordIds) {
@@ -66,5 +79,6 @@ function isDateGroupAllSelected(dateGroup, selectedWordIds) {
 module.exports = {
   getTotalWordCount: getTotalWordCount,
   formatChineseDate: formatChineseDate,
+  formatDateDisplay: formatDateDisplay,
   isDateGroupAllSelected: isDateGroupAllSelected
 }

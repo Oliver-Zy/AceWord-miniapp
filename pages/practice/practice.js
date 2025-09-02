@@ -1034,7 +1034,12 @@ Page({
       Toast.loading({
         forbidClick: true
       })
-      let data = app.globalData.practiceInfo.wordCardIDCheckedList
+      
+      // 一键复习模式使用cardIDList，其他模式使用wordCardIDCheckedList
+      let data = this.data.entryPage === 'quickReview' 
+        ? app.globalData.practiceInfo.cardIDList
+        : app.globalData.practiceInfo.wordCardIDCheckedList
+        
       await common.request({
         url: `/wordcards/practice`,
         method: 'PUT',
@@ -1042,10 +1047,24 @@ Page({
       })
 
 
-      let wordCardIDCheckedList = app.globalData.practiceInfo.wordCardIDCheckedList
+      let wordCardIDCheckedList = this.data.entryPage === 'quickReview'
+        ? app.globalData.practiceInfo.cardIDList
+        : app.globalData.practiceInfo.wordCardIDCheckedList
       let pages = getCurrentPages()
       let prevPage = pages[pages.length - 2]
-      if (this.data.entryPage == 'index') {
+      
+      if (this.data.entryPage == 'quickReview') {
+        // 一键复习完成处理
+        Toast.success('复习完成！')
+        this.setData({
+          canClickFinishBtn: false,
+          hasUnfinishedtask: false
+        })
+        setTimeout(() => {
+          wx.navigateBack()
+        }, 800)
+        
+      } else if (this.data.entryPage == 'index') {
 
         let wordCardList = await common.request({
           url: `/wordcards?word-card-id-list=${wordCardIDCheckedList.join(',')}`

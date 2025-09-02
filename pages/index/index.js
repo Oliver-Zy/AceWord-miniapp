@@ -276,9 +276,30 @@ Page({
    * @event
    */
   onReview: function (e) {
-    wx.navigateTo({
-      url: `/pages/review/review`
-    })
+    if (e.detail && e.detail.showActionSheet) {
+      // 显示一键复习选择弹窗
+      this.setData({
+        showPopupVant: true,
+        actionSheetType: 'quickReview',
+        showActionSheet: true,
+        actionSheetDesc: '选择复习方式',
+        actions: [{
+          name: '一键复习',
+          subname: '开始复习所有待复习卡片'
+        }, {
+          name: '进入复习页',
+          subname: '按日期分组查看待复习卡片'
+        }]
+      })
+      this.getTabBar().setData({
+        show: false
+      })
+    } else {
+      // 兼容旧的直接跳转逻辑
+      wx.navigateTo({
+        url: `/pages/review/review`
+      })
+    }
   },
 
   /**
@@ -1024,6 +1045,10 @@ Page({
 
       this._onSelectActionSheetExamWordbook(e)
 
+    } else if (actionSheetType == 'quickReview') {
+
+      this._onSelectActionSheetQuickReview(e)
+
     }
   },
 
@@ -1163,6 +1188,80 @@ Page({
       // 跳转到真题词书页面
       wx.navigateTo({
         url: `/pages/exam-wordbook/exam-wordbook?examType=${selectedAction.examType}&examName=${encodeURIComponent(selectedAction.name)}`
+      })
+    }
+  },
+
+  /**
+   * 处理一键复习选择
+   */
+  _onSelectActionSheetQuickReview: async function (e) {
+    setTimeout(() => {
+      this.onCancelActionSheet()
+    }, 400)
+
+    if (e.detail.name === '一键复习') {
+      // 一键复习逻辑
+      try {
+        Toast.loading({
+          forbidClick: true,
+          message: '加载中'
+        })
+
+        // 调用新的一键复习API
+        const reviewData = await common.request({
+          url: `/list/need-review/all`,
+          method: 'GET'
+        })
+
+        // 兼容多种可能的数据格式
+        let wordList = null
+        let cardIDList = null
+        
+        if (reviewData && reviewData.data && reviewData.data.wordList) {
+          // 包装在data字段中的格式: {data: {wordList: [...], cardIDList: [...]}}
+          wordList = reviewData.data.wordList
+          cardIDList = reviewData.data.cardIDList
+        } else if (reviewData && reviewData.wordList) {
+          // 直接返回的格式: {wordList: [...], cardIDList: [...]}
+          wordList = reviewData.wordList
+          cardIDList = reviewData.cardIDList
+        }
+
+        if (wordList && wordList.length > 0) {
+          // 设置全局练习数据
+          app.globalData.practiceInfo = {
+            wordInfoList: wordList,
+            cardIDList: cardIDList || [],
+            practiceMode: 'review',
+            isQuickReview: true
+          }
+
+          Toast.clear()
+          
+          // 直接跳转到练习页面
+          wx.navigateTo({
+            url: '../practice/practice?entryPage=quickReview'
+          })
+        } else {
+          Toast.clear()
+          wx.showToast({
+            title: '暂无待复习卡片',
+            icon: 'none'
+          })
+        }
+      } catch (error) {
+        Toast.clear()
+        console.error('一键复习失败:', error)
+        wx.showToast({
+          title: '获取复习数据失败',
+          icon: 'none'
+        })
+      }
+    } else if (e.detail.name === '进入复习页') {
+      // 原有逻辑，跳转到复习页面
+      wx.navigateTo({
+        url: `/pages/review/review`
       })
     }
   },

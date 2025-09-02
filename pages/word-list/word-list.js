@@ -180,6 +180,41 @@ Page({
   },
 
   /**
+   * 监听日期分组header事件（分组全选/取消全选）
+   */
+  onDateGroupHeaderEvent: function (e) {
+    if (e.detail.type === 'selectAll') {
+      const dateIndex = e.currentTarget.dataset.dateIndex
+      const dateGroup = this.data.wordGroupsByDate[dateIndex]
+      const isSelectAll = e.detail.isSelectAll
+      
+      if (!dateGroup || !dateGroup.wordList) {
+        return
+      }
+      
+      // 获取当前日期分组的所有单词ID
+      const groupWordIds = dateGroup.wordList.map(word => word.wordId)
+      let selectedWordIds = [...this.data.selectedWordIds]
+      
+      if (isSelectAll) {
+        // 当前分组是全选状态，执行取消全选（从selectedWordIds中移除该分组的所有单词ID）
+        selectedWordIds = selectedWordIds.filter(wordId => !groupWordIds.includes(wordId))
+      } else {
+        // 当前分组不是全选状态，执行全选（将该分组的所有单词ID添加到selectedWordIds中）
+        groupWordIds.forEach(wordId => {
+          if (!selectedWordIds.includes(wordId)) {
+            selectedWordIds.push(wordId)
+          }
+        })
+      }
+      
+      this.setData({
+        selectedWordIds
+      })
+    }
+  },
+
+  /**
    * 监听释义点击事件（显示/隐藏释义）
    */
   onMeaningTap: function (e) {
@@ -238,7 +273,7 @@ Page({
   },
 
   /**
-   * 加载更多历史练习单词
+   * 加载更多历史练习单词（一次加载7天）
    */
   onLoadMore: async function () {
     if (this.data.isLoadingMore) {
@@ -247,17 +282,7 @@ Page({
 
     try {
       this.setData({ isLoadingMore: true })
-      Toast.loading({ message: '加载中...', forbidClick: true })
-
-      // 获取前一天的日期
-      const previousDate = this._getPreviousDate(this.data.currentDate)
-      
-      // 检查是否已经加载过这个日期
-      if (this.data.loadedDates.includes(previousDate)) {
-        Toast.clear()
-        this.setData({ isLoadingMore: false })
-        return
-      }
+      Toast.loading({ message: '正在加载历史记录...', forbidClick: true })
 
       // 获取词书映射信息（如果还没有的话）
       let wordBookCodeToName = this.data.wordBookCodeToName
@@ -268,43 +293,77 @@ Page({
         this.setData({ wordBookCodeToName })
       }
 
-      // 获取历史练习单词数据
-      const pageInfo = await common.request({
-        url: `/wordcards/practice?date=${previousDate}`
-      })
+      // 一次性加载7天的数据
+      const daysToLoad = 7
+      const newDateGroups = []
+      let currentDate = this.data.currentDate
+      let totalWordsLoaded = 0
+      let daysWithData = 0
 
-      if (pageInfo.data && pageInfo.data.length > 0) {
-        // 处理新的单词列表数据
-        const newWordList = this._processWordList(pageInfo.data, wordBookCodeToName, previousDate)
+      for (let i = 0; i < daysToLoad; i++) {
+        // 获取前一天的日期
+        const previousDate = this._getPreviousDate(currentDate)
         
-        // 预加载新单词的完整信息
-        await this._preloadWordInfos(newWordList)
-
-        // 创建新的日期分组
-        const newDateGroup = {
-          date: previousDate,
-          wordList: newWordList,
-          wordCount: newWordList.length
+        // 检查是否已经加载过这个日期
+        if (this.data.loadedDates.includes(previousDate)) {
+          currentDate = previousDate
+          continue
         }
 
-        // 添加到现有分组列表
-        const updatedWordGroupsByDate = [...this.data.wordGroupsByDate, newDateGroup]
-        const updatedLoadedDates = [...this.data.loadedDates, previousDate]
+        try {
+          // 获取历史练习单词数据
+          const pageInfo = await common.request({
+            url: `/wordcards/practice?date=${previousDate}`
+          })
 
+          if (pageInfo.data && pageInfo.data.length > 0) {
+            // 处理新的单词列表数据
+            const newWordList = this._processWordList(pageInfo.data, wordBookCodeToName, previousDate)
+            
+            if (newWordList.length > 0) {
+              // 预加载新单词的完整信息
+              await this._preloadWordInfos(newWordList)
+
+              // 创建新的日期分组
+              const newDateGroup = {
+                date: previousDate,
+                dateDisplay: null, // 让WXS函数处理日期格式
+                wordList: newWordList,
+                wordCount: newWordList.length
+              }
+
+              newDateGroups.push(newDateGroup)
+              totalWordsLoaded += newWordList.length
+              daysWithData++
+            }
+          }
+        } catch (error) {
+          console.error(`Failed to load data for ${previousDate}:`, error)
+          // 单个日期加载失败不影响其他日期
+        }
+
+        // 更新loadedDates
+        this.data.loadedDates.push(previousDate)
+        currentDate = previousDate
+      }
+
+      // 更新页面数据
+      if (newDateGroups.length > 0) {
+        const updatedWordGroupsByDate = [...this.data.wordGroupsByDate, ...newDateGroups]
+        
         this.setData({
           wordGroupsByDate: updatedWordGroupsByDate,
-          currentDate: previousDate,
-          loadedDates: updatedLoadedDates
+          currentDate: currentDate,
+          loadedDates: this.data.loadedDates
         })
 
-        Toast.success(`加载了 ${this._formatDateDisplay(previousDate)} 的 ${newWordList.length} 个单词`)
+        Toast.success(`加载了${daysWithData}天的历史记录，共${totalWordsLoaded}个单词`)
       } else {
-        // 即使没有数据，也要更新currentDate以便继续往前追溯
         this.setData({
-          currentDate: previousDate,
-          loadedDates: [...this.data.loadedDates, previousDate]
+          currentDate: currentDate,
+          loadedDates: this.data.loadedDates
         })
-        Toast(`${this._formatDateDisplay(previousDate)} 暂无练习记录`)
+        Toast('近期暂无更多练习记录')
       }
 
     } catch (error) {
@@ -317,26 +376,18 @@ Page({
   },
 
   /**
-   * 加载今日练习单词数据
+   * 加载练习单词数据（今日+历史7天）
    */
   _loadTodayWords: async function () {
     try {
-      Toast.loading()
+      Toast.loading({ message: '加载练习记录...', forbidClick: true })
       
       const todayDate = app.globalData.todayDate
-      
-      // 获取今日练习单词卡片数据（参考calendar页面）
-      const pageInfo = await common.request({
-        url: `/wordcards/practice?date=${todayDate}`
-      })
       
       // 获取词书映射信息
       const wordBookCodeToName = await common.request({
         url: `/wordbooks-map`
       })
-      
-      // 处理单词列表数据
-      const wordList = this._processWordList(pageInfo.data, wordBookCodeToName)
       
       // 获取基本设置信息
       const homeData = await common.request({ url: `/homedata` })
@@ -349,26 +400,69 @@ Page({
         userProgressNum: currentWordBook.userProgressNum
       }
 
-      // 预加载所有单词的完整信息
-      await this._preloadWordInfos(wordList)
+      // 一次性加载今日+历史7天的数据
+      const daysToLoad = 8 // 今天 + 历史7天
+      const dateGroups = []
+      const loadedDates = []
+      let currentDate = todayDate
+      let totalWordsLoaded = 0
 
-      // 创建今日的日期分组
-      const todayDateGroup = {
-        date: todayDate,
-        wordList: wordList,
-        wordCount: wordList.length
+      for (let i = 0; i < daysToLoad; i++) {
+        try {
+          // 获取当前日期的练习单词数据
+          const pageInfo = await common.request({
+            url: `/wordcards/practice?date=${currentDate}`
+          })
+
+          if (pageInfo.data && pageInfo.data.length > 0) {
+            // 处理单词列表数据
+            const wordList = this._processWordList(pageInfo.data, wordBookCodeToName, currentDate)
+            
+            if (wordList.length > 0) {
+              // 预加载单词的完整信息
+              await this._preloadWordInfos(wordList)
+
+              // 创建日期分组
+              const dateGroup = {
+                date: currentDate,
+                dateDisplay: i === 0 ? '今日练习' : null, // 让WXS函数处理历史日期格式
+                wordList: wordList,
+                wordCount: wordList.length
+              }
+
+              dateGroups.push(dateGroup)
+              totalWordsLoaded += wordList.length
+            }
+          }
+        } catch (error) {
+          console.error(`Failed to load data for ${currentDate}:`, error)
+          // 单个日期加载失败不影响其他日期
+        }
+
+        loadedDates.push(currentDate)
+        
+        // 获取前一天的日期（除了第一次，因为第一次是今天）
+        if (i < daysToLoad - 1) {
+          currentDate = this._getPreviousDate(currentDate)
+        }
       }
 
       this.setData({
-        wordGroupsByDate: [todayDateGroup],
+        wordGroupsByDate: dateGroups,
         wordBookMyInfo,
-        wordBookCodeToName, // 保存词书映射信息供后续使用
+        wordBookCodeToName,
         isRefresherTriggered: false,
         isLoaded: true,
-        loadedDates: [todayDate]
+        loadedDates: loadedDates,
+        currentDate: currentDate // 设置为最后加载的日期，便于后续"加载更多"
       })
       
       Toast.clear()
+      
+      if (totalWordsLoaded > 0) {
+        Toast.success(`已加载${dateGroups.length}天的练习记录，共${totalWordsLoaded}个单词`)
+      }
+      
     } catch (error) {
       console.error('Failed to load practice words:', error)
       Toast.fail('加载失败，请稍后重试')

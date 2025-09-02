@@ -304,8 +304,6 @@ Page({
       Toast('请输入搜索关键词')
       return
     }
-
-    console.log('搜索词书关键词:', keyword)
     
     try {
       Toast.loading({ message: '搜索中...', forbidClick: true })
@@ -328,15 +326,36 @@ Page({
         url: `/wordbooks/search?${queryString}`
       })
       
-      if (searchResult && searchResult.wordBookList) {
+      // 处理不同的返回格式
+      let wordBooks = []
+      if (Array.isArray(searchResult)) {
+        // 直接返回数组格式
+        wordBooks = searchResult
+      } else if (searchResult && searchResult.data && Array.isArray(searchResult.data)) {
+        // 包装在data字段中的格式
+        wordBooks = searchResult.data
+      } else if (searchResult && searchResult.wordBookList && Array.isArray(searchResult.wordBookList)) {
+        // 包装在wordBookList字段中的格式
+        wordBooks = searchResult.wordBookList
+      }
+      
+      if (wordBooks && wordBooks.length > 0) {
         // 显示搜索结果
+        // 先重置状态，再设置新数据，确保页面重新渲染
         this.setData({
-          searchResults: searchResult.wordBookList,
+          isSearching: false,
+          searchResults: []
+        })
+        
+        // 立即设置新的搜索结果
+        this.setData({
+          searchResults: wordBooks,
           isSearching: true,
           searchKeyword: keyword,
           showSearchBar: false,
           showOverlay: false
         })
+
       } else {
         Toast('未找到相关词书')
         this.setData({
@@ -346,6 +365,7 @@ Page({
           showSearchBar: false,
           showOverlay: false
         })
+
       }
       
       Toast.clear()

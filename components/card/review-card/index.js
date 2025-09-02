@@ -38,7 +38,7 @@ Component({
    */
   methods: {
     onReview: function () {
-      this.triggerEvent('review')
+      this.triggerEvent('review', { showActionSheet: true })
     },
   }
 })

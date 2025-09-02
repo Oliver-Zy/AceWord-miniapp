@@ -11,50 +11,57 @@
     style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" 
     bind:refresherrefresh="onScrollViewRefresh">
     
-    <!-- S header -->
+    <!-- 顶部间距 -->
     <view style="height: 20px;"></view>
-    <ace-header 
-      wx:if="{{wordGroupsByDate.length > 0}}" 
-      titleType="textWithCount" 
-      text="已练习" 
-      arrLen="{{tools.getTotalWordCount(wordGroupsByDate)}}" 
-      iconType="selectAll" 
-      isSelectAll="{{selectedWordIds.length === tools.getTotalWordCount(wordGroupsByDate) && tools.getTotalWordCount(wordGroupsByDate) > 0}}"
-      bind:headerEvent="onHeaderEvent" />
-    <!-- E header -->
 
     <!-- S word list -->
     <view wx:if="{{tools.getTotalWordCount(wordGroupsByDate) > 0}}" class="word-list-container">
       <block wx:for="{{wordGroupsByDate}}" wx:key="date" wx:for-item="dateGroup">
-        <block wx:for="{{dateGroup.wordList}}" wx:key="wordId" wx:for-item="wordItem" wx:for-index="wordIndex">
-          <view class="word-item" 
-                bind:tap="onMeaningTap" 
-                data-word-id="{{wordItem.wordId}}"
-                hover-class="none">
-            <!-- S word item content -->
-            <view class="word-item-content">
-              <!-- S left content -->
-              <view class="word-item-left">
-                <view class="word-name" catchtap="onWordItemTap" data-date-index="{{index}}" data-word-index="{{wordIndex}}" hover-class="none">{{wordItem.wordName}}</view>              
-                <view class="meaning-text {{visibleMeanings[wordItem.wordId] ? '' : 'blurred'}}">
-                  {{wordItem.selfDef || wordItem.wordCN || '暂无释义'}}
+        <!-- S date group header -->
+        <ace-header 
+          titleType="textWithCount" 
+          text="{{dateGroup.dateDisplay || tools.formatDateDisplay(dateGroup.date)}}" 
+          arrLen="{{dateGroup.wordCount}}" 
+          iconType="selectAll" 
+          isSelectAll="{{tools.isDateGroupAllSelected(dateGroup, selectedWordIds)}}"
+          bind:headerEvent="onDateGroupHeaderEvent"
+          data-date-index="{{index}}" />
+        <!-- E date group header -->
+        
+        <view class="date-group-container">
+          <block wx:for="{{dateGroup.wordList}}" wx:key="wordId" wx:for-item="wordItem" wx:for-index="wordIndex">
+            <view class="word-item" 
+                  bind:tap="onMeaningTap" 
+                  data-word-id="{{wordItem.wordId}}"
+                  hover-class="none">
+              <!-- S word item content -->
+              <view class="word-item-content">
+                <!-- S left content -->
+                <view class="word-item-left">
+                  <view class="word-name" catchtap="onWordItemTap" data-date-index="{{index}}" data-word-index="{{wordIndex}}" hover-class="none">{{wordItem.wordName}}</view>              
+                  <view class="meaning-text {{visibleMeanings[wordItem.wordId] ? '' : 'blurred'}}">
+                    {{wordItem.selfDef || wordItem.wordCN || '暂无释义'}}
+                  </view>
                 </view>
-              </view>
-              <!-- E left content -->
+                <!-- E left content -->
 
-              <!-- S right content -->
-              <view class="word-item-right">
-                <view class="proficiency-text">{{wordItem.proficiencyText}}</view>
+                <!-- S right content -->
+                <view class="word-item-right">
+                  <view class="proficiency-text">{{wordItem.proficiencyText}}</view>
+                </view>
+                <!-- E right content -->
               </view>
-              <!-- E right content -->
+              <!-- E word item content -->
+
+              <!-- S divider -->
+              <view wx:if="{{wordIndex !== dateGroup.wordList.length - 1}}" class="divider"></view>
+              <!-- E divider -->
             </view>
-            <!-- E word item content -->
-
-            <!-- S divider -->
-            <view wx:if="{{!(index === wordGroupsByDate.length - 1 && wordIndex === dateGroup.wordList.length - 1)}}" class="divider"></view>
-            <!-- E divider -->
-          </view>
-        </block>
+          </block>
+        </view>
+        
+        <!-- 日期分组间距 -->
+        <view wx:if="{{index !== wordGroupsByDate.length - 1}}" style="height: 16px;"></view>
       </block>
     </view>
     <view style="height:22px;"></view>

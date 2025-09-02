@@ -8,10 +8,15 @@
 /* 单词列表容器 */
 .word-list-container {
   margin: 12px 16px 0 16px;
+}
+
+/* 日期分组容器 */
+.date-group-container {
   background: #FFFFFF;
   border: 1px solid #F1F3F4;
   border-radius: 12px;
   overflow: hidden;
+  margin-top: 8px;
 }
 
 /* 单词项 */

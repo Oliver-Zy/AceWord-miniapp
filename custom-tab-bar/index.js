@@ -12,12 +12,15 @@ Component({
         iconPath: "../images/tab-bars/homepage.png",
         selectedIconPath: "../images/tab-bars/homepage-chosen.png",
         text: "首页"
-      }, {
-        pagePath: "/pages/word-list/word-list",
-        iconPath: "../images/tab-bars/list.png",
-        selectedIconPath: "../images/tab-bars/list-chosen.png",
-        text: "列表"
-      }, {
+      }, 
+      // 暂时注释掉word-list页面
+      // {
+      //   pagePath: "/pages/word-list/word-list",
+      //   iconPath: "../images/tab-bars/list.png",
+      //   selectedIconPath: "../images/tab-bars/list-chosen.png",
+      //   text: "列表"
+      // }, 
+      {
         pagePath: "/pages/calendar/calendar",
         iconPath: "../images/tab-bars/calendar.png",
         selectedIconPath: "../images/tab-bars/calendar-chosen.png",
@@ -46,12 +49,15 @@ Component({
               iconPath: "../images/tab-bars/homepage-dark.png",
               selectedIconPath: "../images/tab-bars/homepage-chosen-dark.png",
               text: "首页"
-            }, {
-              pagePath: "/pages/word-list/word-list",
-              iconPath: "../images/tab-bars/list-dark.png",
-              selectedIconPath: "../images/tab-bars/list-chosen-dark.png",
-              text: "列表"
-            }, {
+            }, 
+            // 暂时注释掉word-list页面
+            // {
+            //   pagePath: "/pages/word-list/word-list",
+            //   iconPath: "../images/tab-bars/list-dark.png",
+            //   selectedIconPath: "../images/tab-bars/list-chosen-dark.png",
+            //   text: "列表"
+            // }, 
+            {
               pagePath: "/pages/calendar/calendar",
               iconPath: "../images/tab-bars/calendar-dark.png",
               selectedIconPath: "../images/tab-bars/calendar-chosen-dark.png",
