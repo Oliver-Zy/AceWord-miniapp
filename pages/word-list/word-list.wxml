@@ -14,56 +14,64 @@
     <!-- S header -->
     <view style="height: 20px;"></view>
     <ace-header 
-      wx:if="{{wordList.length != 0}}" 
+      wx:if="{{wordGroupsByDate.length > 0}}" 
       titleType="textWithCount" 
-      text="今日练习" 
-      arrLen="{{wordList.length}}" 
+      text="已练习" 
+      arrLen="{{tools.getTotalWordCount(wordGroupsByDate)}}" 
       iconType="selectAll" 
-      isSelectAll="{{selectedWordIds.length === wordList.length && wordList.length > 0}}"
+      isSelectAll="{{selectedWordIds.length === tools.getTotalWordCount(wordGroupsByDate) && tools.getTotalWordCount(wordGroupsByDate) > 0}}"
       bind:headerEvent="onHeaderEvent" />
     <!-- E header -->
 
     <!-- S word list -->
-    <view wx:if="{{wordList.length > 0}}" class="word-list-container">
-      <block wx:for="{{wordList}}" wx:key="wordName">
-        <view class="word-item" 
-              bind:tap="onMeaningTap" 
-              data-word-id="{{item.wordId}}"
-              hover-class="none">
-          <!-- S word item content -->
-          <view class="word-item-content">
-            <!-- S left content -->
-            <view class="word-item-left">
-              <view class="word-name" catchtap="onWordItemTap" data-index="{{index}}" hover-class="none">{{item.wordName}}</view>              
-              <view class="meaning-text {{visibleMeanings[item.wordId] ? '' : 'blurred'}}">
-                {{item.selfDef || item.wordCN || '暂无释义'}}
+    <view wx:if="{{tools.getTotalWordCount(wordGroupsByDate) > 0}}" class="word-list-container">
+      <block wx:for="{{wordGroupsByDate}}" wx:key="date" wx:for-item="dateGroup">
+        <block wx:for="{{dateGroup.wordList}}" wx:key="wordId" wx:for-item="wordItem" wx:for-index="wordIndex">
+          <view class="word-item" 
+                bind:tap="onMeaningTap" 
+                data-word-id="{{wordItem.wordId}}"
+                hover-class="none">
+            <!-- S word item content -->
+            <view class="word-item-content">
+              <!-- S left content -->
+              <view class="word-item-left">
+                <view class="word-name" catchtap="onWordItemTap" data-date-index="{{index}}" data-word-index="{{wordIndex}}" hover-class="none">{{wordItem.wordName}}</view>              
+                <view class="meaning-text {{visibleMeanings[wordItem.wordId] ? '' : 'blurred'}}">
+                  {{wordItem.selfDef || wordItem.wordCN || '暂无释义'}}
+                </view>
               </view>
-            </view>
-            <!-- E left content -->
+              <!-- E left content -->
 
-            <!-- S right content -->
-            <view class="word-item-right">
-              <view class="proficiency-text">{{item.proficiencyText}}</view>
+              <!-- S right content -->
+              <view class="word-item-right">
+                <view class="proficiency-text">{{wordItem.proficiencyText}}</view>
+              </view>
+              <!-- E right content -->
             </view>
-            <!-- E right content -->
+            <!-- E word item content -->
+
+            <!-- S divider -->
+            <view wx:if="{{!(index === wordGroupsByDate.length - 1 && wordIndex === dateGroup.wordList.length - 1)}}" class="divider"></view>
+            <!-- E divider -->
           </view>
-          <!-- E word item content -->
-
-          <!-- S divider -->
-          <view wx:if="{{index < wordList.length - 1}}" class="divider"></view>
-          <!-- E divider -->
-        </view>
+        </block>
       </block>
     </view>
     <view style="height:22px;"></view>
     <!-- E word list -->
     
     <!-- S empty state -->
-    <view wx:if="{{isLoaded && wordList.length == 0}}" class="empty-state">
-      <view class="empty-text">暂无今日练习单词</view>
-      <view class="empty-subtext">今天的练习已全部完成</view>
+    <view wx:if="{{isLoaded && wordGroupsByDate.length == 0}}" class="empty-state">
+      <view class="empty-text">暂无练习单词</view>
+      <view class="empty-subtext">还没有练习记录</view>
     </view>
     <!-- E empty state -->
+
+    <!-- S load more button -->
+    <view wx:if="{{isLoaded && wordGroupsByDate.length > 0}}" style="padding:28px 0;display:flex;justify-content:center;align-items:center;gap:12px;">
+      <ace-button size="small" text="{{isLoadingMore ? '加载中...' : '加载更多'}}" bind:btnEvent="onLoadMore" />
+    </view>
+    <!-- E load more button -->
 
     <view style="height:{{selectedWordIds.length != 0 ? 62 : 0}}px;"></view>
   </scroll-view>

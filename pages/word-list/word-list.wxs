@@ -1,18 +1,70 @@
-// 工具函数
-function isSelected(selectedWordIds, wordId) {
+/**
+ * 计算总单词数
+ */
+function getTotalWordCount(wordGroupsByDate) {
+  if (!wordGroupsByDate || wordGroupsByDate.length === 0) {
+    return 0
+  }
+  
+  var total = 0
+  for (var i = 0; i < wordGroupsByDate.length; i++) {
+    if (wordGroupsByDate[i].wordList) {
+      total += wordGroupsByDate[i].wordList.length
+    }
+  }
+  
+  return total
+}
+
+/**
+ * 日期格式化函数 - 中文格式
+ */
+function formatChineseDate(date, todayDate) {
+  if (!date) return ''
+  
+  // 特殊处理今日
+  if (todayDate && date === todayDate) {
+    return '今日练习'
+  }
+  
+  var month = parseInt(date.slice(4, 6))
+  var day = parseInt(date.slice(6, 8))
+  return month + '月' + day + '日'
+}
+
+/**
+ * 检查某个日期分组的单词是否全部被选中
+ */
+function isDateGroupAllSelected(dateGroup, selectedWordIds) {
+  if (!dateGroup || !dateGroup.wordList || dateGroup.wordList.length === 0) {
+    return false
+  }
+  
   if (!selectedWordIds || selectedWordIds.length === 0) {
     return false
   }
   
-  for (var i = 0; i < selectedWordIds.length; i++) {
-    if (selectedWordIds[i] === wordId) {
-      return true
+  for (var i = 0; i < dateGroup.wordList.length; i++) {
+    var wordId = dateGroup.wordList[i].wordId
+    var isSelected = false
+    
+    for (var j = 0; j < selectedWordIds.length; j++) {
+      if (selectedWordIds[j] === wordId) {
+        isSelected = true
+        break
+      }
+    }
+    
+    if (!isSelected) {
+      return false
     }
   }
   
-  return false
+  return true
 }
 
 module.exports = {
-  isSelected: isSelected
+  getTotalWordCount: getTotalWordCount,
+  formatChineseDate: formatChineseDate,
+  isDateGroupAllSelected: isDateGroupAllSelected
 }

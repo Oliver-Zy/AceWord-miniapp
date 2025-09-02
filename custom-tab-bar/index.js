@@ -21,7 +21,7 @@ Component({
         pagePath: "/pages/calendar/calendar",
         iconPath: "../images/tab-bars/calendar.png",
         selectedIconPath: "../images/tab-bars/calendar-chosen.png",
-        text: "日历"
+        text: "打卡"
       }, {
         pagePath: "/pages/mine/mine",
         iconPath: "../images/tab-bars/mine.png",

@@ -20,7 +20,7 @@
     <text class="title-text">——{{tools.titleHandler(senCard.title)}}</text>
 
     <!-- S right-footer -->
-    <!-- <view class="right-footer">
+    <view class="right-footer">
       <view class="icon-group" bind:tap="onLike">
         <image src="/images/icons/{{senCard.isLike ? 'like-fill' : isDarkMode ? 'like-dark' : 'like'}}.png"></image>
         <text class="icon-group-text">{{senCard.likeNum}}</text>
@@ -29,7 +29,7 @@
         <image src="/images/icons/{{isDarkMode ? 'share-dark' : 'share'}}.png"></image>
         <text class="icon-group-text">{{senCard.shareNum}}</text>
       </view>
-    </view> -->
+    </view>
     <!-- E right-footer -->
 
   </view>

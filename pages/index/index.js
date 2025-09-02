@@ -391,15 +391,20 @@ Page({
   _showWordbookTypeSelection: function() {
     const actions = [
       { 
+        name: '我的词书', 
+        subname: '我收藏和创建的个人词书',
+        type: 'my'
+      },
+      { 
         name: '分类词书', 
         subname: '按学习阶段和考试类型分类的词书',
         type: 'category'
-      },
-      { 
-        name: '真题词书', 
-        subname: '【会员专享】考研英语真题词汇，带真题例句',
-        type: 'exam'
       }
+      // { 
+      //   name: '真题词书', 
+      //   subname: '【会员专享】考研英语真题词汇，带真题例句',
+      //   type: 'exam'
+      // }
     ]
 
     this.setData({
@@ -418,13 +423,13 @@ Page({
    * 显示分类选择
    */
   _showCategorySelection: function() {
-    // 从mock数据读取主分类
+    // 使用新的后端分类代码
     const categories = [
-      { name: '基础教育阶段', code: '01', description: '小学至高中英语教材词汇，夯实基础' },
-      { name: '大学英语考试', code: '02', description: '四六级、专四专八，大学必备' },
-      { name: '研究生考试', code: '03', description: '考研考博词汇，学术深造必选' },
-      { name: '出国留学考试', code: '04', description: '托福雅思GRE，留学申请利器' },
-      { name: '成人继续教育', code: '05', description: '专升本自考PETS，提升学历必备' }
+      { name: '基础教育阶段', code: '21', description: '小学至高中英语教材词汇，夯实基础' },
+      { name: '大学英语考试', code: '22', description: '四六级、专四专八，大学必备' },
+      { name: '研究生考试', code: '23', description: '考研考博词汇，学术深造必选' },
+      { name: '出国留学考试', code: '24', description: '托福雅思GRE，留学申请利器' },
+      { name: '成人继续教育', code: '25', description: '专升本自考PETS，提升学历必备' }
     ]
 
     const actions = categories.map(cat => ({
@@ -1093,17 +1098,25 @@ Page({
     const selectedAction = this.data.actions.find(action => action.name === e.detail.name)
     
     if (selectedAction) {
-      if (selectedAction.type === 'category') {
+      if (selectedAction.type === 'my') {
+        // 选择了我的词书，跳转到我的词书页面
+        setTimeout(() => {
+          wx.navigateTo({
+            url: `/pages/wordbook-all/wordbook-all?categoryCode=99&categoryName=${encodeURIComponent('我的词书')}`
+          })
+        }, 500)
+      } else if (selectedAction.type === 'category') {
         // 选择了分类词书，显示原来的分类选择
         setTimeout(() => {
           this._showCategorySelection()
         }, 500)
-      } else if (selectedAction.type === 'exam') {
-        // 选择了真题词书，显示真题词书选择
-        setTimeout(() => {
-          this._showExamWordbookSelection()
-        }, 500)
       }
+      // else if (selectedAction.type === 'exam') {
+      //   // 选择了真题词书，显示真题词书选择
+      //   setTimeout(() => {
+      //     this._showExamWordbookSelection()
+      //   }, 500)
+      // }
     }
   },
 

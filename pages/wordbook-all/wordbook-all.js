@@ -1,7 +1,6 @@
 import { Common } from '../../models/common.js'
 import Toast from '../../miniprogram_npm/@vant/weapp/toast/toast'
 import Dialog from '../../miniprogram_npm/@vant/weapp/dialog/dialog'
-import mockDataService from '../../services/mockDataService.js'
 
 const common = new Common()
 const app = getApp()
@@ -115,55 +114,60 @@ Page({
       Toast.clear()
       Toast.loading({ message: '加载中...', forbidClick: true })
       
-      // 使用mock数据
-      const mockData = await this._loadMockData()
-      
-      // 如果有选中的分类，只显示该分类下的子分类
-      let wordBookCategories = []
-      
-      if (this.data.selectedCategoryCode) {
-        // 过滤出选中分类的词书
-        const selectedCategory = mockData.categories.main_categories.find(
-          cat => cat.code === this.data.selectedCategoryCode
-        )
-        
-        if (selectedCategory) {
-          // 获取该分类下的所有子分类，每个子分类作为一个折叠项
-          const subCategories = mockData.categories.sub_categories.filter(
-            subCat => subCat.parent_code === selectedCategory.code
-          )
-          
-          // 每个子分类作为一个独立的分类项
-          wordBookCategories = subCategories.map(subCat => ({
-            categoryCode: subCat.code,
-            categoryName: subCat.name,
-            wordBooks: this._getWordBooksByCategory(mockData.wordbooks, selectedCategory.name, subCat.name)
-          })).filter(cat => cat.wordBooks.length > 0)
-        }
-      } else {
-        // 显示所有子分类（扁平化显示）
-        const allSubCategories = []
-        
-        mockData.categories.main_categories.forEach(category => {
-          const subCategories = mockData.categories.sub_categories.filter(
-            subCat => subCat.parent_code === category.code
-          )
-          
-          subCategories.forEach(subCat => {
-            const wordBooks = this._getWordBooksByCategory(mockData.wordbooks, category.name, subCat.name)
-            if (wordBooks.length > 0) {
-              allSubCategories.push({
-                categoryCode: subCat.code,
-                categoryName: subCat.name,
-                parentCategoryName: category.name,
-                wordBooks: wordBooks
-              })
-            }
-          })
+      // 根据分类代码选择不同的API
+      let wordBookListInfo
+      if (this.data.selectedCategoryCode === '00') {
+        // 我的词书使用专门的接口
+        wordBookListInfo = await common.request({
+          url: `/wordbooks-official?wordbook-category-code=00`
         })
-        
-        wordBookCategories = allSubCategories
+      } else {
+        // 其他分类使用原有接口
+        wordBookListInfo = await common.request({
+          url: `/wordbooks-official?wordbook-category-code=${this.data.selectedCategoryCode}`
+        })
       }
+      
+      // 处理真实API返回的词书数据，按子分类分组
+      const wordBookList = wordBookListInfo.wordBookList || []
+      const subCategoryMap = new Map()
+      
+      // 按子分类分组词书
+      wordBookList.forEach(book => {
+        const subCategoryCode = book.wordBookSubCategoryCode || 'default'
+        const subCategoryName = book.wordBookSubCategoryName || '其他'
+        
+        if (!subCategoryMap.has(subCategoryCode)) {
+          subCategoryMap.set(subCategoryCode, {
+            categoryCode: subCategoryCode,
+            categoryName: subCategoryName,
+            wordBooks: []
+          })
+        }
+        
+        subCategoryMap.get(subCategoryCode).wordBooks.push(book)
+      })
+      
+      // 处理子分类数据
+      const wordBookCategories = Array.from(subCategoryMap.values()).map(category => {
+        if (category.wordBooks) {
+          const processedBooks = category.wordBooks.map(book => ({
+            ...book,
+            // 添加标签逻辑
+            isHot: book.userNum > 50000,
+            isNew: this._isNewBook(book.createTime),
+            // 确保进度数据
+            userProgressNum: book.userProgressNum || 0,
+            totalWordNum: book.totalWordNum || 0
+          }))
+          
+          return {
+            ...category,
+            wordBooks: processedBooks
+          }
+        }
+        return category
+      }).filter(cat => cat.wordBooks && cat.wordBooks.length > 0)
       
       // 先设置数据，不展开任何分类
       this.setData({
@@ -194,49 +198,7 @@ Page({
     }
   },
 
-  /**
-   * 加载mock数据
-   */
-  _loadMockData: async function() {
-    return await mockDataService.loadMockData()
-  },
 
-  /**
-   * 根据分类获取词书
-   */
-  _getWordBooksByCategory: function(wordbooks, categoryName, subCategoryName) {
-    // 从mock数据服务获取词书
-    const books = mockDataService.getWordBooksByCategory(categoryName, subCategoryName)
-    
-    // 转换数据格式以匹配现有的处理逻辑
-    const formattedBooks = books.map(book => ({
-      wordBookCode: book.code,
-      wordBookName: book.name,
-      description: book.description,
-      totalWordNum: book.total_word_num,
-      userNum: book.userNum || 0,
-      createTime: book.createTime,
-      isHot: book.isHot,
-      isNew: book.isNew
-    }))
-    
-    return this._processWordBooks(formattedBooks)
-  },
-
-  /**
-   * 处理词书数据
-   */
-  _processWordBooks: function (wordBooks) {
-    return wordBooks.map(book => ({
-      ...book,
-      // 添加标签逻辑
-      isHot: book.userNum > 1000, // 超过1000人学习标记为热门
-      isNew: this._isNewBook(book.createTime), // 30天内创建的标记为新书
-      // 确保进度数据
-      userProgressNum: book.userProgressNum || 0,
-      totalWordNum: book.totalWordNum || 0
-    }))
-  },
 
   /**
    * 判断是否为新词书

@@ -188,7 +188,7 @@ Page({
   modifyNickname: function () {
     wx.showModal({
       editable: true,
-      placeholderText: "长度不能超过15",
+      placeholderText: "长度不能超过15个字",
       title: '修改昵称',
       content: '',
       complete: (res) => {
@@ -255,38 +255,30 @@ Page({
           forbidClick: true
         })
         
-        // 使用base64方式上传头像
-        wx.getFileSystemManager().readFile({
+        // 使用form-data方式上传头像文件
+        common.uploadFile({
+          url: '/avatar',
           filePath: res.tempFiles[0].tempFilePath,
-          encoding: 'base64',
-          success: (fileRes) => {
-            const base64Data = 'data:image/jpeg;base64,' + fileRes.data
-            
-            // 通过settings API更新头像（使用base64）
-            common.request({
-              url: '/settings',
-              method: 'PUT',
-              data: {
-                avatarUrl: base64Data
-              }
-            }).then(settingsRes => {
-              console.log('头像更新成功:', settingsRes)
-              Toast.success('修改成功')
-              // 更新页面数据
-              that.setData({
-                avatarUrl: base64Data
-              })
-              // 更新全局数据
-              app.globalData.settings.avatarUrl = base64Data
-            }).catch(err => {
-              console.error('头像更新失败:', err)
-              Toast.fail('保存失败')
+          name: 'avatar',
+          method: 'PUT'
+        }).then(settingsRes => {
+          console.log('头像更新成功:', settingsRes)
+          Toast.success('修改成功')
+          // 更新页面数据 - 使用临时文件路径显示
+          that.setData({
+            avatarUrl: res.tempFiles[0].tempFilePath
+          })
+          // 如果服务器返回了新的头像URL，使用服务器返回的URL
+          if (settingsRes && settingsRes.avatarUrl) {
+            that.setData({
+              avatarUrl: settingsRes.avatarUrl
             })
-          },
-          fail: (error) => {
-            console.error('读取文件失败:', error)
-            Toast.fail('读取图片失败')
+            // 更新全局数据
+            app.globalData.settings.avatarUrl = settingsRes.avatarUrl
           }
+        }).catch(err => {
+          console.error('头像更新失败:', err)
+          Toast.fail('保存失败')
         })
       },
       fail(error) {
@@ -388,22 +380,8 @@ Page({
       })
 
     } else if (type == 'wordbook') {
-
-      this.setData({
-        showPopupVant: true,
-        showActionSheet: true,
-        actionSheetType: 'changeDic',
-        showTabBarShadow: false,
-        actionSheetDesc: '更换词书',
-        actions: [{
-          name: '词书广场'
-        }, {
-          name: '自定义词书'
-        }]
-      })
-      this.getTabBar().setData({
-        show: false
-      })
+      // 显示词书类型选择
+      this._showWordbookTypeSelection()
 
     } else if (type == 'radio') {
 
@@ -438,29 +416,12 @@ Page({
         url: '/pages/settings/settings'
       })
 
-    } else if (type == 'guide') {
-
-      wx.navigateTo({
-        url: '../web-view/web-view?type=userGuideBook&title=用户手册'
-      })
-
     } else if (type == 'feedback') {
 
-      this.setData({
-        showPopupVant: true,
-        showActionSheet: true,
-        actionSheetType: 'feedback',
-        actionSheetDesc: '反馈与建议',
-        actions: [{
-          name: '加入官方QQ反馈6群'
-        }, {
-          name: '通过微信联系我们'
-        }, {
-          name: '通过邮件联系我们'
-        }]
-      })
-      this.getTabBar().setData({
-        show: false
+      // 直接展示business-card图片
+      wx.previewImage({
+        urls: ['/images/others/business-card.jpg'],
+        current: '/images/others/business-card.jpg'
       })
 
     } else if (type == 'sentence') {
@@ -494,6 +455,14 @@ Page({
     } else if (actionSheetType == 'categorySelection') {
 
       this._onSelectActionSheetCategorySelection(e)
+
+    } else if (actionSheetType == 'wordbookType') {
+
+      this._onSelectActionSheetWordbookType(e)
+
+    } else if (actionSheetType == 'examWordbook') {
+
+      this._onSelectActionSheetExamWordbook(e)
 
     }
   },
@@ -546,6 +515,152 @@ Page({
         ? '545536581' : e.detail.name == '微信反馈群'
           ? 'Ace-Oliver' : 'aceword.xyz@gmail.com'}`
     })
+  },
+
+  /**
+   * 显示词书类型选择
+   */
+  _showWordbookTypeSelection: function() {
+    const actions = [
+      { 
+        name: '我的词书', 
+        subname: '我收藏和创建的个人词书',
+        type: 'my'
+      },
+      { 
+        name: '分类词书', 
+        subname: '按学习阶段和考试类型分类的词书',
+        type: 'category'
+      }
+      // { 
+      //   name: '真题词书', 
+      //   subname: '【会员专享】考研英语真题词汇，带真题例句',
+      //   type: 'exam'
+      // }
+    ]
+
+    this.setData({
+      showPopupVant: true,
+      actionSheetType: 'wordbookType',
+      showActionSheet: true,
+      actionSheetDesc: '选择词书类型',
+      actions: actions
+    })
+    this.getTabBar().setData({
+      show: false
+    })
+  },
+
+  /**
+   * 处理词书类型选择
+   */
+  _onSelectActionSheetWordbookType: function (e) {
+    setTimeout(() => {
+      this.onCancelActionSheet()
+    }, 400)
+
+    const selectedAction = this.data.actions.find(action => action.name === e.detail.name)
+    
+    if (selectedAction) {
+      if (selectedAction.type === 'my') {
+        // 选择了我的词书，跳转到我的词书页面
+        setTimeout(() => {
+          wx.navigateTo({
+            url: `/pages/wordbook-all/wordbook-all?categoryCode=99&categoryName=${encodeURIComponent('我的词书')}`
+          })
+        }, 500)
+      } else if (selectedAction.type === 'category') {
+        // 选择了分类词书，显示分类选择
+        setTimeout(() => {
+          this._showCategorySelection()
+        }, 500)
+      }
+      // else if (selectedAction.type === 'exam') {
+      //   // 选择了真题词书，显示真题词书选择
+      //   setTimeout(() => {
+      //     this._showExamWordbookSelection()
+      //   }, 500)
+      // }
+    }
+  },
+
+  /**
+   * 显示分类选择
+   */
+  _showCategorySelection: function() {
+    // 使用新的后端分类代码
+    const categories = [
+      { name: '基础教育阶段', code: '21', description: '小学至高中英语教材词汇，夯实基础' },
+      { name: '大学英语考试', code: '22', description: '四六级、专四专八，大学必备' },
+      { name: '研究生考试', code: '23', description: '考研考博词汇，学术深造必选' },
+      { name: '出国留学考试', code: '24', description: '托福雅思GRE，留学申请利器' },
+      { name: '成人继续教育', code: '25', description: '专升本自考PETS，提升学历必备' }
+    ]
+
+    const actions = categories.map(cat => ({
+      name: cat.name,
+      subname: cat.description,
+      categoryCode: cat.code,
+      description: cat.description
+    }))
+
+    this.setData({
+      showPopupVant: true,
+      actionSheetType: 'categorySelection',
+      showActionSheet: true,
+      actionSheetDesc: '选择词书分类',
+      actions: actions
+    })
+    this.getTabBar().setData({
+      show: false
+    })
+  },
+
+  /**
+   * 显示真题词书选择
+   */
+  _showExamWordbookSelection: function() {
+    const examActions = [
+      { 
+        name: '考研英语一真题', 
+        subname: '2010-2024年考研英语一真题词汇',
+        examType: 'kaoyan1'
+      },
+      { 
+        name: '考研英语二真题', 
+        subname: '2010-2024年考研英语二真题词汇',
+        examType: 'kaoyan2'
+      }
+    ]
+
+    this.setData({
+      showPopupVant: true,
+      actionSheetType: 'examWordbook',
+      showActionSheet: true,
+      actionSheetDesc: '选择真题词书',
+      actions: examActions
+    })
+    this.getTabBar().setData({
+      show: false
+    })
+  },
+
+  /**
+   * 处理真题词书选择
+   */
+  _onSelectActionSheetExamWordbook: function (e) {
+    setTimeout(() => {
+      this.onCancelActionSheet()
+    }, 400)
+
+    const selectedAction = this.data.actions.find(action => action.name === e.detail.name)
+    
+    if (selectedAction && selectedAction.examType) {
+      // 跳转到真题词书页面
+      wx.navigateTo({
+        url: `/pages/exam-wordbook/exam-wordbook?examType=${selectedAction.examType}&examName=${encodeURIComponent(selectedAction.name)}`
+      })
+    }
   },
   onDateTimePickerCancel: function () {
     this.getTabBar().setData({
@@ -688,28 +803,36 @@ Page({
    * @event
    */
   onOpenVip: function () {
-    // 小程序限制，直接弹出modal提示
-    wx.showModal({
-      title: '温馨提示',
-      content: '受微信限制，iOS暂无法开通',
-      showCancel: true,
-      confirmText: '联系客服',
-      cancelText: '我知道了',
-      success: (res) => {
-        if (res.confirm) {
-          // 复制客服微信号
-          wx.setClipboardData({
-            data: 'MiddleRain_',
-            success: () => {
-              wx.showToast({
-                title: '客服微信号已复制',
-                icon: 'success'
-              })
-            }
-          })
+    // 检查当前系统是否为iOS
+    if (app.globalData.isIOS) {
+      // iOS系统显示限制提示
+      wx.showModal({
+        title: '温馨提示',
+        content: '受微信限制，iOS暂无法开通会员',
+        showCancel: true,
+        confirmText: '联系客服',
+        cancelText: '我知道了',
+        success: (res) => {
+          if (res.confirm) {
+            // 复制客服微信号
+            wx.setClipboardData({
+              data: 'MiddleRain_',
+              success: () => {
+                wx.showToast({
+                  title: '客服微信号已复制',
+                  icon: 'success'
+                })
+              }
+            })
+          }
         }
-      }
-    })
+      })
+    } else {
+      // 安卓系统直接跳转到VIP页面
+      wx.navigateTo({
+        url: '/pages/vip/vip?event=vip_mine'
+      })
+    }
   },
 
   /**

@@ -30,7 +30,7 @@ const config = {
   cellInfo_2: [{
       imgName: "wordbook",
       imgNameDark: "wordbook-dark",
-      text: "词书设置",
+      text: "选择词书",
     },
     {
       imgName: "settings",
@@ -39,11 +39,6 @@ const config = {
     },
   ],
   cellInfo_3: [{
-      imgName: "guide",
-      imgNameDark: "guide-dark",
-      text: "用户手册",
-    },
-    {
       imgName: "feedback",
       imgNameDark: "feedback-dark",
       text: "反馈与建议",

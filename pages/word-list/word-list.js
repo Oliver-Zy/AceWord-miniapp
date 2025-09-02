@@ -9,7 +9,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    wordList: [],
+    wordGroupsByDate: [], // 按日期分组的单词数据 [{date: 'YYYYMMDD', dateDisplay: 'X月X日', wordList: [...], wordCount: N}]
     wordBookMyInfo: {},
     isLoaded: false, // 标记是否已完成加载
     // 单词弹窗相关
@@ -19,7 +19,12 @@ Page({
     // 释义显示状态
     visibleMeanings: {}, // 用于记录哪些单词的释义是可见的
     // 选择功能
-    selectedWordIds: [] // 选中的单词ID列表
+    selectedWordIds: [], // 选中的单词ID列表
+    // 历史数据加载相关
+    currentDate: '', // 当前加载的日期（用于追溯）
+    todayDate: '', // 今日日期（固定不变，用于WXS判断）
+    loadedDates: [], // 已加载的日期列表
+    isLoadingMore: false // 是否正在加载更多数据
   },
 
   /**
@@ -27,6 +32,12 @@ Page({
    */
   onLoad: async function (options) {
     this._setInitInfo()
+    // 设置固定的今日日期，供WXS使用
+    const todayDate = app.globalData.todayDate
+    this.setData({
+      todayDate: todayDate,
+      currentDate: todayDate
+    })
     await this._loadTodayWords()
   },
 
@@ -56,8 +67,9 @@ Page({
    * 监听单词项点击事件（显示单词弹窗）
    */
   onWordItemTap: async function (e) {
-    const index = e.currentTarget.dataset.index
-    const wordItem = this.data.wordList[index]
+    const dateIndex = e.currentTarget.dataset.dateIndex
+    const wordIndex = e.currentTarget.dataset.wordIndex
+    const wordItem = this.data.wordGroupsByDate[dateIndex].wordList[wordIndex]
     
     if (wordItem && wordItem.wordName) {
       // 优先使用预加载的wordInfo数据
@@ -143,14 +155,23 @@ Page({
    */
   onHeaderEvent: function (e) {
     if (e.detail.type === 'selectAll') {
-      if (this.data.selectedWordIds.length === this.data.wordList.length) {
+      const isSelectAll = e.detail.isSelectAll
+      
+      // 获取所有单词ID
+      const allWordIds = []
+      this.data.wordGroupsByDate.forEach(group => {
+        group.wordList.forEach(word => {
+          allWordIds.push(word.wordId)
+        })
+      })
+      
+      if (isSelectAll) {
         // 当前是全选状态，执行取消全选
         this.setData({
           selectedWordIds: []
         })
       } else {
         // 当前不是全选状态，执行全选
-        const allWordIds = this.data.wordList.map(item => item.wordId)
         this.setData({
           selectedWordIds: allWordIds
         })
@@ -217,15 +238,96 @@ Page({
   },
 
   /**
+   * 加载更多历史练习单词
+   */
+  onLoadMore: async function () {
+    if (this.data.isLoadingMore) {
+      return
+    }
+
+    try {
+      this.setData({ isLoadingMore: true })
+      Toast.loading({ message: '加载中...', forbidClick: true })
+
+      // 获取前一天的日期
+      const previousDate = this._getPreviousDate(this.data.currentDate)
+      
+      // 检查是否已经加载过这个日期
+      if (this.data.loadedDates.includes(previousDate)) {
+        Toast.clear()
+        this.setData({ isLoadingMore: false })
+        return
+      }
+
+      // 获取词书映射信息（如果还没有的话）
+      let wordBookCodeToName = this.data.wordBookCodeToName
+      if (!wordBookCodeToName) {
+        wordBookCodeToName = await common.request({
+          url: `/wordbooks-map`
+        })
+        this.setData({ wordBookCodeToName })
+      }
+
+      // 获取历史练习单词数据
+      const pageInfo = await common.request({
+        url: `/wordcards/practice?date=${previousDate}`
+      })
+
+      if (pageInfo.data && pageInfo.data.length > 0) {
+        // 处理新的单词列表数据
+        const newWordList = this._processWordList(pageInfo.data, wordBookCodeToName, previousDate)
+        
+        // 预加载新单词的完整信息
+        await this._preloadWordInfos(newWordList)
+
+        // 创建新的日期分组
+        const newDateGroup = {
+          date: previousDate,
+          wordList: newWordList,
+          wordCount: newWordList.length
+        }
+
+        // 添加到现有分组列表
+        const updatedWordGroupsByDate = [...this.data.wordGroupsByDate, newDateGroup]
+        const updatedLoadedDates = [...this.data.loadedDates, previousDate]
+
+        this.setData({
+          wordGroupsByDate: updatedWordGroupsByDate,
+          currentDate: previousDate,
+          loadedDates: updatedLoadedDates
+        })
+
+        Toast.success(`加载了 ${this._formatDateDisplay(previousDate)} 的 ${newWordList.length} 个单词`)
+      } else {
+        // 即使没有数据，也要更新currentDate以便继续往前追溯
+        this.setData({
+          currentDate: previousDate,
+          loadedDates: [...this.data.loadedDates, previousDate]
+        })
+        Toast(`${this._formatDateDisplay(previousDate)} 暂无练习记录`)
+      }
+
+    } catch (error) {
+      console.error('Failed to load more words:', error)
+      Toast.fail('加载失败，请稍后重试')
+    } finally {
+      this.setData({ isLoadingMore: false })
+      Toast.clear()
+    }
+  },
+
+  /**
    * 加载今日练习单词数据
    */
   _loadTodayWords: async function () {
     try {
       Toast.loading()
       
+      const todayDate = app.globalData.todayDate
+      
       // 获取今日练习单词卡片数据（参考calendar页面）
       const pageInfo = await common.request({
-        url: `/wordcards/practice?date=${app.globalData.todayDate}`
+        url: `/wordcards/practice?date=${todayDate}`
       })
       
       // 获取词书映射信息
@@ -250,11 +352,20 @@ Page({
       // 预加载所有单词的完整信息
       await this._preloadWordInfos(wordList)
 
+      // 创建今日的日期分组
+      const todayDateGroup = {
+        date: todayDate,
+        wordList: wordList,
+        wordCount: wordList.length
+      }
+
       this.setData({
-        wordList,
+        wordGroupsByDate: [todayDateGroup],
         wordBookMyInfo,
+        wordBookCodeToName, // 保存词书映射信息供后续使用
         isRefresherTriggered: false,
-        isLoaded: true
+        isLoaded: true,
+        loadedDates: [todayDate]
       })
       
       Toast.clear()
@@ -311,7 +422,7 @@ Page({
   /**
    * 处理单词列表数据
    */
-  _processWordList: function (wordCardList, wordBookCodeToName) {
+  _processWordList: function (wordCardList, wordBookCodeToName, practiceDate = null) {
     if (!wordCardList || wordCardList.length === 0) {
       return []
     }
@@ -326,10 +437,11 @@ Page({
             wordName: wordInfo.wordName,
             wordCardID: wordCard.wordCardID,
             wordIndex: index,
-            // 创建唯一的单词ID：卡片ID + 单词索引
-            wordId: `${wordCard.wordCardID}_${index}`,
+            // 创建唯一的单词ID：卡片ID + 单词索引 + 日期（避免重复）
+            wordId: `${wordCard.wordCardID}_${index}_${practiceDate || app.globalData.todayDate}`,
             practiceNum: wordCard.realPracticeNum || 0,
             createDate: wordCard.createDate,
+            practiceDate: practiceDate || app.globalData.todayDate, // 添加练习日期
             wordBookName: wordBookCodeToName[wordCard.wordBookCode] || '未知词书',
             wordBookCode: wordCard.wordBookCode,
             isDeleted: wordCard.isDeleted || false,
@@ -477,6 +589,37 @@ Page({
       naviBarHeight: wx.getMenuButtonBoundingClientRect().bottom + 6,
       isIOS: app.globalData.isIOS,
     })
+  },
+
+  /**
+   * 获取前一天的日期
+   */
+  _getPreviousDate: function (currentDate) {
+    // currentDate 格式：YYYYMMDD
+    const year = parseInt(currentDate.substring(0, 4))
+    const month = parseInt(currentDate.substring(4, 6)) - 1 // JavaScript月份从0开始
+    const day = parseInt(currentDate.substring(6, 8))
+    
+    const date = new Date(year, month, day)
+    date.setDate(date.getDate() - 1) // 减去一天
+    
+    const prevYear = date.getFullYear()
+    const prevMonth = String(date.getMonth() + 1).padStart(2, '0')
+    const prevDay = String(date.getDate()).padStart(2, '0')
+    
+    return `${prevYear}${prevMonth}${prevDay}`
+  },
+
+  /**
+   * 格式化日期显示
+   */
+  _formatDateDisplay: function (dateString) {
+    // dateString 格式：YYYYMMDD
+    const year = dateString.substring(0, 4)
+    const month = dateString.substring(4, 6)
+    const day = dateString.substring(6, 8)
+    
+    return `${year}年${month}月${day}日`
   },
 
   onShareAppMessage() {
