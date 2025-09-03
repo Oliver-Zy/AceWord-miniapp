@@ -74,29 +74,29 @@
     <!-- content -->
 
     <!-- S 真题例句 content -->
-    <view wx:if="{{wordInfo.examExamples && wordInfo.examExamples.length > 0}}" class="content">
+    <!-- <view wx:if="{{wordInfo.examExamples && wordInfo.examExamples.length > 0}}" class="content">
         <view class="exam-title-container">
           <image src="/images/icons/vip.png" class="vip-icon-small"></image>
           <text class="title">真题例句</text>
         </view>
-      <view style="height:4px;"></view>
+      <view style="height:4px;"></view> -->
       
       <!-- 真题例句列表 -->
-      <block wx:for="{{wordInfo.examExamples}}" wx:key="year" wx:if="{{index < 3}}">
+      <!-- <block wx:for="{{wordInfo.examExamples}}" wx:key="year" wx:if="{{index < 3}}">
         <view class="exam-example-item">
           <rich-text class="english exam-english" nodes="{{item.english}}"></rich-text>
           <view style="height:6px;"></view>
           <rich-text class="chinese exam-chinese" nodes="{{item.chinese}}"></rich-text>
         </view>
         <view wx:if="{{index < wordInfo.examExamples.length - 1 && index < 2}}" class="exam-divider"></view>
-      </block>
+      </block> -->
       
       <!-- 查看更多按钮 -->
-      <view wx:if="{{wordInfo.examExamples.length > 3}}" class="view-more-btn" bind:tap="onViewMoreExamples">
+      <!-- <view wx:if="{{wordInfo.examExamples.length > 3}}" class="view-more-btn" bind:tap="onViewMoreExamples">
         <text class="view-more-text">查看更多真题例句 ({{wordInfo.examExamples.length - 3}})</text>
         <image src="/images/icons/right.png" class="arrow-icon"></image>
       </view>
-    </view>
+    </view> -->
     <!-- E 真题例句 content -->
 
   </view>

@@ -72,7 +72,7 @@
 .proficiency-text {
   font-family: var(--simHei);
   font-size: 13px;
-  color: #86909C;
+  color: #C9CDD4;
   line-height: 1.4;
 }
 
@@ -180,7 +180,7 @@
   }
 
   .proficiency-text {
-    color: #9598A9;
+    color: #6B7280;
   }
 
   .practice-count {

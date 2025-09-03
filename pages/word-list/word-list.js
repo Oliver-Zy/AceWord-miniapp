@@ -337,6 +337,11 @@ Page({
               // 预加载新单词的完整信息
               await this._preloadWordInfos(newWordList)
 
+              // 按熟练度排序：最陌生的（opacity最低）排在前面
+              newWordList.sort((a, b) => {
+                return (a.opacity || 0) - (b.opacity || 0)
+              })
+
               // 创建新的日期分组
               const newDateGroup = {
                 date: previousDate,
@@ -436,6 +441,11 @@ Page({
             if (wordList.length > 0) {
               // 预加载单词的完整信息
               await this._preloadWordInfos(wordList)
+
+              // 按熟练度排序：最陌生的（opacity最低）排在前面
+              wordList.sort((a, b) => {
+                return (a.opacity || 0) - (b.opacity || 0)
+              })
 
               // 创建日期分组
               const dateGroup = {
@@ -559,12 +569,14 @@ Page({
             wordBookName: wordBookCodeToName[wordCard.wordBookCode] || '未知词书',
             wordBookCode: wordCard.wordBookCode,
             isDeleted: wordCard.isDeleted || false,
+            // 保存原始的opacity值用于排序
+            opacity: wordInfo.opacity || 0,
             // 添加自定义释义和完整的wordInfo数据
             selfDef: wordInfo.selfDef || wordInfo.wordCN || '',
             wordCN: wordInfo.wordCN || '',
             wordInfo: wordInfo,
-            // 添加熟练度文案
-            proficiencyText: this._getProficiencyText(wordCard.realPracticeNum || 0)
+            // 添加熟练度文案 - 使用opacity分数
+            proficiencyText: this._getProficiencyText(wordInfo.opacity || 0)
           })
         })
       }
@@ -574,19 +586,20 @@ Page({
   },
 
   /**
-   * 根据练习次数获取熟练度文案
+   * 根据熟练度分数获取熟练度文案
+   * @param {number} opacity 熟练度分数 (0-100)
    */
-  _getProficiencyText: function(practiceNum) {
-    if (practiceNum === 0) {
-      return '非常陌生'
-    } else if (practiceNum <= 2) {
-      return '初步了解'
-    } else if (practiceNum <= 5) {
-      return '比较熟悉'
-    } else if (practiceNum <= 10) {
-      return '相当熟练'
-    } else {
+  _getProficiencyText: function(opacity) {
+    if (opacity >= 80) {
       return '完全掌握'
+    } else if (opacity >= 60) {
+      return '比较熟练'
+    } else if (opacity >= 40) {
+      return '初步了解'
+    } else if (opacity >= 20) {
+      return '略有印象'
+    } else {
+      return '非常陌生'
     }
   },
 

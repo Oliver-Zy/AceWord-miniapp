@@ -452,7 +452,10 @@ Page({
     let word = this.data.wordInfoList.splice(this.data.wordIndex, 1)
     console.log('Delete word from card:', word)
     
-    let wordCardIDCheckedList = app.globalData.practiceInfo.wordCardIDCheckedList
+    // 一键复习模式使用cardIDList，其他模式使用wordCardIDCheckedList
+    let wordCardIDCheckedList = this.data.entryPage === 'quickReview'
+      ? app.globalData.practiceInfo.cardIDList
+      : app.globalData.practiceInfo.wordCardIDCheckedList
     
     try {
       // 发请求删除单词
@@ -1027,6 +1030,9 @@ Page({
       data: practiceWordReportArrayList
     })
 
+    // 智能更新单词熟练度
+    await this._updateWordFamiliarity(wordPracticeRecordDict)
+
 
     // 从已删除页面进入，也无需保存
     if (this.data.entryPage != 'wordgroup' && this.data.entryPage != 'deleted') {
@@ -1183,6 +1189,142 @@ Page({
       backgroundAudioManager.title = word
       backgroundAudioManager.src = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=${app.globalData.settings.pronType == 'US' ? 0 : 1}`
     })
+  },
+
+  /**
+   * 智能更新单词熟练度
+   * 
+   * @inner
+   * @param {Object} wordPracticeRecordDict 练习记录字典
+   */
+  _updateWordFamiliarity: async function (wordPracticeRecordDict) {
+    try {
+      // 构建熟练度更新数据
+      const familiarityUpdateList = []
+      
+      // 获取卡片ID列表
+      const wordCardIDCheckedList = this.data.entryPage === 'quickReview'
+        ? app.globalData.practiceInfo.cardIDList
+        : app.globalData.practiceInfo.wordCardIDCheckedList
+
+      // 为每个练习过的单词计算熟练度
+      for (let word in wordPracticeRecordDict) {
+        if (wordPracticeRecordDict.hasOwnProperty(word)) {
+          const record = wordPracticeRecordDict[word]
+          const familiar = this._calculateFamiliarity(record.remember, record.vague)
+          
+          // 找到对应的单词信息
+          const wordInfo = this.data.wordInfoList.find(item => item.word === word)
+          let cardID = null
+          
+          // 尝试多种方式获取cardID
+          if (wordInfo) {
+            // 方式1: 直接从wordInfo获取
+            cardID = wordInfo.cardID || wordInfo.wordCardID
+            
+            // 方式2: 如果没有cardID，尝试从wordCardIDCheckedList获取
+            if (!cardID) {
+              const wordIndex = this.data.wordInfoList.findIndex(item => item.word === word)
+              if (wordIndex >= 0 && wordIndex < wordCardIDCheckedList.length) {
+                cardID = wordCardIDCheckedList[wordIndex]
+              }
+            }
+          }
+          
+          // 方式3: 如果还是没有cardID，使用第一个可用的cardID（适用于单卡片多单词的情况）
+          if (!cardID && wordCardIDCheckedList.length > 0) {
+            cardID = wordCardIDCheckedList[0]
+          }
+          
+          if (cardID) {
+            familiarityUpdateList.push({
+              word: word,
+              familiar: familiar,
+              cardID: cardID.toString() // 确保cardID是字符串
+            })
+          } else {
+            console.warn(`无法获取单词 ${word} 的cardID，跳过熟练度更新`)
+          }
+        }
+      }
+
+      // 如果有需要更新的数据，调用批量更新接口
+      if (familiarityUpdateList.length > 0) {
+        console.log('准备更新单词熟练度:', familiarityUpdateList)
+        
+        try {
+          const response = await common.request({
+            url: `/word/familiar/batch`,
+            method: 'PUT',
+            data: familiarityUpdateList
+          })
+          
+          if (response && response.errcode === 0) {
+            console.log(`单词熟练度更新成功，共更新${familiarityUpdateList.length}个单词`)
+          } else {
+            console.warn('单词熟练度更新响应异常:', response)
+          }
+        } catch (apiError) {
+          console.error('调用熟练度更新接口失败:', apiError)
+          throw apiError // 重新抛出错误，让外层catch处理
+        }
+      } else {
+        console.log('没有需要更新熟练度的单词')
+      }
+    } catch (error) {
+      console.error('更新单词熟练度失败:', error)
+      // 熟练度更新失败不影响主流程，只记录错误
+    }
+  },
+
+  /**
+   * 计算单词熟练度
+   * 
+   * @inner
+   * @param {number} rememberCount 记住次数
+   * @param {number} vagueCount 模糊次数
+   * @returns {number} 熟练度分数 (0-100)
+   */
+  _calculateFamiliarity: function (rememberCount, vagueCount) {
+    // 智能熟练度计算算法
+    const totalCount = rememberCount + vagueCount
+    
+    if (totalCount === 0) {
+      return 0 // 没有练习记录
+    }
+    
+    // 基础分数：记住率 * 100
+    const rememberRate = rememberCount / totalCount
+    let baseScore = Math.round(rememberRate * 100)
+    
+    // 根据练习次数调整分数
+    if (totalCount === 1) {
+      // 只练习了一次
+      if (rememberCount === 1) {
+        baseScore = Math.min(baseScore, 75) // 最高75分
+      } else {
+        baseScore = Math.max(baseScore, 10) // 最低10分
+      }
+    } else if (totalCount === 2) {
+      // 练习了两次
+      if (rememberCount === 2) {
+        baseScore = Math.min(baseScore, 85) // 最高85分
+      } else if (rememberCount === 1) {
+        baseScore = Math.min(baseScore, 60) // 最高60分
+      }
+    } else if (totalCount >= 3) {
+      // 练习了三次或以上，可以达到满分
+      if (rememberCount === totalCount) {
+        baseScore = 100 // 全部记住，满分
+      } else if (rememberRate >= 0.8) {
+        baseScore = Math.min(baseScore, 90) // 80%以上记住率，最高90分
+      } else if (rememberRate >= 0.6) {
+        baseScore = Math.min(baseScore, 75) // 60%以上记住率，最高75分
+      }
+    }
+    
+    // 确保分数在0-100范围内
+    return Math.max(0, Math.min(100, baseScore))
   },
 
 

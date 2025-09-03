@@ -1328,10 +1328,29 @@ Page({
     this.onLoad()
   },
 
-  onShareAppMessage() {
+  onShareAppMessage(options) {
+    console.log('分享来源:', options.from) // button 或 menu
     return {
       title: '快来AceWord背单词吧！',
-      path: 'pages/index/index',
+      path: '/pages/index/index',
+      imageUrl: '' // 可以设置自定义分享图片
+    }
+  },
+
+  onShareTimeline() {
+    return {
+      title: 'AceWord - 智能背单词助手',
+      query: '', // 可以携带参数
+      imageUrl: '' // 可以设置自定义分享图片，朋友圈要求1:1比例
+    }
+  },
+
+  onAddToFavorites(res) {
+    console.log('用户收藏页面')
+    return {
+      title: 'AceWord - 智能背单词助手',
+      imageUrl: '/images/logos/logo.png', // 使用应用Logo作为收藏图标
+      query: 'from=favorites'
     }
   },
 
