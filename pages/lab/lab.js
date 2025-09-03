@@ -26,10 +26,11 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
+    // lab页面不在TabBar中，隐藏TabBar
     if (typeof this.getTabBar === 'function' &&
       this.getTabBar()) {
       this.getTabBar().setData({
-        selected: 1  // 调整：移除word-list后，lab从索引2改为1
+        show: false
       })
     }
   },

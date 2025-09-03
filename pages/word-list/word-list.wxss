@@ -7,16 +7,38 @@
 
 /* 单词列表容器 */
 .word-list-container {
-  margin: 12px 16px 0 16px;
+  margin: 0 16px;
+}
+
+/* 日期卡片 */
+.date-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #F1F3F4;
+  overflow: hidden;
+}
+
+/* 折叠面板自定义样式 */
+.collapse-item {
+  background: transparent !important;
+  --collapse-item-content-padding: 0;
+}
+
+/* 日期单词数量 */
+.date-word-count {
+  font-size: 13px;
+  color: #86909C;
+  font-weight: 500;
 }
 
 /* 日期分组容器 */
 .date-group-container {
-  background: #FFFFFF;
-  border: 1px solid #F1F3F4;
-  border-radius: 12px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
   overflow: hidden;
-  margin-top: 8px;
+  margin-top: 0;
 }
 
 /* 单词项 */
@@ -135,9 +157,14 @@
     /* 深色模式下与紫色系统协调的渐变，与首页保持一致 */
   }
 
-  .word-list-container {
-    background: #2A2D3A;
-    border: 1px solid #3A3F4B;
+  .date-card {
+    background: #282A3D;
+    border: 1px solid #3A3D50;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .date-word-count {
+    color: #9598A9;
   }
 
   .word-name {

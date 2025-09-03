@@ -877,11 +877,7 @@ Page({
     console.log("triggerTime", triggerTime)
     console.log(this.zeroPadding(triggerTime.minute))
 
-    // 调试头像信息
-    console.log("=== 头像调试信息 ===")
-    console.log("全局头像URL:", app.globalData.settings.avatarUrl)
-    console.log("页面头像URL:", this.data.avatarUrl)
-    console.log("昵称:", app.globalData.settings.nickName)
+    // 头像信息已加载
     console.log("==================")
 
     this.setData({
@@ -896,7 +892,7 @@ Page({
     if (typeof this.getTabBar === 'function' &&
       this.getTabBar()) {
       this.getTabBar().setData({
-        selected: 2  // 调整：移除word-list后，mine从索引3改为2
+        selected: 3  // mine页面在TabBar中的索引
       })
     }
   },

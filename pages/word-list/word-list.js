@@ -24,7 +24,11 @@ Page({
     currentDate: '', // 当前加载的日期（用于追溯）
     todayDate: '', // 今日日期（固定不变，用于WXS判断）
     loadedDates: [], // 已加载的日期列表
-    isLoadingMore: false // 是否正在加载更多数据
+    isLoadingMore: false, // 是否正在加载更多数据
+    hasMoreData: true, // 是否还有更多数据可以加载
+    // 折叠展开相关
+    activeNames: [], // 当前展开的日期列表
+    defaultLoadDays: 5 // 默认加载天数
   },
 
   /**
@@ -228,6 +232,15 @@ Page({
   },
 
   /**
+   * 监听折叠面板变化事件
+   */
+  onCollapseChange: function(e) {
+    this.setData({
+      activeNames: e.detail
+    })
+  },
+
+  /**
    * 监听开始练习按钮
    */
   onPractice: async function () {
@@ -273,7 +286,7 @@ Page({
   },
 
   /**
-   * 加载更多历史练习单词（一次加载7天）
+   * 加载更多历史练习单词（一次加载5天）
    */
   onLoadMore: async function () {
     if (this.data.isLoadingMore) {
@@ -282,7 +295,7 @@ Page({
 
     try {
       this.setData({ isLoadingMore: true })
-      Toast.loading({ message: '正在加载历史记录...', forbidClick: true })
+      Toast.loading({ message: '加载中...', forbidClick: true })
 
       // 获取词书映射信息（如果还没有的话）
       let wordBookCodeToName = this.data.wordBookCodeToName
@@ -293,8 +306,8 @@ Page({
         this.setData({ wordBookCodeToName })
       }
 
-      // 一次性加载7天的数据
-      const daysToLoad = 7
+      // 一次性加载5天的数据
+      const daysToLoad = 5
       const newDateGroups = []
       let currentDate = this.data.currentDate
       let totalWordsLoaded = 0
@@ -359,9 +372,11 @@ Page({
 
         Toast.success(`加载了${daysWithData}天的历史记录，共${totalWordsLoaded}个单词`)
       } else {
+        // 没有更多数据了
         this.setData({
           currentDate: currentDate,
-          loadedDates: this.data.loadedDates
+          loadedDates: this.data.loadedDates,
+          hasMoreData: false
         })
         Toast('近期暂无更多练习记录')
       }
@@ -380,7 +395,7 @@ Page({
    */
   _loadTodayWords: async function () {
     try {
-      Toast.loading({ message: '加载练习记录...', forbidClick: true })
+      Toast.loading({ message: '加载中...', forbidClick: true })
       
       const todayDate = app.globalData.todayDate
       
@@ -400,8 +415,8 @@ Page({
         userProgressNum: currentWordBook.userProgressNum
       }
 
-      // 一次性加载今日+历史7天的数据
-      const daysToLoad = 8 // 今天 + 历史7天
+      // 一次性加载今日+历史4天的数据（总共5天）
+      const daysToLoad = this.data.defaultLoadDays
       const dateGroups = []
       const loadedDates = []
       let currentDate = todayDate
@@ -447,6 +462,9 @@ Page({
         }
       }
 
+      // 设置默认展开第一个日期
+      const activeNames = dateGroups.length > 0 ? [dateGroups[0].date] : []
+      
       this.setData({
         wordGroupsByDate: dateGroups,
         wordBookMyInfo,
@@ -454,13 +472,15 @@ Page({
         isRefresherTriggered: false,
         isLoaded: true,
         loadedDates: loadedDates,
-        currentDate: currentDate // 设置为最后加载的日期，便于后续"加载更多"
+        currentDate: currentDate, // 设置为最后加载的日期，便于后续"加载更多"
+        activeNames: activeNames, // 默认展开第一个日期
+        hasMoreData: true // 重置加载更多状态
       })
       
       Toast.clear()
       
       if (totalWordsLoaded > 0) {
-        Toast.success(`已加载${dateGroups.length}天的练习记录，共${totalWordsLoaded}个单词`)
+        // Toast.success('加载成功')
       }
       
     } catch (error) {

@@ -17,54 +17,62 @@
     <!-- S word list -->
     <view wx:if="{{tools.getTotalWordCount(wordGroupsByDate) > 0}}" class="word-list-container">
       <block wx:for="{{wordGroupsByDate}}" wx:key="date" wx:for-item="dateGroup">
-        <!-- S date group header -->
-        <ace-header 
-          titleType="textWithCount" 
-          text="{{dateGroup.dateDisplay || tools.formatDateDisplay(dateGroup.date)}}" 
-          arrLen="{{dateGroup.wordCount}}" 
-          iconType="selectAll" 
-          isSelectAll="{{tools.isDateGroupAllSelected(dateGroup, selectedWordIds)}}"
-          bind:headerEvent="onDateGroupHeaderEvent"
-          data-date-index="{{index}}" />
-        <!-- E date group header -->
-        
-        <view class="date-group-container">
-          <block wx:for="{{dateGroup.wordList}}" wx:key="wordId" wx:for-item="wordItem" wx:for-index="wordIndex">
-            <view class="word-item" 
-                  bind:tap="onMeaningTap" 
-                  data-word-id="{{wordItem.wordId}}"
-                  hover-class="none">
-              <!-- S word item content -->
-              <view class="word-item-content">
-                <!-- S left content -->
-                <view class="word-item-left">
-                  <view class="word-name" catchtap="onWordItemTap" data-date-index="{{index}}" data-word-index="{{wordIndex}}" hover-class="none">{{wordItem.wordName}}</view>              
-                  <view class="meaning-text {{visibleMeanings[wordItem.wordId] ? '' : 'blurred'}}">
-                    {{wordItem.selfDef || wordItem.wordCN || '暂无释义'}}
+        <view class="date-card">
+          <van-collapse 
+            value="{{ activeNames }}" 
+            bind:change="onCollapseChange"
+            border="{{ false }}">
+            
+            <van-collapse-item 
+              title="{{dateGroup.dateDisplay || tools.formatDateDisplay(dateGroup.date)}}" 
+              name="{{dateGroup.date}}"
+              custom-class="collapse-item">
+              
+              <view slot="value" class="date-word-count">{{dateGroup.wordCount}}词</view>
+              
+              <!-- S word list content -->
+              <view class="date-group-container">
+                <block wx:for="{{dateGroup.wordList}}" wx:key="wordId" wx:for-item="wordItem" wx:for-index="wordIndex">
+                  <view class="word-item" 
+                        bind:tap="onMeaningTap" 
+                        data-word-id="{{wordItem.wordId}}"
+                        hover-class="none">
+                    <!-- S word item content -->
+                    <view class="word-item-content">
+                      <!-- S left content -->
+                      <view class="word-item-left">
+                        <view class="word-name" catchtap="onWordItemTap" data-date-index="{{index}}" data-word-index="{{wordIndex}}" hover-class="none">{{wordItem.wordName}}</view>              
+                        <view class="meaning-text {{visibleMeanings[wordItem.wordId] ? '' : 'blurred'}}">
+                          {{wordItem.selfDef || wordItem.wordCN || '暂无释义'}}
+                        </view>
+                      </view>
+                      <!-- E left content -->
+
+                      <!-- S right content -->
+                      <view class="word-item-right">
+                        <view class="proficiency-text">{{wordItem.proficiencyText}}</view>
+                      </view>
+                      <!-- E right content -->
+                    </view>
+                    <!-- E word item content -->
+
+                    <!-- S divider -->
+                    <view wx:if="{{wordIndex !== dateGroup.wordList.length - 1}}" class="divider"></view>
+                    <!-- E divider -->
                   </view>
-                </view>
-                <!-- E left content -->
-
-                <!-- S right content -->
-                <view class="word-item-right">
-                  <view class="proficiency-text">{{wordItem.proficiencyText}}</view>
-                </view>
-                <!-- E right content -->
+                </block>
               </view>
-              <!-- E word item content -->
-
-              <!-- S divider -->
-              <view wx:if="{{wordIndex !== dateGroup.wordList.length - 1}}" class="divider"></view>
-              <!-- E divider -->
-            </view>
-          </block>
+              <!-- E word list content -->
+              
+            </van-collapse-item>
+            
+          </van-collapse>
         </view>
         
         <!-- 日期分组间距 -->
-        <view wx:if="{{index !== wordGroupsByDate.length - 1}}" style="height: 16px;"></view>
+        <view wx:if="{{index !== wordGroupsByDate.length - 1}}" style="height: 12px;"></view>
       </block>
     </view>
-    <view style="height:22px;"></view>
     <!-- E word list -->
     
     <!-- S empty state -->
@@ -74,11 +82,17 @@
     </view>
     <!-- E empty state -->
 
-    <!-- S load more button -->
-    <view wx:if="{{isLoaded && wordGroupsByDate.length > 0}}" style="padding:28px 0;display:flex;justify-content:center;align-items:center;gap:12px;">
-      <ace-button size="small" text="{{isLoadingMore ? '加载中...' : '加载更多'}}" bind:btnEvent="onLoadMore" />
+    <!-- S load more section -->
+    <view wx:if="{{isLoaded && wordGroupsByDate.length > 0 && hasMoreData && !isLoadingMore}}" style="padding:28px 0;display:flex;justify-content:center;align-items:center;gap:12px;">
+      <ace-button size="small" text="加载更多" bind:btnEvent="onLoadMore" />
     </view>
-    <!-- E load more button -->
+    
+    <!-- S end divider -->
+    <view wx:if="{{isLoaded && wordGroupsByDate.length > 0 && !hasMoreData}}" style="padding:28px 0;display:flex;justify-content:center;">
+      <text style="font-family:var(--poppins-italic);font-size:12px;color:#7987A3;">- Rome wasn't built in a day -</text>
+    </view>
+    <!-- E end divider -->
+    <!-- E load more section -->
 
     <view style="height:{{selectedWordIds.length != 0 ? 62 : 0}}px;"></view>
   </scroll-view>
