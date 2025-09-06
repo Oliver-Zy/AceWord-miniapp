@@ -9,10 +9,12 @@ const {
 } = require('../../models/handler.js')
 const { logger } = require('../../utils/logger.js')
 const { dailyLimits } = require('../../utils/dailyLimits.js')
+const { IndexService } = require('./indexService.js')
 
 const common = new Common()
 const http = new HTTP()
 const shareCardHandler = new ShareCardHandler()
+const indexService = new IndexService()
 
 import Toast from '../../miniprogram_npm/@vant/weapp/toast/toast'
 const innerAudioContext = wx.createInnerAudioContext()
@@ -202,6 +204,12 @@ Page({
       
       // 检查是否需要自动添加卡片以满足每日计划（首页加载时）
       const finalCardList = await this._autoAddCardsForDailyTarget(todayCardList, settings.dailyTargetNum, 'onLoad')
+      
+      // 自动添加完成后，同步最终的卡片数量到 dailyLimits
+      this._syncTodayCardCount(finalCardList)
+      
+      // 同步完成后，重新更新按钮状态
+      this._updateAddCardButtonText()
       
       // 自动添加完成后，如果最终还是没有卡片，才显示空白卡片
       if (finalCardList.length === 0) {
@@ -1407,8 +1415,37 @@ Page({
           showCancel: false,
           confirmText: '立即开通',
           success: () => {
+            // 注释掉VIP页面跳转，改为显示客服联系弹窗
+            /*
             wx.navigateTo({
               url: `/pages/vip/vip?event=${'vip_wordgroup'}`
+            })
+            */
+            wx.showModal({
+              title: '联系客服',
+              content: '如需升级会员，请联系客服\n客服微信：MiddleRain_',
+              confirmText: '复制',
+              cancelText: '我知道了',
+              success: (res) => {
+                if (res.confirm) {
+                  wx.setClipboardData({
+                    data: 'MiddleRain_',
+                    success: () => {
+                      wx.showToast({
+                        title: '客服微信号已复制',
+                        icon: 'success'
+                      })
+                    },
+                    fail: () => {
+                      wx.showToast({
+                        title: '复制失败，请手动复制：MiddleRain_',
+                        icon: 'none',
+                        duration: 3000
+                      })
+                    }
+                  })
+                }
+              }
             })
           }
         })
@@ -1441,10 +1478,7 @@ Page({
 
       // 如果最新的卡片是loading卡片，则向服务端请求新添一张
       if (todayCardList[todayCardList.length - 1]._type == 'loading') {
-        let wordCard = await common.request({
-          url: '/wordcard',
-          method: 'POST'
-        })
+        let wordCard = await indexService.addWordCard()
         todayCardList.pop()
         todayCardList.push(wordCard)
         this.setData({
@@ -1459,6 +1493,9 @@ Page({
         
         // 重新获取数据来更新按钮文案
         this._refreshAddCardButtonText()
+        
+        // 同时立即更新按钮状态（基于本地数据）
+        this._updateAddCardButtonText()
         return
       }
 
@@ -1493,8 +1530,37 @@ Page({
           showCancel: false,
           confirmText: '立即开通',
           success: () => {
+            // 注释掉VIP页面跳转，改为显示客服联系弹窗
+            /*
             wx.navigateTo({
               url: `/pages/vip/vip?event=${'vip_wordcard'}`
+            })
+            */
+            wx.showModal({
+              title: '联系客服',
+              content: '如需升级会员，请联系客服\n客服微信：MiddleRain_',
+              confirmText: '复制',
+              cancelText: '我知道了',
+              success: (res) => {
+                if (res.confirm) {
+                  wx.setClipboardData({
+                    data: 'MiddleRain_',
+                    success: () => {
+                      wx.showToast({
+                        title: '客服微信号已复制',
+                        icon: 'success'
+                      })
+                    },
+                    fail: () => {
+                      wx.showToast({
+                        title: '复制失败，请手动复制：MiddleRain_',
+                        icon: 'none',
+                        duration: 3000
+                      })
+                    }
+                  })
+                }
+              }
             })
           }
         })
@@ -1777,17 +1843,42 @@ Page({
 
   /**
    * 处理VIP按钮点击事件
-   * 内测阶段：注释VIP按钮功能
    */
   onShowVip: function() {
-    // 内测阶段暂时注释VIP按钮功能
-    console.log('VIP button clicked - disabled during beta testing')
-    
-    /* 原VIP按钮逻辑，内测期间暂时注释
+    // 注释掉VIP页面跳转，改为显示客服联系弹窗
+    /*
     wx.navigateTo({
       url: '/pages/vip/vip?event=vip_wordcard'
     })
     */
+    
+    // 显示客服联系弹窗
+    wx.showModal({
+      title: '联系客服',
+      content: '如需升级会员，请联系客服\n客服微信：MiddleRain_',
+      confirmText: '复制',
+      cancelText: '我知道了',
+      success: (res) => {
+        if (res.confirm) {
+          wx.setClipboardData({
+            data: 'MiddleRain_',
+            success: () => {
+              wx.showToast({
+                title: '客服微信号已复制',
+                icon: 'success'
+              })
+            },
+            fail: () => {
+              wx.showToast({
+                title: '复制失败，请手动复制：MiddleRain_',
+                icon: 'none',
+                duration: 3000
+              })
+            }
+          })
+        }
+      }
+    })
   },
 
   /**
@@ -2071,17 +2162,8 @@ Page({
 
   /**
    * 更新添加卡片按钮文案和VIP按钮显示
-   * 内测阶段：注释VIP限制，隐藏VIP按钮
    */
   _updateAddCardButtonText: function(todayCardListData) {
-    // 内测阶段暂时注释VIP限制，隐藏VIP按钮
-    this.setData({ 
-      addCardButtonText: '添加卡片',
-      showVipButton: false,
-      isLowRemaining: false
-    })
-    
-    /* 原VIP限制逻辑，内测期间暂时注释
     try {
       const isVip = app && app.globalData && app.globalData.settings && !app.globalData.settings.isVipExpired
       if (isVip) {
@@ -2095,12 +2177,25 @@ Page({
 
       const check = dailyLimits.canCreateCard()
       const remaining = check.remaining
-      this.setData({
-        addCardButtonText: '添加卡片',
-        showVipButton: true,
-        vipButtonText: `今日余${remaining}张 · 升级无限制`,
-        isLowRemaining: remaining <= 3
-      })
+      const used = dailyLimits.getTodayUsage().cards
+      
+      console.log('VIP按钮逻辑检查:', { used, remaining, limit: check.limit })
+      
+      // 超过5张（即已用>5张）时显示VIP按钮
+      if (used > 5) {
+        this.setData({
+          addCardButtonText: '添加卡片',
+          showVipButton: true,
+          vipButtonText: `今日余${remaining}张 · 升级无限制`,
+          isLowRemaining: remaining <= 3 // 剩余≤3张时按钮变红
+        })
+      } else {
+        this.setData({
+          addCardButtonText: '添加卡片',
+          showVipButton: false,
+          isLowRemaining: false
+        })
+      }
     } catch (error) {
       console.error('Error updating add card button text:', error)
       this.setData({
@@ -2108,7 +2203,6 @@ Page({
         showVipButton: false
       })
     }
-    */
   },
 
   /**
@@ -2135,5 +2229,48 @@ Page({
     setTimeout(() => {
       wx.eventBus.updateReplaceButtonText = false
     }, 100)
+  },
+
+  /**
+   * 同步今日卡片数量到 dailyLimits
+   */
+  _syncTodayCardCount: function(todayCardList) {
+    try {
+      console.log('todayCardList 类型和内容:', typeof todayCardList, todayCardList)
+      
+      // 确保 todayCardList 是数组
+      if (!Array.isArray(todayCardList)) {
+        console.warn('todayCardList 不是数组，跳过同步')
+        return
+      }
+      
+      // 过滤掉非正常卡片（loading、blank、error等）
+      const validCards = todayCardList.filter(card => 
+        card && !card._type && card.wordCardID
+      )
+      
+      const todayCardCount = validCards.length
+      console.log('同步今日卡片数量:', { todayCardCount, validCards })
+      
+      // 直接将今日卡片数量设置为使用量
+      const todayKey = dailyLimits.getTodayKey()
+      const storageKey = `dailyUsage_${todayKey}`
+      const currentUsage = dailyLimits.getTodayUsage()
+      
+      console.log('当前 dailyLimits 使用量:', currentUsage)
+      console.log('直接设置使用量为今日卡片数量:', todayCardCount)
+      
+      // 直接设置使用量为当前卡片数量
+      const newUsage = {
+        cards: todayCardCount,
+        replaces: currentUsage.replaces, // 保持换词记录不变
+        date: todayKey
+      }
+      wx.setStorageSync(storageKey, newUsage)
+      
+      console.log('设置后的使用量:', newUsage)
+    } catch (error) {
+      console.error('同步今日卡片数量失败:', error)
+    }
   },
 })

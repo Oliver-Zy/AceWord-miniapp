@@ -24,7 +24,7 @@
     <view class="vip-card-content">
       <view class="vip-text-content">
         <text class="vip-title">开通AceWord VIP</text>
-        <text class="vip-subtitle">无限卡片额度｜真题词书例句</text>
+        <text class="vip-subtitle">无限卡片额度｜自定义复习节奏</text>
       </view>
       <view class="vip-btn">
         <text>立即开通</text>

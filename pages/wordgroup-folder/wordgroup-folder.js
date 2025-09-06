@@ -89,7 +89,8 @@ Page({
           confirmText: '立即开通',
           success: () => {
             wx.navigateTo({
-              url: `/pages/vip/vip?event=${'vip_wordgroup'}`
+              // 注释掉VIP页面跳转
+              // url: `/pages/vip/vip?event=${'vip_wordgroup'}`
             })
           }
         })

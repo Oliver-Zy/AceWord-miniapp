@@ -70,7 +70,36 @@ Component({
           showCancel: false,
           confirmText: '立即开通',
           success: () => {
+            // 泣释掉VIP页面跳转，改为显示客服联系弹窗
+            /*
             wx.navigateTo({ url: `/pages/vip/vip?event=${'vip_textbgcolor'}` })
+            */
+            wx.showModal({
+              title: '联系客服',
+              content: '如需升级会员，请联系客服\n客服微信：MiddleRain_',
+              confirmText: '复制',
+              cancelText: '我知道了',
+              success: (res) => {
+                if (res.confirm) {
+                  wx.setClipboardData({
+                    data: 'MiddleRain_',
+                    success: () => {
+                      wx.showToast({
+                        title: '客服微信号已复制',
+                        icon: 'success'
+                      })
+                    },
+                    fail: () => {
+                      wx.showToast({
+                        title: '复制失败，请手动复制：MiddleRain_',
+                        icon: 'none',
+                        duration: 3000
+                      })
+                    }
+                  })
+                }
+              }
+            })
           }
         })
   

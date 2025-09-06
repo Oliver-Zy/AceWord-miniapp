@@ -64,7 +64,12 @@ Page({
       { name: '了解', opacity: 50 },   // familiar = 50
       { name: '陌生', opacity: 80 },   // familiar = 20
       { name: '未学习', opacity: 100 } // familiar = 0
-    ]
+    ],
+    
+    // 自定义释义编辑相关
+    showSearchBarSelfDef: false,
+    keyboardHeight: 0,
+    currentEditingDefinition: null // 当前编辑释义的单词信息
   },
 
   /**
@@ -268,8 +273,14 @@ Page({
 
   /**
    * 监听熟练度点击事件
+   * 注释：暂时禁用熟练度更新功能，避免更新不生效的问题
    */
   onProficiencyTap: function (e) {
+    // 暂时禁用熟练度更新功能
+    console.log('熟练度更新功能已暂时禁用')
+    return
+    
+    /* 原有的熟练度更新逻辑，暂时注释
     const dataset = e.currentTarget.dataset
     const dateIndex = dataset.dateIndex
     const wordIndex = dataset.wordIndex
@@ -289,6 +300,7 @@ Page({
       showProficiencySheet: true,
       currentEditingWord
     })
+    */
   },
 
   /**
@@ -754,13 +766,6 @@ Page({
     })
   },
 
-  /**
-   * 处理dic-card事件
-   */
-  onDicCardEvent: function (e) {
-    // 处理dic-card的各种事件
-    console.log('dic-card event:', e.detail)
-  },
 
   /**
    * 设置初始信息
@@ -1145,6 +1150,78 @@ Page({
   onDicCardEvent: function (e) {
     // 处理dic-card组件的事件，如收藏等
     console.log('dic-card event:', e.detail)
+    
+    if (e.detail.type === 'selfDef') {
+      // 编辑自定义释义
+      this.setData({
+        showSearchBarSelfDef: true,
+        currentEditingDefinition: {
+          wordName: this.data.wordInfo.word,
+          currentSelfDef: this.data.wordInfo.selfDef || this.data.wordInfo.wordCN || ''
+        }
+      })
+    }
+  },
+
+  /**
+   * 监听自定义释义输入框获得焦点事件
+   */
+  onSearchBarSelfDefFocus: function (e) {
+    this.setData({
+      keyboardHeight: e.detail.height
+    })
+  },
+
+  /**
+   * 监听完成修改自定义释义事件
+   */
+  onSearchBarSelfDefConfirm: async function (e) {
+    const { currentEditingDefinition } = this.data
+    if (!currentEditingDefinition) return
+
+    try {
+      Toast.loading({ message: '保存中...', forbidClick: true })
+
+      // 更新服务器数据
+      await common.request({
+        url: `/wordinfos`,
+        method: 'PUT',
+        data: [{
+          word: currentEditingDefinition.wordName,
+          selfDef: e.detail.value
+        }]
+      })
+
+      // 更新当前弹窗显示的数据
+      this.setData({
+        'wordInfo.selfDef': e.detail.value,
+        showSearchBarSelfDef: false,
+        keyboardHeight: 0,
+        currentEditingDefinition: null
+      })
+
+      // 更新列表中对应单词的释义
+      this._updateWordListSelfDef(currentEditingDefinition.wordName, e.detail.value)
+
+      Toast.clear()
+      Toast.success('修改成功')
+
+    } catch (error) {
+      console.error('修改自定义释义失败:', error)
+      Toast.clear()
+      Toast.fail('修改失败，请重试')
+    }
+  },
+
+  /**
+   * 监听取消修改自定义释义事件
+   */
+  onSearchBarSelfDefCancel: function () {
+    this.setData({
+      showSearchBarSelfDef: false,
+      keyboardHeight: 0,
+      currentEditingDefinition: null
+    })
   },
 
   /**
@@ -1164,6 +1241,44 @@ Page({
       backgroundAudioManager.title = word
       backgroundAudioManager.src = audioUrl
     })
+  },
+
+  /**
+   * 更新单词列表中指定单词的自定义释义
+   */
+  _updateWordListSelfDef: function (wordName, newSelfDef) {
+    const { wordGroupsByDate } = this.data
+    let updated = false
+
+    // 遍历所有日期分组
+    for (let dateIndex = 0; dateIndex < wordGroupsByDate.length; dateIndex++) {
+      const dateGroup = wordGroupsByDate[dateIndex]
+      if (dateGroup.wordList) {
+        // 遍历该日期分组下的所有单词
+        for (let wordIndex = 0; wordIndex < dateGroup.wordList.length; wordIndex++) {
+          const wordItem = dateGroup.wordList[wordIndex]
+          if (wordItem.wordName === wordName) {
+            // 更新找到的单词的释义
+            this.setData({
+              [`wordGroupsByDate[${dateIndex}].wordList[${wordIndex}].selfDef`]: newSelfDef
+            })
+            
+            // 同时更新wordInfo中的释义（如果存在）
+            if (wordItem.wordInfo) {
+              this.setData({
+                [`wordGroupsByDate[${dateIndex}].wordList[${wordIndex}].wordInfo.selfDef`]: newSelfDef
+              })
+            }
+            
+            updated = true
+          }
+        }
+      }
+    }
+
+    if (!updated) {
+      console.warn('未找到需要更新的单词:', wordName)
+    }
   },
 
   /**

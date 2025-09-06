@@ -125,6 +125,16 @@
 </view>
 <!-- E dic-card -->
 
+<!-- S search bar for self definition -->
+<ace-search-bar 
+  wx:if="{{showSearchBarSelfDef}}" 
+  style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" 
+  placeholder="修改自定义释义" 
+  bind:focus="onSearchBarSelfDefFocus" 
+  bind:confirm="onSearchBarSelfDefConfirm" 
+  bind:cancel="onSearchBarSelfDefCancel" />
+<!-- E search bar for self definition -->
+
 <!-- S overlay -->
 <view wx:if="{{showOverlay}}" class="overlay" bind:tap="onClickHideOverlay"></view>
 <!-- E overlay -->

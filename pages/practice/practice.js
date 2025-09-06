@@ -317,8 +317,37 @@ Page({
           showCancel: false,
           confirmText: '立即开通',
           success: () => {
+            // 注释掉VIP页面跳转，改为显示客服联系弹窗
+            /*
             wx.navigateTo({
               url: `/pages/vip/vip?event=${'vip_wordgroup'}`
+            })
+            */
+            wx.showModal({
+              title: '联系客服',
+              content: '如需升级会员，请联系客服\n客服微信：MiddleRain_',
+              confirmText: '复制',
+              cancelText: '我知道了',
+              success: (res) => {
+                if (res.confirm) {
+                  wx.setClipboardData({
+                    data: 'MiddleRain_',
+                    success: () => {
+                      wx.showToast({
+                        title: '客服微信号已复制',
+                        icon: 'success'
+                      })
+                    },
+                    fail: () => {
+                      wx.showToast({
+                        title: '复制失败，请手动复制：MiddleRain_',
+                        icon: 'none',
+                        duration: 3000
+                      })
+                    }
+                  })
+                }
+              }
             })
           }
         })
@@ -1030,7 +1059,8 @@ Page({
    * @param { Object } e 事件参数
    */
   onFinished: async function (e) {
-
+    console.log('onFinished 被调用，entryPage:', this.data.entryPage)
+    
     if (!this.data.canClickFinishBtn) return
     this.setData({
       canClickFinishBtn: false
@@ -1085,17 +1115,28 @@ Page({
       
       if (this.data.entryPage == 'quickReview') {
         // 一键复习完成处理
+        console.log('进入quickReview分支，准备跳转到word-list')
         Toast.success('复习完成！')
         this.setData({
           canClickFinishBtn: false,
           hasUnfinishedtask: false
         })
         setTimeout(() => {
-          wx.navigateBack()
+          console.log('执行quickReview跳转到word-list')
+          wx.switchTab({
+            url: '/pages/word-list/word-list',
+            success: () => {
+              console.log('quickReview跳转成功')
+            },
+            fail: (err) => {
+              console.error('quickReview跳转失败:', err)
+            }
+          })
         }, 800)
         
       } else if (this.data.entryPage == 'index') {
-
+        console.log('进入index分支，准备跳转到word-list')
+        
         let wordCardList = await common.request({
           url: `/wordcards?word-card-id-list=${wordCardIDCheckedList.join(',')}`
         })
@@ -1120,7 +1161,16 @@ Page({
           hasUnfinishedtask: false
         })
         setTimeout(() => {
-          wx.navigateBack()
+          console.log('执行index跳转到word-list')
+          wx.switchTab({
+            url: '/pages/word-list/word-list',
+            success: () => {
+              console.log('index跳转成功')
+            },
+            fail: (err) => {
+              console.error('index跳转失败:', err)
+            }
+          })
         }, 800)
 
       } else if (this.data.entryPage == 'review') {
@@ -1153,7 +1203,9 @@ Page({
           hasUnfinishedtask: false
         })
         setTimeout(() => {
-          wx.navigateBack()
+          wx.switchTab({
+            url: '/pages/word-list/word-list'
+          })
         }, 800)
 
       } else if (this.data.entryPage == 'calendar') {
@@ -1180,11 +1232,45 @@ Page({
           hasUnfinishedtask: false
         })
         setTimeout(() => {
-          wx.navigateBack()
+          wx.switchTab({
+            url: '/pages/word-list/word-list'
+          })
         }, 800)
 
+      } else {
+        // 其他入口页面或未匹配的情况，也跳转到单词列表
+        console.log('进入else分支（其他入口），准备跳转到word-list')
+        Toast.success('练习完成！')
+        this.setData({
+          canClickFinishBtn: false,
+          hasUnfinishedtask: false
+        })
+        setTimeout(() => {
+          console.log('执行else分支跳转到word-list')
+          wx.switchTab({
+            url: '/pages/word-list/word-list',
+            success: () => {
+              console.log('else分支跳转成功')
+            },
+            fail: (err) => {
+              console.error('else分支跳转失败:', err)
+            }
+          })
+        }, 800)
       }
-    } else wx.navigateBack()
+    } else {
+      // 从已删除页面或词组页面进入的情况，也跳转到单词列表
+      console.log('进入最外层else分支（deleted/wordgroup），准备跳转到word-list')
+      wx.switchTab({
+        url: '/pages/word-list/word-list',
+        success: () => {
+          console.log('最外层else分支跳转成功')
+        },
+        fail: (err) => {
+          console.error('最外层else分支跳转失败:', err)
+        }
+      })
+    }
   },
 
   /**

@@ -10,6 +10,14 @@ scroll-view {
   align-items: flex-start;
 }
 
+/* 隐藏滚动条 */
+scroll-view::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  color: transparent;
+}
+
 .background-container {
   box-sizing: border-box;
   margin: 0 16px;
@@ -83,7 +91,133 @@ scroll-view {
   color: #1D2129;
 }
 
-/* 永久会员卡片样式 */
+/* 会员档位容器 */
+.vip-plans-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 4px;
+}
+
+/* 会员档位卡片 */
+.vip-plan-card {
+  position: relative;
+  flex: 1;
+  height: 152px;
+  background: white;
+  border: 1px solid #E2E2E2;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  max-width: 104px;
+}
+
+/* 选中状态 */
+.vip-plan-card.selected {
+  background: linear-gradient(180deg, #FEF9E9 0%, #FEF9EC 100%);
+  border: 1px solid #AC884E;
+}
+
+/* 选中图标 */
+.selected-corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 24px;
+  height: 20px;
+}
+
+/* 会员标题 */
+.plan-title {
+  position: absolute;
+  left: 50%;
+  top: 20px;
+  transform: translateX(-50%);
+  text-align: center;
+  color: #434346;
+  font-size: 14px;
+  font-family: MiSans;
+  font-weight: 400;
+  line-height: 20px;
+  width: 100%;
+}
+
+/* 价格区域 */
+.plan-price-area {
+  position: absolute;
+  left: 26px;
+  top: 50px;
+  display: flex;
+  align-items: baseline;
+}
+
+.plan-currency {
+  color: #BB8247;
+  font-size: 16px;
+  font-family: MiSans;
+  font-weight: 600;
+}
+
+.plan-price {
+  color: #BB8247;
+  font-size: 28px;
+  font-family: MiSans;
+  font-weight: 600;
+  line-height: 35px;
+}
+
+/* 节省标签 */
+.savings-badge {
+  position: absolute;
+  left: 50%;
+  top: 95px;
+  transform: translateX(-50%);
+  height: 22px;
+  background: #FAB220;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+/* 体验版标签样式 */
+.experience-badge {
+  background: #E8E8E8;
+}
+
+.experience-badge .savings-text {
+  color: #666666;
+}
+
+.savings-text {
+  color: white;
+  font-size: 14px;
+  font-family: MiSans;
+  font-weight: 400;
+  line-height: 14px;
+}
+
+/* 原价 */
+.original-price {
+  position: absolute;
+  left: 50%;
+  top: 123px;
+  transform: translateX(-50%);
+  text-align: center;
+  color: #939495;
+  font-size: 12px;
+  font-family: MiSans;
+  font-weight: 400;
+  text-decoration: line-through;
+  line-height: 14px;
+  width: 100%;
+}
+
+/* 永久会员卡片样式（保留兼容性） */
 .lifetime-vip-card {
   position: relative;
   background: linear-gradient(180deg, #FEF9E9 0%, #FEF9EC 100%);

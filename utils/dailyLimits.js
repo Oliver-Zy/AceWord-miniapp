@@ -97,10 +97,6 @@ class DailyLimits {
    * 检查是否可以创建新卡片
    */
   canCreateCard() {
-    // 内测阶段暂时注释VIP限制，所有用户都可以无限使用
-    return { allowed: true, remaining: -1, limit: -1 }
-    
-    /* 原VIP限制逻辑，内测期间暂时注释
     try {
       const app = getApp()
       const isVip = app && app.globalData && app.globalData.settings && !app.globalData.settings.isVipExpired
@@ -133,7 +129,6 @@ class DailyLimits {
         remaining: remaining
       }
     }
-    */
   }
 
   /**
@@ -186,12 +181,12 @@ class DailyLimits {
     const messages = {
       cards: {
         title: '今日卡片已用完',
-        content: '今日新建卡片已达上限(10个)\n开通会员解锁无限制学习',
+        content: '今日新建卡片已达上限(10个)\n如需升级会员，请联系客服',
         event: 'limit_cards'
       },
       replaces: {
         title: '换词次数已用完', 
-        content: '今日换词次数已达上限(15次)\n会员用户可无限制换词',
+        content: '今日换词次数已达上限(15次)\n如需升级会员，请联系客服',
         event: 'limit_replaces'
       }
     }
@@ -202,12 +197,43 @@ class DailyLimits {
     wx.showModal({
       title: message.title,
       content: message.content,
-      confirmText: '升级会员',
+      confirmText: '联系客服',
       cancelText: '明天再来',
       success: (res) => {
         if (res.confirm) {
+          // 注释掉VIP页面跳转，改为显示客服联系弹窗
+          /*
           wx.navigateTo({ 
             url: `/pages/vip/vip?event=${message.event}` 
+          })
+          */
+          
+          // 显示客服联系信息
+          wx.showModal({
+            title: '联系客服',
+            content: '客服微信：MiddleRain_',
+            confirmText: '复制',
+            cancelText: '我知道了',
+            success: (res) => {
+              if (res.confirm) {
+                wx.setClipboardData({
+                  data: 'MiddleRain_',
+                  success: () => {
+                    wx.showToast({
+                      title: '客服微信号已复制',
+                      icon: 'success'
+                    })
+                  },
+                  fail: () => {
+                    wx.showToast({
+                      title: '复制失败，请手动复制：MiddleRain_',
+                      icon: 'none',
+                      duration: 3000
+                    })
+                  }
+                })
+              }
+            }
           })
         }
       }
@@ -238,10 +264,6 @@ class DailyLimits {
    * 记录卡片创建
    */
   recordCardCreation() {
-    // 内测阶段暂时注释VIP限制，直接返回成功
-    return true
-    
-    /* 原VIP限制逻辑，内测期间暂时注释
     const check = this.canCreateCard()
     if (!check.allowed) {
       this.showLimitReached('cards')
@@ -257,7 +279,6 @@ class DailyLimits {
     }
     
     return true
-    */
   }
 
   /**
@@ -290,22 +311,6 @@ class DailyLimits {
    * 获取使用统计信息（用于"我的"页面显示）
    */
   getUsageStats() {
-    // 内测阶段暂时注释VIP限制，返回无限制状态
-    return {
-      isVip: true, // 内测期间所有用户都按VIP处理
-      cards: {
-        used: 0,
-        limit: -1, // 无限制
-        percentage: 0
-      },
-      replaces: {
-        used: 0,
-        limit: -1, // 无限制
-        percentage: 0
-      }
-    }
-    
-    /* 原VIP限制逻辑，内测期间暂时注释
     try {
       const app = getApp()
       const isVip = app && app.globalData && app.globalData.settings && !app.globalData.settings.isVipExpired
@@ -342,7 +347,6 @@ class DailyLimits {
         }
       }
     }
-    */
   }
 }
 

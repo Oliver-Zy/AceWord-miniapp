@@ -59,10 +59,39 @@ App({
     this.globalData.isDarkMode = wx.getSystemInfoSync().theme == 'dark' ? true : false
     this.globalData.isIOS = wx.getSystemInfoSync().system.slice(0, 3) == 'iOS' ? true : false
 
+    // 设置音频播放选项
+    this.setAudioOptions()
+
     this.autoUpdate()
     
     // 异步预加载核心字体，不阻塞启动
     this.preloadFonts()
+  },
+
+  /**
+   * 设置音频播放选项
+   */
+  setAudioOptions() {
+    // 检查基础库版本是否支持
+    if (wx.canIUse('setInnerAudioOption')) {
+      try {
+        wx.setInnerAudioOption({
+          mixWithOther: false, // 不与其他音频混播，确保单词发音清晰
+          obeyMuteSwitch: false, // iOS下不遵循静音开关，确保学习时能听到发音
+          speakerOn: true, // 使用扬声器播放，音量更大更清晰
+          success: () => {
+            console.log('🔊 音频播放选项设置成功')
+          },
+          fail: (err) => {
+            console.warn('🔊 音频播放选项设置失败:', err)
+          }
+        })
+      } catch (error) {
+        console.warn('🔊 设置音频选项时发生错误:', error)
+      }
+    } else {
+      console.warn('🔊 当前基础库版本不支持 setInnerAudioOption')
+    }
   },
 
   /**

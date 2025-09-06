@@ -125,13 +125,21 @@ class IndexService {
    * 添加单词卡片
    */
   async addWordCard() {
-    // 检查每日限制 - 内测期间暂时注释
-    // const { dailyLimits } = require('../../utils/dailyLimits.js')
+    // 检查每日限制
+    const { dailyLimits } = require('../../utils/dailyLimits.js')
     
-    // if (!dailyLimits.recordCardCreation()) {
-    //   // 已达到限制，dailyLimits会显示相应提示
-    //   throw new Error('Daily card limit reached')
-    // }
+    console.log('IndexService: 开始添加卡片，检查限制...')
+    const beforeUsage = dailyLimits.getTodayUsage()
+    console.log('IndexService: 添加前使用量:', beforeUsage)
+    
+    if (!dailyLimits.recordCardCreation()) {
+      // 已达到限制，dailyLimits会显示相应提示
+      console.log('IndexService: 达到每日限制，停止添加')
+      throw new Error('Daily card limit reached')
+    }
+    
+    const afterUsage = dailyLimits.getTodayUsage()
+    console.log('IndexService: 添加后使用量:', afterUsage)
     
     try {
       const wordCard = await common.request({
@@ -150,7 +158,8 @@ class IndexService {
           confirmText: '立即开通',
           success: () => {
             wx.navigateTo({
-              url: `/pages/vip/vip?event=${'vip_wordcard'}`
+              // 注释掉VIP页面跳转
+              // url: `/pages/vip/vip?event=${'vip_wordcard'}`
             })
           }
         })

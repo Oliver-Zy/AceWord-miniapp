@@ -23,7 +23,7 @@
   <!-- S inner-container -->
   <view class="inner-container">
     <block wx:for="{{wordInfoList}}" wx:key="name">
-      <text id="block-{{index+1}}" bind:tap="onWord" data-index="{{index}}" style="position:absolute;left:{{item.left}}px;top:{{item.top}}px;background:{{tools.bgColorHandler(item.bgColor, isDarkMode)}};color:rgba({{isDarkMode ? 238 : 29 }}, {{isDarkMode ? 241 : 33 }}, {{isDarkMode ? 247 : 41 }}, {{0.01 * item.opacity}});font-family:{{wordCardFontFamily}};">{{item.wordName}}</text>
+      <text id="block-{{index+1}}" bind:tap="onWord" data-index="{{index}}" style="position:absolute;left:{{item.left}}px;top:{{item.top}}px;background:{{tools.bgColorHandler(item.bgColor, isDarkMode)}};color:rgba({{isDarkMode ? 238 : 29 }}, {{isDarkMode ? 241 : 33 }}, {{isDarkMode ? 247 : 41 }}, 1);font-family:{{wordCardFontFamily}};">{{item.wordName}}</text>
     </block>
   </view>
   <!-- E inner-container -->

@@ -20,39 +20,48 @@
   <!-- E background-container -->
 
   <!-- S scroll-view -->
-  <scroll-view scroll-y="true" style="padding:24px 16px 0 16px;height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight + 16 + 120}}px;background:#fff;border-radius:16px;box-sizing:border-box;">
-    <text wx:if="{{ !isIOS }}" class="title-text">解锁会员</text>
-    <view wx:if="{{ !isIOS }}" style="height:20px;"></view>
-    <!-- <view wx:if="{{ !isIOS }}" class="price-container" style="width:{{bgContainerWidth}}px;"> -->
-    <!-- <text class="title-text">解锁会员</text>
-    <view style="height:20px;"></view> -->
-    <!-- 永久会员方案 -->
-    <view class="lifetime-vip-card">
-      <view class="vip-badge">
-        <text class="vip-badge-text">AceWord VIP</text>
-      </view>
-      <view class="lifetime-content">
-        <text class="lifetime-title">永久会员</text>
-        <text class="lifetime-promo">限时促销中，距结束 01:21:30</text>
-      </view>
-      <view class="lifetime-price">
-        <view class="price-row">
-          <text class="price-symbol">¥</text>
-          <text class="price-number">98</text>
+  <scroll-view scroll-y="true" enhanced="{{true}}" show-scrollbar="{{false}}" style="padding:24px 16px 0 16px;height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight + 16 + 120}}px;background:#fff;border-radius:16px;box-sizing:border-box;">
+    <text class="title-text">选择会员档位</text>
+    <view style="height:20px;"></view>
+    
+    <!-- 会员档位选择 -->
+    <view class="vip-plans-container">
+      <view 
+        wx:for="{{vipPlans}}" 
+        wx:key="id" 
+        class="vip-plan-card {{chosenIndex === index ? 'selected' : ''}}"
+        data-index="{{index}}"
+        bind:tap="onPriceBlock"
+      >
+        <!-- 选中标签 -->
+        <image wx:if="{{chosenIndex === index}}" class="selected-corner" src="/images/icons/corner.png"></image>
+        
+        <!-- 会员标题 -->
+        <view class="plan-title">{{item.title}}</view>
+        
+        <!-- 价格区域 -->
+        <view class="plan-price-area">
+          <text class="plan-currency">￥</text>
+          <text class="plan-price">{{item.price}}</text>
         </view>
-        <text class="original-price-text">原价¥298</text>
+        
+        <!-- 标签 -->
+        <view class="savings-badge {{item.badgeText === '无优惠' ? 'experience-badge' : ''}}">
+          <text class="savings-text">{{item.badgeText}}</text>
+        </view>
+        
+        <!-- 原价 -->
+        <view wx:if="{{item.originalPrice}}" class="original-price">原价￥{{item.originalPrice}}</view>
       </view>
-      <image class="lifetime-corner" src="/images/icons/corner.png"></image>
     </view>
 
 
 
     <view style="height:24px;"></view>
     <view class="pay-btn" bind:tap="onPay">
-      <text wx:if="{{ !isIOS }}" class="pay-btn-text">立即以98元开通</text>
-      <text wx:else class="pay-btn-text">现在开通</text>
+      <text class="pay-btn-text">立即以￥{{vipPlans[chosenIndex].price}}开通</text>
     </view>
-    <view wx:if="{{ !isIOS }}" style="padding-top:12px;width:100%;display:flex;justify-content:center;">
+    <view style="padding-top:12px;width:100%;display:flex;justify-content:center;">
       <text style="font-size:14px;color:#787878;">开通会员代表接受</text>
       <text style="font-size:14px;color:#FAB220;" bind:tap="onVipProtocol">《会员协议》</text>
     </view>
@@ -75,32 +84,6 @@
 
     <view style="height:24px;"></view>
     <view class="feature-container">
-      <image src="./images/feature-3.png" style="width:40px;height:40px;"></image>
-      <view style="width:14px;"></view>
-      <view class="right-feature-container">
-        <text class="feature-title">无限词书管理</text>
-        <view style="height:2px;"></view>
-        <text class="feature-desc">创建专属单词本和自定义词书，数量无上限</text>
-      </view>
-    </view>
-
-    <!-- 高级功能 -->
-    <view style="height:32px;"></view>
-    <text class="feature-section-title">高级学习功能</text>
-    <view style="height:16px;"></view>
-
-    <view class="feature-container">
-      <image src="./images/feature-6.png" style="width:40px;height:40px;"></image>
-      <view style="width:14px;"></view>
-      <view class="right-feature-container">
-        <text class="feature-title">批量导入释义</text>
-        <view style="height:2px;"></view>
-        <text class="feature-desc">一键批量导入自定义释义，效率翻倍</text>
-      </view>
-    </view>
-
-    <view style="height:24px;"></view>
-    <view class="feature-container">
       <image src="./images/feature-2.png" style="width:40px;height:40px;"></image>
       <view style="width:14px;"></view>
       <view class="right-feature-container">
@@ -110,11 +93,7 @@
       </view>
     </view>
 
-    <!-- 个性化定制 -->
-    <view style="height:32px;"></view>
-    <text class="feature-section-title">个性化定制</text>
-    <view style="height:16px;"></view>
-
+    <view style="height:24px;"></view>
     <view class="feature-container">
       <image src="./images/feature-4.png" style="width:40px;height:40px;"></image>
       <view style="width:14px;"></view>
@@ -122,17 +101,6 @@
         <text class="feature-title">精美英文字体</text>
         <view style="height:2px;"></view>
         <text class="feature-desc">8种专业字体随心切换，让学习更赏心悦目</text>
-      </view>
-    </view>
-
-    <view style="height:24px;"></view>
-    <view class="feature-container">
-      <image src="./images/feature-5.png" style="width:40px;height:40px;"></image>
-      <view style="width:14px;"></view>
-      <view class="right-feature-container">
-        <text class="feature-title">多彩背景标记</text>
-        <view style="height:2px;"></view>
-        <text class="feature-desc">丰富背景色标记，让重点单词一目了然</text>
       </view>
     </view>
     <view style="height:24px;padding-bottom:env(safe-area-inset-bottom);"></view>

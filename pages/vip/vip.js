@@ -15,8 +15,38 @@ Page({
    * 页面的初始数据
    */
   data: {
-    chosenIndex: 0,
+    chosenIndex: 0, // 默认选择永久会员（索引0）
     selectedPayment: 'wechat', // 默认选择微信支付
+    vipPlans: [
+      {
+        id: 'lifetime',
+        title: '永久会员',
+        price: 98,
+        originalPrice: 198,
+        badgeText: '最多人选',
+        period: 'lifetime',
+        duration: -1,
+        isRecommended: true
+      },
+      {
+        id: 'yearly', 
+        title: '年度会员',
+        price: 68,
+        originalPrice: 128,
+        badgeText: '每天2毛',
+        period: 'year',
+        duration: 1
+      },
+      {
+        id: 'monthly',
+        title: '月度会员',
+        price: 25,
+        originalPrice: null,
+        badgeText: '无优惠',
+        period: 'month',
+        duration: 1
+      }
+    ]
   },
 
   /**
@@ -77,7 +107,8 @@ Page({
    * @event
    */
     onPay: function (e) {
-    // iOS支付限制检查
+    // iOS支付限制检查 - 暂时注释掉
+    /*
     if (this.data.isIOS) {
       wx.showModal({
         title: '温馨提示',
@@ -102,9 +133,11 @@ Page({
       })
       return
     }
+    */
 
-    // 固定价格：98元终身会员
-    let price = 98
+    // 获取选中的会员档位价格
+    const selectedPlan = this.data.vipPlans[this.data.chosenIndex]
+    let price = selectedPlan.price
 
       let that = this
       Toast.loading()
