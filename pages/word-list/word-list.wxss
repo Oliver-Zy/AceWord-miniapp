@@ -10,6 +10,56 @@
   margin: 0 16px;
 }
 
+/* 统计模块 - 已注释 */
+/*
+.statistics-container {
+  margin: 0 16px 20px 16px;
+}
+
+.statistics-card {
+  padding: 16px 0;
+  background: #FFFFFF;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #F1F3F4;
+}
+
+.statistics-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-label {
+  color: rgba(60, 60, 67, 0.80);
+  font-size: 12px;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 20px;
+  margin-bottom: 2px;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.stat-value {
+  color: #000000;
+  font-size: 24px;
+  font-family: Source Code Pro;
+  font-weight: 400;
+  text-align: center;
+}
+*/
+
 /* 日期卡片 */
 .date-card {
   background: #FFFFFF;
@@ -74,6 +124,10 @@
   font-size: 13px;
   color: #C9CDD4;
   line-height: 1.4;
+}
+
+.proficiency-hover {
+  color: #1989FA;
 }
 
 /* 释义文本样式 - 现在在左侧单词名下方 */

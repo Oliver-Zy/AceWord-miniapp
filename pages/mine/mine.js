@@ -338,10 +338,25 @@ Page({
         },
         fail(err) {
           console.error('Copy failed:', err)
-          Toast.fail('复制失败')
+          
+          // 检查是否是隐私协议问题
+          if (err.errMsg && err.errMsg.includes('privacy agreement')) {
+            Toast.fail('请在小程序设置中允许访问剪贴板')
+          } else {
+            Toast.fail('复制失败，请重试')
+          }
+          
+          // 作为备选方案，显示ID让用户手动复制
+          wx.showModal({
+            title: '用户ID',
+            content: openID,
+            confirmText: '知道了',
+            showCancel: false
+          })
         }
       })
     } catch (error) {
+      Toast.clear()
       Toast.fail('获取失败，请重试')
       console.error('Copy ID failed:', error)
     }

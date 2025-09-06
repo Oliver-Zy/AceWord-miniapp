@@ -1,0 +1,9 @@
+{
+  "privacyDesc": "本小程序需要使用以下隐私相关功能",
+  "privacyList": [
+    {
+      "type": "clipboard",
+      "desc": "用于复制用户ID到剪贴板，方便用户分享"
+    }
+  ]
+}

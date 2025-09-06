@@ -468,6 +468,23 @@ Page({
         }
       })
       
+      // 删除单词时，将其熟练度设置为0，表示已掌握（opacity=0表示完全掌握）
+      try {
+        await common.request({
+          url: `/word/familiar/batch`,
+          method: 'PUT',
+          data: [{
+            word: word[0].word,
+            familiar: 0, // 设置为0表示已掌握（opacity=0）
+            cardID: wordCardIDCheckedList[0].toString() // 使用第一个卡片ID
+          }]
+        })
+        console.log(`已将删除的单词 ${word[0].word} 熟练度设置为0（已掌握）`)
+      } catch (familiarError) {
+        console.warn(`设置删除单词熟练度失败:`, familiarError)
+        // 熟练度设置失败不影响删除操作
+      }
+      
       this.setData({
         wordInfoList: this.data.wordInfoList,
         outerIndex: this.data.outerIndex == this.data.wordIndex && this.data.practiceMode == 'memorize' ? this.data.outerIndex : this.data.outerIndex - 1,
@@ -822,15 +839,22 @@ Page({
       let isVague = e.currentTarget.dataset.side == 'right'
       let currentWord = wordInfoList[wordIndex].word
       let wordPracticeRecordDict = this.data.wordPracticeRecordDict
-      if (isVague) {
-        wordPracticeRecordDict[currentWord].vague = wordPracticeRecordDict[currentWord].vague + 1
+      
+      // 只有在非巩固练习阶段才记录到熟练度统计中
+      if (!this.data.isVagueMode || this.data.practiceMode !== 'review') {
+        if (isVague) {
+          wordPracticeRecordDict[currentWord].vague = wordPracticeRecordDict[currentWord].vague + 1
+        }
+        if (!isVague) {
+          wordPracticeRecordDict[currentWord].remember = wordPracticeRecordDict[currentWord].remember + 1
+        }
+        this.setData({
+          wordPracticeRecordDict
+        })
+        console.log(`记录练习数据 - 单词: ${currentWord}, 模糊: ${isVague}, 当前统计:`, wordPracticeRecordDict[currentWord])
+      } else {
+        console.log(`巩固练习阶段，不记录熟练度统计 - 单词: ${currentWord}, 模糊: ${isVague}`)
       }
-      if (!isVague) {
-        wordPracticeRecordDict[currentWord].remember = wordPracticeRecordDict[currentWord].remember + 1
-      }
-      this.setData({
-        wordPracticeRecordDict
-      })
     }
 
     // todo
@@ -1199,6 +1223,8 @@ Page({
    */
   _updateWordFamiliarity: async function (wordPracticeRecordDict) {
     try {
+      console.log('开始更新单词熟练度，练习记录:', wordPracticeRecordDict)
+      console.log('当前状态 - isVagueMode:', this.data.isVagueMode, 'practiceMode:', this.data.practiceMode)
       // 构建熟练度更新数据
       const familiarityUpdateList = []
       
@@ -1239,7 +1265,7 @@ Page({
           if (cardID) {
             familiarityUpdateList.push({
               word: word,
-              familiar: familiar,
+              familiar: 100 - familiar, // 转换为opacity值：100表示未学过，0表示掌握
               cardID: cardID.toString() // 确保cardID是字符串
             })
           } else {
@@ -1290,7 +1316,8 @@ Page({
     const totalCount = rememberCount + vagueCount
     
     if (totalCount === 0) {
-      return 0 // 没有练习记录
+      // 练习过但没有记录的情况，给予最低练习分数，避免标记为未学过
+      return 10 // 最低练习分数，表示已经练习过
     }
     
     // 基础分数：记住率 * 100
@@ -1303,7 +1330,7 @@ Page({
       if (rememberCount === 1) {
         baseScore = Math.min(baseScore, 75) // 最高75分
       } else {
-        baseScore = Math.max(baseScore, 10) // 最低10分
+        baseScore = Math.max(baseScore, 15) // 最低15分，确保练习过的单词不为0
       }
     } else if (totalCount === 2) {
       // 练习了两次
@@ -1311,6 +1338,8 @@ Page({
         baseScore = Math.min(baseScore, 85) // 最高85分
       } else if (rememberCount === 1) {
         baseScore = Math.min(baseScore, 60) // 最高60分
+      } else {
+        baseScore = Math.max(baseScore, 20) // 全部模糊也给20分，表示练习过
       }
     } else if (totalCount >= 3) {
       // 练习了三次或以上，可以达到满分
@@ -1320,11 +1349,13 @@ Page({
         baseScore = Math.min(baseScore, 90) // 80%以上记住率，最高90分
       } else if (rememberRate >= 0.6) {
         baseScore = Math.min(baseScore, 75) // 60%以上记住率，最高75分
+      } else {
+        baseScore = Math.max(baseScore, 25) // 即使记住率低，也给25分表示练习过
       }
     }
     
-    // 确保分数在0-100范围内
-    return Math.max(0, Math.min(100, baseScore))
+    // 确保分数在10-100范围内，练习过的单词最低10分
+    return Math.max(10, Math.min(100, baseScore))
   },
 
 

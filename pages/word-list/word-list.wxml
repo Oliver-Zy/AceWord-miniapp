@@ -14,6 +14,7 @@
     <!-- 顶部间距 -->
     <view style="height: 20px;"></view>
 
+
     <!-- S word list -->
     <view wx:if="{{tools.getTotalWordCount(wordGroupsByDate) > 0}}" class="word-list-container">
       <block wx:for="{{wordGroupsByDate}}" wx:key="date" wx:for-item="dateGroup">
@@ -50,7 +51,17 @@
 
                       <!-- S right content -->
                       <view class="word-item-right">
-                        <view class="proficiency-text">{{wordItem.proficiencyText}}</view>
+                        <view class="proficiency-text" 
+                              catchtap="onProficiencyTap" 
+                              data-date-index="{{index}}" 
+                              data-word-index="{{wordIndex}}"
+                              data-word-id="{{wordItem.wordId}}"
+                              data-word-name="{{wordItem.wordName}}"
+                              data-current-opacity="{{wordItem.opacity}}"
+                              hover-class="proficiency-hover"
+                              style="color: {{wordItem.proficiencyColor}};">
+                          {{wordItem.proficiencyText}}
+                        </view>
                       </view>
                       <!-- E right content -->
                     </view>
@@ -77,8 +88,8 @@
     
     <!-- S empty state -->
     <view wx:if="{{isLoaded && wordGroupsByDate.length == 0}}" class="empty-state">
-      <view class="empty-text">暂无练习单词</view>
-      <view class="empty-subtext">还没有练习记录</view>
+      <view class="empty-text">暂无新学单词</view>
+      <view class="empty-subtext">还没有新学记录</view>
     </view>
     <!-- E empty state -->
 
@@ -119,9 +130,19 @@
 <!-- E overlay -->
 
 <!-- S ace components -->
-<ace-navi-bar type="calendar" title="单词列表" backgroundColor="rgba(0,0,0,0)" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
+<ace-navi-bar type="calendar" title="单词库" backgroundColor="rgba(0,0,0,0)" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
 <!-- E ace components -->
 
 <!-- S vant components -->
 <van-toast id="van-toast" />
+<van-popup show="{{ showProficiencyPopup }}" position="bottom" overlay="{{ false }}" duration="0" bind:close="onCloseProficiencySheet">
+  <van-action-sheet 
+    show="{{ showProficiencySheet }}" 
+    description="选择该单词的熟练程度" 
+    actions="{{ proficiencyActions }}" 
+    cancel-text="取消" 
+    bind:select="onSelectProficiency" 
+    bind:cancel="onCloseProficiencySheet" 
+    bind:click-overlay="onCloseProficiencySheet" />
+</van-popup>
 <!-- E vant components -->

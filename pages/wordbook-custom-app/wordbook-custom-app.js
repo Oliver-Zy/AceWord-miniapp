@@ -321,7 +321,9 @@ Page({
                 const code = res.statusCode.toString()
                 if (code.startsWith('2')) {
                   if (res.data.errcode == 0) {
-                    Toast.success('重进App生效')
+                    // 设置标记，通知首页需要刷新数据
+                    wx.setStorageSync('needRefreshHomeData', true)
+                    Toast.success('切换成功')
                   }
                 }
 

@@ -266,6 +266,9 @@ Page({
       
       Toast.success('切换成功')
       
+      // 设置标记，通知首页需要刷新数据
+      wx.setStorageSync('needRefreshHomeData', true)
+      
       // 延迟返回首页
       setTimeout(() => {
         wx.navigateBack({

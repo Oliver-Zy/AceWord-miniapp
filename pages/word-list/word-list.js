@@ -20,15 +20,51 @@ Page({
     visibleMeanings: {}, // 用于记录哪些单词的释义是可见的
     // 选择功能
     selectedWordIds: [], // 选中的单词ID列表
-    // 历史数据加载相关
-    currentDate: '', // 当前加载的日期（用于追溯）
-    todayDate: '', // 今日日期（固定不变，用于WXS判断）
-    loadedDates: [], // 已加载的日期列表
+    
+    // 新接口相关的分页和排序筛选参数
+    sortOrder: 'desc', // 排序方向：desc | asc
+    sortKey: 'familiar', // 排序字段：familiar | date
+    startDate: '', // 筛选开始日期 yyyymmdd
+    endDate: '', // 筛选结束日期 yyyymmdd
+    startOpacity: 0, // 最低熟练度
+    endOpacity: 100, // 最高熟练度
+    pageIndex: 1, // 当前页码
+    pageSize: 30, // 每页数量
+    totalCount: 0, // 总数量
+    totalPage: 0, // 总页数
+    hasNextPage: false, // 是否有下一页
+    
+    // UI状态相关
     isLoadingMore: false, // 是否正在加载更多数据
     hasMoreData: true, // 是否还有更多数据可以加载
-    // 折叠展开相关
     activeNames: [], // 当前展开的日期列表
-    defaultLoadDays: 5 // 默认加载天数
+    
+    // 筛选和排序UI相关
+    dateFilterText: '全部日期',
+    opacityFilterText: '全部熟练度',
+    showDateFilterPopup: false,
+    showOpacityFilterPopup: false,
+    opacityRangeOptions: [
+      { name: '未学习', value: 100 },
+      { name: '陌生', value: 80 },
+      { name: '了解', value: 50 },
+      { name: '熟练', value: 30 },
+      { name: '掌握', value: 10 }
+    ],
+    minOpacityIndex: 0, // 最低熟练度选择器索引
+    maxOpacityIndex: 4, // 最高熟练度选择器索引
+    
+    // 熟练度调整相关
+    showProficiencyPopup: false,
+    showProficiencySheet: false,
+    currentEditingWord: null, // 当前编辑的单词信息
+    proficiencyActions: [
+      { name: '掌握', opacity: 10 },   // familiar = 90
+      { name: '熟练', opacity: 30 },   // familiar = 70
+      { name: '了解', opacity: 50 },   // familiar = 50
+      { name: '陌生', opacity: 80 },   // familiar = 20
+      { name: '未学习', opacity: 100 } // familiar = 0
+    ]
   },
 
   /**
@@ -39,10 +75,9 @@ Page({
     // 设置固定的今日日期，供WXS使用
     const todayDate = app.globalData.todayDate
     this.setData({
-      todayDate: todayDate,
-      currentDate: todayDate
+      todayDate: todayDate
     })
-    await this._loadTodayWords()
+    await this._loadWordList()
   },
 
   /**
@@ -232,6 +267,280 @@ Page({
   },
 
   /**
+   * 监听熟练度点击事件
+   */
+  onProficiencyTap: function (e) {
+    const dataset = e.currentTarget.dataset
+    const dateIndex = dataset.dateIndex
+    const wordIndex = dataset.wordIndex
+    const wordItem = this.data.wordGroupsByDate[dateIndex].wordList[wordIndex]
+    
+    const currentEditingWord = {
+      dateIndex: dateIndex,
+      wordIndex: wordIndex,
+      wordId: dataset.wordId,
+      wordName: dataset.wordName,
+      currentOpacity: dataset.currentOpacity || 0,
+      wordCardID: wordItem.wordCardID // 添加卡片ID
+    }
+    
+    this.setData({
+      showProficiencyPopup: true,
+      showProficiencySheet: true,
+      currentEditingWord
+    })
+  },
+
+  /**
+   * 选择熟练度
+   */
+  onSelectProficiency: async function (e) {
+    const selectedAction = e.detail
+    const { currentEditingWord } = this.data
+    
+    if (!currentEditingWord) return
+    
+    try {
+      Toast.loading({ message: '更新中...', forbidClick: true })
+      
+      // 更新本地数据
+      const newOpacity = selectedAction.opacity
+      const newProficiencyText = this._getProficiencyText(newOpacity)
+      const newProficiencyColor = this._getProficiencyColor(newOpacity)
+      
+      this.setData({
+        [`wordGroupsByDate[${currentEditingWord.dateIndex}].wordList[${currentEditingWord.wordIndex}].opacity`]: newOpacity,
+        [`wordGroupsByDate[${currentEditingWord.dateIndex}].wordList[${currentEditingWord.wordIndex}].proficiencyText`]: newProficiencyText,
+        [`wordGroupsByDate[${currentEditingWord.dateIndex}].wordList[${currentEditingWord.wordIndex}].proficiencyColor`]: newProficiencyColor,
+        showProficiencyPopup: false,
+        showProficiencySheet: false,
+        currentEditingWord: null
+      })
+      
+      // 调用API更新服务器数据
+      await common.request({
+        url: `/word/familiar/batch`,
+        method: 'PUT',
+        data: [{
+          word: currentEditingWord.wordName,
+          familiar: newOpacity, // 直接使用opacity作为familiar值
+          cardID: currentEditingWord.wordCardID
+        }]
+      })
+      
+      Toast.clear()
+      Toast.success(`更新成功`)
+      
+    } catch (error) {
+      console.error('更新熟练度失败:', error)
+      Toast.clear()
+      Toast.fail('更新失败，请重试')
+      
+      // 恢复原始数据
+      const originalOpacity = currentEditingWord.currentOpacity
+      const originalProficiencyText = this._getProficiencyText(originalOpacity)
+      const originalProficiencyColor = this._getProficiencyColor(originalOpacity)
+      this.setData({
+        [`wordGroupsByDate[${currentEditingWord.dateIndex}].wordList[${currentEditingWord.wordIndex}].opacity`]: originalOpacity,
+        [`wordGroupsByDate[${currentEditingWord.dateIndex}].wordList[${currentEditingWord.wordIndex}].proficiencyText`]: originalProficiencyText,
+        [`wordGroupsByDate[${currentEditingWord.dateIndex}].wordList[${currentEditingWord.wordIndex}].proficiencyColor`]: originalProficiencyColor
+      })
+    }
+  },
+
+  /**
+   * 关闭熟练度选择弹窗
+   */
+  onCloseProficiencySheet: function () {
+    this.setData({
+      showProficiencyPopup: false,
+      showProficiencySheet: false,
+      currentEditingWord: null
+    })
+  },
+
+  /**
+   * 排序切换
+   */
+  onSortChange: function (e) {
+    const sortKey = e.currentTarget.dataset.sortKey
+    let sortOrder = 'desc'
+    
+    // 如果点击的是当前排序字段，则切换排序方向
+    if (this.data.sortKey === sortKey) {
+      sortOrder = this.data.sortOrder === 'desc' ? 'asc' : 'desc'
+    }
+    
+    this.setData({
+      sortKey,
+      sortOrder,
+      pageIndex: 1,
+      wordGroupsByDate: []
+    })
+    
+    this._loadWordList()
+  },
+
+  /**
+   * 显示日期筛选弹窗
+   */
+  onShowDateFilter: function () {
+    this.setData({
+      showDateFilterPopup: true
+    })
+  },
+
+  /**
+   * 关闭日期筛选弹窗
+   */
+  onCloseDateFilter: function () {
+    this.setData({
+      showDateFilterPopup: false
+    })
+  },
+
+  /**
+   * 开始日期变化
+   */
+  onStartDateChange: function (e) {
+    const startDate = e.detail.value.replace(/-/g, '') // 转换为yyyymmdd格式
+    this.setData({
+      startDate
+    })
+  },
+
+  /**
+   * 结束日期变化
+   */
+  onEndDateChange: function (e) {
+    const endDate = e.detail.value.replace(/-/g, '') // 转换为yyyymmdd格式
+    this.setData({
+      endDate
+    })
+  },
+
+  /**
+   * 重置日期筛选
+   */
+  onResetDateFilter: function () {
+    this.setData({
+      startDate: '',
+      endDate: '',
+      dateFilterText: '全部日期'
+    })
+  },
+
+  /**
+   * 应用日期筛选
+   */
+  onApplyDateFilter: function () {
+    const { startDate, endDate } = this.data
+    let filterText = '全部日期'
+    
+    if (startDate && endDate) {
+      const startDateFormatted = this._formatDateForDisplay(startDate)
+      const endDateFormatted = this._formatDateForDisplay(endDate)
+      filterText = `${startDateFormatted} 至 ${endDateFormatted}`
+    } else if (startDate) {
+      const startDateFormatted = this._formatDateForDisplay(startDate)
+      filterText = `${startDateFormatted} 之后`
+    } else if (endDate) {
+      const endDateFormatted = this._formatDateForDisplay(endDate)
+      filterText = `${endDateFormatted} 之前`
+    }
+    
+    this.setData({
+      dateFilterText: filterText,
+      showDateFilterPopup: false,
+      pageIndex: 1,
+      wordGroupsByDate: []
+    })
+    
+    this._loadWordList()
+  },
+
+  /**
+   * 显示熟练度筛选弹窗
+   */
+  onShowOpacityFilter: function () {
+    this.setData({
+      showOpacityFilterPopup: true
+    })
+  },
+
+  /**
+   * 关闭熟练度筛选弹窗
+   */
+  onCloseOpacityFilter: function () {
+    this.setData({
+      showOpacityFilterPopup: false
+    })
+  },
+
+  /**
+   * 最低熟练度变化
+   */
+  onMinOpacityChange: function (e) {
+    const minOpacityIndex = parseInt(e.detail.value)
+    this.setData({
+      minOpacityIndex
+    })
+  },
+
+  /**
+   * 最高熟练度变化
+   */
+  onMaxOpacityChange: function (e) {
+    const maxOpacityIndex = parseInt(e.detail.value)
+    this.setData({
+      maxOpacityIndex
+    })
+  },
+
+  /**
+   * 重置熟练度筛选
+   */
+  onResetOpacityFilter: function () {
+    this.setData({
+      minOpacityIndex: 0,
+      maxOpacityIndex: 4,
+      startOpacity: 0,
+      endOpacity: 100,
+      opacityFilterText: '全部熟练度'
+    })
+  },
+
+  /**
+   * 应用熟练度筛选
+   */
+  onApplyOpacityFilter: function () {
+    const { minOpacityIndex, maxOpacityIndex, opacityRangeOptions } = this.data
+    
+    // 注意：opacity值越高表示熟练度越低，所以需要反向处理
+    const maxOpacity = opacityRangeOptions[minOpacityIndex].value // 最低熟练度对应最高opacity
+    const minOpacity = opacityRangeOptions[maxOpacityIndex].value // 最高熟练度对应最低opacity
+    
+    const minName = opacityRangeOptions[maxOpacityIndex].name
+    const maxName = opacityRangeOptions[minOpacityIndex].name
+    
+    let filterText = '全部熟练度'
+    if (minOpacityIndex !== 0 || maxOpacityIndex !== 4) {
+      filterText = `${minName} 至 ${maxName}`
+    }
+    
+    this.setData({
+      startOpacity: minOpacity,
+      endOpacity: maxOpacity,
+      opacityFilterText: filterText,
+      showOpacityFilterPopup: false,
+      pageIndex: 1,
+      wordGroupsByDate: []
+    })
+    
+    this._loadWordList()
+  },
+
+  /**
    * 监听折叠面板变化事件
    */
   onCollapseChange: function(e) {
@@ -282,14 +591,18 @@ Page({
    * 下拉刷新
    */
   onScrollViewRefresh: function () {
-    this._loadTodayWords()
+    this.setData({
+      pageIndex: 1,
+      wordGroupsByDate: []
+    })
+    this._loadWordList()
   },
 
   /**
-   * 加载更多历史练习单词（一次加载5天）
+   * 加载更多单词（分页加载）
    */
   onLoadMore: async function () {
-    if (this.data.isLoadingMore) {
+    if (this.data.isLoadingMore || !this.data.hasNextPage) {
       return
     }
 
@@ -297,209 +610,134 @@ Page({
       this.setData({ isLoadingMore: true })
       Toast.loading({ message: '加载中...', forbidClick: true })
 
-      // 获取词书映射信息（如果还没有的话）
-      let wordBookCodeToName = this.data.wordBookCodeToName
-      if (!wordBookCodeToName) {
-        wordBookCodeToName = await common.request({
-          url: `/wordbooks-map`
-        })
-        this.setData({ wordBookCodeToName })
-      }
+      // 增加页码
+      const nextPageIndex = this.data.pageIndex + 1
+      this.setData({ pageIndex: nextPageIndex })
 
-      // 一次性加载5天的数据
-      const daysToLoad = 5
-      const newDateGroups = []
-      let currentDate = this.data.currentDate
-      let totalWordsLoaded = 0
-      let daysWithData = 0
+      // 调用加载函数，但不清空现有数据
+      await this._loadWordList(true) // 传入append参数表示追加数据
 
-      for (let i = 0; i < daysToLoad; i++) {
-        // 获取前一天的日期
-        const previousDate = this._getPreviousDate(currentDate)
-        
-        // 检查是否已经加载过这个日期
-        if (this.data.loadedDates.includes(previousDate)) {
-          currentDate = previousDate
-          continue
-        }
-
-        try {
-          // 获取历史练习单词数据
-          const pageInfo = await common.request({
-            url: `/wordcards/practice?date=${previousDate}`
-          })
-
-          if (pageInfo.data && pageInfo.data.length > 0) {
-            // 处理新的单词列表数据
-            const newWordList = this._processWordList(pageInfo.data, wordBookCodeToName, previousDate)
-            
-            if (newWordList.length > 0) {
-              // 预加载新单词的完整信息
-              await this._preloadWordInfos(newWordList)
-
-              // 按熟练度排序：最陌生的（opacity最低）排在前面
-              newWordList.sort((a, b) => {
-                return (a.opacity || 0) - (b.opacity || 0)
-              })
-
-              // 创建新的日期分组
-              const newDateGroup = {
-                date: previousDate,
-                dateDisplay: null, // 让WXS函数处理日期格式
-                wordList: newWordList,
-                wordCount: newWordList.length
-              }
-
-              newDateGroups.push(newDateGroup)
-              totalWordsLoaded += newWordList.length
-              daysWithData++
-            }
-          }
-        } catch (error) {
-          console.error(`Failed to load data for ${previousDate}:`, error)
-          // 单个日期加载失败不影响其他日期
-        }
-
-        // 更新loadedDates
-        this.data.loadedDates.push(previousDate)
-        currentDate = previousDate
-      }
-
-      // 更新页面数据
-      if (newDateGroups.length > 0) {
-        const updatedWordGroupsByDate = [...this.data.wordGroupsByDate, ...newDateGroups]
-        
-        this.setData({
-          wordGroupsByDate: updatedWordGroupsByDate,
-          currentDate: currentDate,
-          loadedDates: this.data.loadedDates
-        })
-
-        Toast.success(`加载了${daysWithData}天的历史记录，共${totalWordsLoaded}个单词`)
-      } else {
-        // 没有更多数据了
-        this.setData({
-          currentDate: currentDate,
-          loadedDates: this.data.loadedDates,
-          hasMoreData: false
-        })
-        Toast('近期暂无更多练习记录')
-      }
+      Toast.clear()
 
     } catch (error) {
       console.error('Failed to load more words:', error)
       Toast.fail('加载失败，请稍后重试')
     } finally {
       this.setData({ isLoadingMore: false })
-      Toast.clear()
     }
   },
 
   /**
-   * 加载练习单词数据（今日+历史7天）
+   * 加载单词列表数据（使用新接口）
    */
-  _loadTodayWords: async function () {
+  _loadWordList: async function (append = false) {
     try {
-      Toast.loading({ message: '加载中...', forbidClick: true })
+      if (!append) {
+        Toast.loading({ message: '加载中...', forbidClick: true })
+      }
       
-      const todayDate = app.globalData.todayDate
+      // 构建请求参数
+      const params = {
+        sortOrder: this.data.sortOrder,
+        sortKey: this.data.sortKey,
+        pageIndex: this.data.pageIndex,
+        pageSize: this.data.pageSize
+      }
       
-      // 获取词书映射信息
-      const wordBookCodeToName = await common.request({
-        url: `/wordbooks-map`
+      // 添加筛选条件（如果有）
+      if (this.data.startDate) {
+        params.startDate = this.data.startDate
+      }
+      if (this.data.endDate) {
+        params.endDate = this.data.endDate
+      }
+      if (this.data.startOpacity > 0) {
+        params.startOpacity = this.data.startOpacity
+      }
+      if (this.data.endOpacity < 100) {
+        params.endOpacity = this.data.endOpacity
+      }
+      
+      // 手动构建URL参数字符串
+      const urlParams = Object.keys(params)
+        .filter(key => params[key] !== undefined && params[key] !== '')
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+        .join('&')
+      
+      // 调用新接口
+      const response = await common.request({
+        url: `/cardword/list${urlParams ? '?' + urlParams : ''}`
       })
       
-      // 获取基本设置信息
-      const homeData = await common.request({ url: `/homedata` })
-      const settings = homeData.settings
-      const currentWordBook = settings.currentWordBook
-      const wordBookMyInfo = {
-        currentWordBookName: currentWordBook.wordBookName,
-        dailyTargetNum: settings.dailyTargetNum,
-        totalWordNum: currentWordBook.totalWordNum,
-        userProgressNum: currentWordBook.userProgressNum
+      if (!response) {
+        throw new Error('接口返回数据为空')
       }
-
-      // 一次性加载今日+历史4天的数据（总共5天）
-      const daysToLoad = this.data.defaultLoadDays
-      const dateGroups = []
-      const loadedDates = []
-      let currentDate = todayDate
-      let totalWordsLoaded = 0
-
-      for (let i = 0; i < daysToLoad; i++) {
-        try {
-          // 获取当前日期的练习单词数据
-          const pageInfo = await common.request({
-            url: `/wordcards/practice?date=${currentDate}`
-          })
-
-          if (pageInfo.data && pageInfo.data.length > 0) {
-            // 处理单词列表数据
-            const wordList = this._processWordList(pageInfo.data, wordBookCodeToName, currentDate)
-            
-            if (wordList.length > 0) {
-              // 预加载单词的完整信息
-              await this._preloadWordInfos(wordList)
-
-              // 按熟练度排序：最陌生的（opacity最低）排在前面
-              wordList.sort((a, b) => {
-                return (a.opacity || 0) - (b.opacity || 0)
-              })
-
-              // 创建日期分组
-              const dateGroup = {
-                date: currentDate,
-                dateDisplay: i === 0 ? '今日练习' : null, // 让WXS函数处理历史日期格式
-                wordList: wordList,
-                wordCount: wordList.length
-              }
-
-              dateGroups.push(dateGroup)
-              totalWordsLoaded += wordList.length
-            }
-          }
-        } catch (error) {
-          console.error(`Failed to load data for ${currentDate}:`, error)
-          // 单个日期加载失败不影响其他日期
-        }
-
-        loadedDates.push(currentDate)
-        
-        // 获取前一天的日期（除了第一次，因为第一次是今天）
-        if (i < daysToLoad - 1) {
-          currentDate = this._getPreviousDate(currentDate)
-        }
+      
+      console.log('Full response structure:', response)
+      console.log('response.data:', response.data)
+      
+      // response 本身就包含了所有需要的数据
+      const { totalCount, totalPage, pageSize, hasNextPage, currentPage, data: wordList } = response
+      
+      console.log('Raw wordList from API:', wordList)
+      console.log('wordList length:', wordList ? wordList.length : 'null')
+      if (wordList && wordList.length > 0) {
+        console.log('First word item:', wordList[0])
       }
-
+      
+      // 处理单词数据
+      const processedWordList = this._processNewWordList(wordList)
+      console.log('Processed word list:', processedWordList)
+      
+      // 预加载单词完整信息
+      await this._preloadWordInfos(processedWordList)
+      
+      // 按日期分组
+      const groupedWords = this._groupWordsByDate(processedWordList)
+      console.log('Grouped words:', groupedWords)
+      
+      // 更新页面数据
+      let finalWordGroups = []
+      if (append && this.data.wordGroupsByDate.length > 0) {
+        // 追加模式：合并数据
+        finalWordGroups = this._mergeWordGroups(this.data.wordGroupsByDate, groupedWords)
+      } else {
+        // 重新加载模式：直接使用新数据
+        finalWordGroups = groupedWords
+      }
+      
       // 设置默认展开第一个日期
-      const activeNames = dateGroups.length > 0 ? [dateGroups[0].date] : []
+      const activeNames = finalWordGroups.length > 0 && !append ? [finalWordGroups[0].date] : this.data.activeNames
+      
+      console.log('Final word groups to set:', finalWordGroups)
+      console.log('Active names:', activeNames)
       
       this.setData({
-        wordGroupsByDate: dateGroups,
-        wordBookMyInfo,
-        wordBookCodeToName,
+        wordGroupsByDate: finalWordGroups,
+        totalCount,
+        totalPage,
+        hasNextPage,
         isRefresherTriggered: false,
         isLoaded: true,
-        loadedDates: loadedDates,
-        currentDate: currentDate, // 设置为最后加载的日期，便于后续"加载更多"
-        activeNames: activeNames, // 默认展开第一个日期
-        hasMoreData: true // 重置加载更多状态
+        hasMoreData: hasNextPage,
+        activeNames: activeNames
       })
       
-      Toast.clear()
+      console.log('Data set complete. Current wordGroupsByDate:', this.data.wordGroupsByDate)
       
-      if (totalWordsLoaded > 0) {
-        // Toast.success('加载成功')
+      if (!append) {
+        Toast.clear()
       }
       
     } catch (error) {
-      console.error('Failed to load practice words:', error)
-      Toast.fail('加载失败，请稍后重试')
-      this.setData({
-        isRefresherTriggered: false,
-        isLoaded: true
-      })
+      console.error('Failed to load word list:', error)
+      if (!append) {
+        Toast.fail('加载失败，请稍后重试')
+        this.setData({
+          isRefresherTriggered: false,
+          isLoaded: true
+        })
+      }
     }
   },
 
@@ -544,7 +782,174 @@ Page({
   },
 
   /**
-   * 处理单词列表数据
+   * 处理新接口返回的单词数据
+   */
+  _processNewWordList: function (wordList) {
+    console.log('_processNewWordList called with:', wordList)
+    
+    if (!wordList || wordList.length === 0) {
+      console.log('wordList is empty or null')
+      return []
+    }
+
+    // 检查数据格式：是单词数组还是卡片数组
+    const firstItem = wordList[0]
+    console.log('First item structure:', firstItem)
+    
+    // 如果是卡片格式（包含wordList和wordInfoList）
+    if (firstItem && firstItem.wordList && firstItem.wordInfoList) {
+      console.log('Detected card format, using _processWordCardList')
+      return this._processWordCardList(wordList)
+    }
+    
+    console.log('Detected direct word array format, processing...')
+    // 如果是直接的单词数组格式
+    return wordList.map((wordItem, index) => {
+      return {
+        wordName: wordItem.wordName,
+        wordCardID: wordItem.dictCode || wordItem.wordName, // 使用dictCode或wordName作为wordCardID
+        wordIndex: index,
+        // 创建唯一的单词ID
+        wordId: `${wordItem.wordName}_${index}_${wordItem.createTime}`,
+        practiceNum: 0, // 新接口暂无此字段
+        createDate: wordItem.createTime,
+        learnDate: wordItem.createTime,
+        wordBookName: '当前词书', // 新接口暂无词书信息
+        wordBookCode: '',
+        isDeleted: false,
+        // 保存原始的opacity值用于排序
+        opacity: wordItem.opacity || 0,
+        // 添加自定义释义和完整的wordInfo数据
+        selfDef: wordItem.definition?.wordCN || '',
+        wordCN: wordItem.definition?.wordCN || '',
+        wordInfo: wordItem.definition || null,
+        // 添加熟练度文案和颜色 - 使用opacity分数
+        proficiencyText: this._getProficiencyText(wordItem.opacity || 0),
+        proficiencyColor: this._getProficiencyColor(wordItem.opacity || 0),
+        // 保存原始数据
+        originalData: wordItem
+      }
+    })
+  },
+
+  /**
+   * 处理卡片格式的单词数据（备用）
+   */
+  _processWordCardList: function (wordCardList) {
+    const processedWords = []
+    
+    // 遍历每个单词卡片
+    wordCardList.forEach(wordCard => {
+      if (wordCard.wordList && wordCard.wordList.length > 0) {
+        // 遍历卡片中的每个单词
+        wordCard.wordList.forEach((wordName, wordIndex) => {
+          // 获取对应的单词信息
+          const wordInfo = wordCard.wordInfoList && wordCard.wordInfoList[wordIndex] 
+            ? wordCard.wordInfoList[wordIndex] 
+            : null
+          
+          const processedWord = {
+            wordName: wordName,
+            wordCardID: wordCard.wordCardID,
+            wordIndex: wordIndex,
+            // 创建唯一的单词ID
+            wordId: `${wordCard.wordCardID}_${wordIndex}_${wordCard.createDate}`,
+            practiceNum: wordCard.realPracticeNum || 0,
+            createDate: wordCard.createDate,
+            learnDate: wordCard.createDate,
+            wordBookName: wordCard.wordBookName || '当前词书',
+            wordBookCode: wordCard.wordBookCode || '',
+            isDeleted: wordCard.isDeleted || false,
+            // 从wordInfo中获取opacity，如果没有则默认为100（未学习）
+            opacity: wordInfo?.opacity || 100,
+            // 添加自定义释义和完整的wordInfo数据
+            selfDef: wordInfo?.selfDef || wordInfo?.wordCN || '',
+            wordCN: wordInfo?.wordCN || '',
+            wordInfo: wordInfo,
+            // 添加熟练度文案和颜色
+            proficiencyText: this._getProficiencyText(wordInfo?.opacity || 100),
+            proficiencyColor: this._getProficiencyColor(wordInfo?.opacity || 100),
+            // 保存原始数据
+            originalData: wordCard
+          }
+          
+          processedWords.push(processedWord)
+        })
+      }
+    })
+
+    return processedWords
+  },
+
+  /**
+   * 按日期分组单词
+   */
+  _groupWordsByDate: function (wordList) {
+    if (!wordList || wordList.length === 0) {
+      return []
+    }
+
+    // 按日期分组
+    const dateGroups = {}
+    
+    wordList.forEach(word => {
+      const date = word.createDate
+      if (!dateGroups[date]) {
+        dateGroups[date] = []
+      }
+      dateGroups[date].push(word)
+    })
+
+    // 转换为数组格式并排序
+    const groupedArray = Object.keys(dateGroups)
+      .sort((a, b) => b.localeCompare(a)) // 日期降序
+      .map(date => ({
+        date: date,
+        dateDisplay: date === app.globalData.todayDate ? '今日添加' : null,
+        wordList: dateGroups[date],
+        wordCount: dateGroups[date].length
+      }))
+
+    console.log('Date groups created:', groupedArray)
+    return groupedArray
+  },
+
+  /**
+   * 合并单词分组（用于分页追加）
+   */
+  _mergeWordGroups: function (existingGroups, newGroups) {
+    if (!newGroups || newGroups.length === 0) {
+      return existingGroups
+    }
+
+    const mergedGroups = [...existingGroups]
+    
+    newGroups.forEach(newGroup => {
+      const existingIndex = mergedGroups.findIndex(group => group.date === newGroup.date)
+      
+      if (existingIndex >= 0) {
+        // 合并同日期的数据
+        const existingWords = mergedGroups[existingIndex].wordList
+        const newWords = newGroup.wordList.filter(newWord => 
+          !existingWords.some(existingWord => existingWord.wordId === newWord.wordId)
+        )
+        
+        mergedGroups[existingIndex].wordList = [...existingWords, ...newWords]
+        mergedGroups[existingIndex].wordCount = mergedGroups[existingIndex].wordList.length
+      } else {
+        // 添加新日期分组
+        mergedGroups.push(newGroup)
+      }
+    })
+
+    // 重新排序
+    mergedGroups.sort((a, b) => b.date.localeCompare(a.date))
+
+    return mergedGroups
+  },
+
+  /**
+   * 处理单词列表数据（保留原有函数以兼容其他功能）
    */
   _processWordList: function (wordCardList, wordBookCodeToName, practiceDate = null) {
     if (!wordCardList || wordCardList.length === 0) {
@@ -565,7 +970,7 @@ Page({
             wordId: `${wordCard.wordCardID}_${index}_${practiceDate || app.globalData.todayDate}`,
             practiceNum: wordCard.realPracticeNum || 0,
             createDate: wordCard.createDate,
-            practiceDate: practiceDate || app.globalData.todayDate, // 添加练习日期
+            learnDate: practiceDate || app.globalData.todayDate, // 添加学习日期
             wordBookName: wordBookCodeToName[wordCard.wordBookCode] || '未知词书',
             wordBookCode: wordCard.wordBookCode,
             isDeleted: wordCard.isDeleted || false,
@@ -575,8 +980,9 @@ Page({
             selfDef: wordInfo.selfDef || wordInfo.wordCN || '',
             wordCN: wordInfo.wordCN || '',
             wordInfo: wordInfo,
-            // 添加熟练度文案 - 使用opacity分数
-            proficiencyText: this._getProficiencyText(wordInfo.opacity || 0)
+            // 添加熟练度文案和颜色 - 使用opacity分数
+            proficiencyText: this._getProficiencyText(wordInfo.opacity || 0),
+            proficiencyColor: this._getProficiencyColor(wordInfo.opacity || 0)
           })
         })
       }
@@ -586,20 +992,72 @@ Page({
   },
 
   /**
+   * 计算统计数据 - 已注释
+   */
+  /*
+  _calculateStatistics: function() {
+    let totalWords = 0
+    let beginnerWords = 0  // 陌生+了解 (0-59)
+    let advancedWords = 0  // 熟练+掌握 (60-100)
+    
+    this.data.wordGroupsByDate.forEach(dateGroup => {
+      if (dateGroup.wordList) {
+        dateGroup.wordList.forEach(word => {
+          totalWords++
+          const opacity = word.opacity || 0
+          
+          if (opacity >= 60) {
+            advancedWords++  // 熟练/掌握
+          } else {
+            beginnerWords++  // 陌生/了解
+          }
+        })
+      }
+    })
+    
+    this.setData({
+      statistics: {
+        totalWords,
+        beginnerWords,
+        advancedWords
+      }
+    })
+  },
+  */
+
+  /**
    * 根据熟练度分数获取熟练度文案
-   * @param {number} opacity 熟练度分数 (0-100)
+   * @param {number} opacity 熟练度分数 (0-100)，100表示未学过，0表示掌握
    */
   _getProficiencyText: function(opacity) {
-    if (opacity >= 80) {
-      return '完全掌握'
-    } else if (opacity >= 60) {
-      return '比较熟练'
+    if (opacity >= 100) {
+      return '未学习'  // 100分 = 未学过
+    } else if (opacity >= 70) {
+      return '陌生'    // 70-99分
     } else if (opacity >= 40) {
-      return '初步了解'
-    } else if (opacity >= 20) {
-      return '略有印象'
+      return '了解'    // 40-69分
+    } else if (opacity >= 15) {
+      return '熟练'    // 15-39分
     } else {
-      return '非常陌生'
+      return '掌握'    // 0-14分
+    }
+  },
+
+  /**
+   * 根据熟练度分数获取颜色
+   * @param {number} opacity 熟练度分数 (0-100)，100表示未学过，0表示掌握
+   */
+  _getProficiencyColor: function(opacity) {
+    if (opacity >= 100) {
+      return '#C9CDD4' // 浅灰色 - 未学习
+    } else if (opacity >= 70) {
+      return '#969799' // 灰色 - 陌生
+    } else if (opacity >= 40) {
+      return '#ff976a' // 橙色 - 了解
+    } else if (opacity >= 15) {
+      return '#1989fa' // 蓝色 - 熟练
+    } else {
+      return '#07c160' // 绿色 - 掌握
     }
   },
 
@@ -749,9 +1207,20 @@ Page({
     return `${year}年${month}月${day}日`
   },
 
+  /**
+   * 格式化日期显示（用于筛选显示）
+   */
+  _formatDateForDisplay: function (dateString) {
+    // dateString 格式：YYYYMMDD
+    const month = parseInt(dateString.substring(4, 6))
+    const day = parseInt(dateString.substring(6, 8))
+    
+    return `${month}月${day}日`
+  },
+
   onShareAppMessage() {
     return {
-      title: '我的单词学习列表 - AceWord',
+      title: '我的新学单词列表 - AceWord',
       path: 'pages/word-list/word-list',
     }
   }

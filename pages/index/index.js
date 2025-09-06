@@ -40,6 +40,10 @@ Page({
     showVipButton: false,
     vipButtonText: '剩余0张',
     isLowRemaining: false,
+    // 新手引导相关
+    showNewUserGuide: false,
+    newUserGuideStep: 0, // 0: 选择词书, 1: 开始练习
+    isNewUser: false,
   },
   onChangeRate(e) {
     let colorList = [
@@ -131,11 +135,27 @@ Page({
       console.error('获取openid失败:', error)
     }
     
+    // // !!! 注销账户调试代码 !!!
+    // try {
+    //   console.log('开始执行账户注销...')
+    //   const deleteResult = await common.request({
+    //     url: `/account`,
+    //     method: 'DELETE'
+    //   })
+    //   console.log('账户注销成功:', deleteResult)
+    //   Toast.success('账户注销成功')
+    // } catch (error) {
+    //   console.error('账户注销失败:', error)
+    //   Toast.fail('账户注销失败: ' + (error.message || error))
+    // }
+    
     this._setInitInfo()
     // 获取首页数据
-    common.request({
-      url: `/homedata`
-    }).then(homeData => {
+    try {
+      const homeData = await common.request({
+        url: `/homedata`
+      })
+      
       logger.info('Home data loaded:', homeData)
       Toast.clear()
       // set globalData: settings
@@ -172,14 +192,36 @@ Page({
       })
       let todayCardList = this._updateWordCardList(pageInfo.data)
       console.log(todayCardList)
+      
+      // 首页加载时，如果没有卡片，先显示空数组，等自动添加完成后再处理
       this.setData({
-        todayCardList: todayCardList.length == 0 ? [{
-          _type: 'blank'
-        }] : todayCardList,
+        todayCardList: todayCardList.length == 0 ? [] : todayCardList,
       })
 
       wx.setStorageSync('todayCardList', todayCardList)
-    }).catch(e => {
+      
+      // 检查是否需要自动添加卡片以满足每日计划（首页加载时）
+      const finalCardList = await this._autoAddCardsForDailyTarget(todayCardList, settings.dailyTargetNum, 'onLoad')
+      
+      // 自动添加完成后，如果最终还是没有卡片，才显示空白卡片
+      if (finalCardList.length === 0) {
+        logger.info('[首页加载] 自动添加后仍无卡片，显示空白卡片')
+        this.setData({
+          todayCardList: [{
+            _type: 'blank'
+          }]
+        })
+      } else {
+        // 如果自动添加了卡片，需要更新页面数据
+        logger.info(`[首页加载] 自动添加完成，最终卡片数: ${finalCardList.length}`)
+        // 注意：_autoAddCardsForDailyTarget 函数内部已经通过 setData 更新了 todayCardList
+        // 这里不需要再次 setData，避免重复设置
+      }
+      
+      // 检查是否需要显示新手引导
+      this._checkAndShowNewUserGuide(settings, todayCardList)
+      
+    } catch (e) {
       logger.error('Failed to load home data:', e)
       Toast.fail('加载失败，请稍后重试')
       
@@ -190,7 +232,7 @@ Page({
           message: '网络连接失败，请下拉刷新重试'
         }]
       })
-    })
+    }
   },
 
   /**
@@ -393,6 +435,459 @@ Page({
       })
       Toast.success('修改成功')
 
+    }
+  },
+
+  /**
+   * 检查并显示新手引导
+   */
+  _checkAndShowNewUserGuide: function(settings, todayCardList) {
+    // 检查是否已经显示过新手引导
+    const hasShownGuide = wx.getStorageSync('hasShownNewUserGuide')
+    if (hasShownGuide) {
+      return
+    }
+    
+    // 判断是否为新用户（使用示例词书或词书名包含"示例"）
+    const currentWordBook = settings.currentWordBook
+    const isUsingExampleWordbook = 
+      currentWordBook.wordBookName.includes('示例') || 
+      currentWordBook.wordBookName.includes('Example') ||
+      currentWordBook.wordBookCode === 'example' ||
+      currentWordBook.wordBookCode === '0000' // 根据实际情况调整
+    
+    if (isUsingExampleWordbook) {
+      console.log('检测到新用户使用示例词书，显示选择词书引导')
+      this.setData({
+        isNewUser: true,
+        newUserGuideStep: 0
+      })
+      
+      // 延迟显示，确保页面加载完成
+      setTimeout(() => {
+        this._showNewUserWordbookGuide()
+      }, 1000)
+    }
+  },
+
+  /**
+   * 显示新用户词书选择引导
+   */
+  _showNewUserWordbookGuide: function() {
+    // 新用户直接显示分类词书选择，跳过词书类型选择
+    this.setData({
+      showNewUserGuide: true
+    })
+    
+    // 直接调用分类选择函数
+    this._showCategorySelection()
+    
+    // 修改ActionSheet的描述文案为新用户引导
+    setTimeout(() => {
+      this.setData({
+        actionSheetDesc: '👋 欢迎使用AceWord！\n请选择适合你的学习阶段'
+      })
+    }, 100)
+  },
+
+  /**
+   * 显示新用户练习引导
+   */
+  _showNewUserPracticeGuide: function() {
+    // 检查是否有可练习的卡片
+    const todayCardList = this.data.todayCardList
+    const practiceableCards = todayCardList.filter(card => 
+      card._type !== 'loading' && 
+      card._type !== 'blank' && 
+      card._type !== 'error'
+    )
+
+    if (practiceableCards.length > 0) {
+      // 自动选中第一张卡片
+      const firstCard = practiceableCards[0]
+      this.setData({
+        wordCardIDCheckedList: [firstCard.wordCardID],
+        newUserGuideStep: 1
+      })
+
+      // 显示练习引导提示
+      wx.showModal({
+        title: '🎉 词书选择成功！',
+        content: '我已经为你选中了第一张单词卡片，点击"开始练习"按钮开始你的第一次学习吧！',
+        showCancel: false,
+        confirmText: '开始练习',
+        success: (res) => {
+          if (res.confirm) {
+            this.onPractice()
+          }
+        }
+      })
+    } else {
+      // 没有可练习的卡片，引导用户添加卡片
+      wx.showModal({
+        title: '词书选择成功！',
+        content: '请点击"添加卡片"按钮来添加今日要学习的单词',
+        showCancel: false,
+        confirmText: '知道了'
+      })
+    }
+
+    // 标记新手引导已完成
+    wx.setStorageSync('hasShownNewUserGuide', true)
+    this.setData({
+      showNewUserGuide: false,
+      isNewUser: false
+    })
+  },
+
+  /**
+   * 检查是否需要刷新首页数据（词书切换后）
+   */
+  _checkAndRefreshHomeData: function() {
+    const needRefresh = wx.getStorageSync('needRefreshHomeData')
+    if (needRefresh) {
+      logger.info('检测到词书切换标记，开始刷新首页数据并自动添加卡片')
+      // 清除标记
+      wx.removeStorageSync('needRefreshHomeData')
+      
+      // 显示加载提示
+      Toast.loading({
+        message: '更新数据中...',
+        forbidClick: true
+      })
+      
+      // 重新加载首页数据
+      this._refreshHomeData()
+    } else {
+      logger.info('未检测到词书切换标记，不执行自动添加卡片')
+    }
+  },
+
+  /**
+   * 刷新首页数据
+   */
+  _refreshHomeData: async function() {
+    logger.info('开始执行词书切换后的数据刷新和自动添加卡片逻辑')
+    try {
+      const homeData = await common.request({
+        url: `/homedata`
+      })
+      
+      logger.info('词书切换后首页数据已刷新:', homeData)
+      Toast.clear()
+      
+      // 更新全局设置
+      let settings = homeData.settings
+      app.globalData.settings = settings
+      
+      // 更新按钮文案
+      this._updateAddCardButtonText(homeData.todayCardList)
+
+      // 更新页面数据
+      let senCard = homeData.sentence
+      let wordBookCodeToName = homeData.bookMap
+      let currentWordBook = settings.currentWordBook
+      let wordBookMyInfo = {
+        currentWordBookName: currentWordBook.wordBookName,
+        dailyTargetNum: settings.dailyTargetNum,
+        totalWordNum: currentWordBook.totalWordNum,
+        userProgressNum: currentWordBook.userProgressNum
+      }
+      let reviewCard = homeData.reviewData
+      let pageInfo = homeData.todayCardList
+
+      this.setData({
+        isVipExpired: settings.isVipExpired,
+        showGuideOfAddToMyMiniApp: settings.showGuideOfAddToMyMiniApp,
+        senCard,
+        wordBookMyInfo,
+        wordBookCodeToName,
+        reviewCard: reviewCard,
+        isRefresherTriggered: false,
+      })
+      
+      let todayCardList = this._updateWordCardList(pageInfo.data)
+      
+      // 词书切换后，如果没有卡片，先不显示空白卡片，等自动添加完成后再处理
+      if (todayCardList.length === 0) {
+        logger.info('[词书切换] 当前无卡片，准备自动添加')
+        this.setData({
+          todayCardList: [] // 先设置为空数组，不显示blank卡片
+        })
+      } else {
+        this.setData({
+          todayCardList: todayCardList
+        })
+      }
+
+      wx.setStorageSync('todayCardList', todayCardList)
+      
+      // 检查是否需要自动添加卡片以满足每日计划（词书切换后）
+      const finalCardList = await this._autoAddCardsForDailyTarget(todayCardList, settings.dailyTargetNum, 'wordBookSwitch')
+      
+      // 自动添加完成后，如果最终还是没有卡片，才显示空白卡片
+      if (finalCardList.length === 0) {
+        logger.info('[词书切换] 自动添加后仍无卡片，显示空白卡片')
+        this.setData({
+          todayCardList: [{
+            _type: 'blank'
+          }]
+        })
+      }
+      
+      // 词书切换后自动全选卡片（使用最终的卡片列表）
+      this._autoSelectAllCardsAfterSwitch(finalCardList)
+      
+      // 显示成功提示
+      Toast.success('数据已更新')
+      
+    } catch (e) {
+      logger.error('Failed to refresh home data:', e)
+      Toast.fail('更新失败，请稍后重试')
+    }
+  },
+
+  /**
+   * 根据每日计划自动添加卡片
+   * @param {Array} todayCardList 当前卡片列表
+   * @param {Number} dailyTargetNum 每日目标单词数
+   * @param {String} source 触发来源：'onLoad' | 'wordBookSwitch'
+   */
+  _autoAddCardsForDailyTarget: async function(todayCardList, dailyTargetNum, source = 'onLoad') {
+    try {
+      // 检查是否启用自动添加卡片功能（可以后续添加到设置中）
+      // const autoAddEnabled = app.globalData.settings.autoAddCards !== false // 默认启用
+      // if (!autoAddEnabled) {
+      //   logger.info('自动添加卡片功能已禁用')
+      //   return
+      // }
+      // 过滤掉非正常卡片（loading、blank、error等）
+      const validCards = todayCardList.filter(card => 
+        card._type !== 'loading' && 
+        card._type !== 'blank' && 
+        card._type !== 'error' &&
+        card.wordList && 
+        card.wordList.length > 0
+      )
+      
+      // 计算当前已有的卡片数量
+      const currentCardCount = validCards.length
+      
+      // 计算每日目标卡片数（每张卡片5个单词）
+      const dailyTargetCardNum = Math.ceil(dailyTargetNum / 5)
+      
+      const sourceText = source === 'onLoad' ? '首页加载' : '词书切换'
+      logger.info(`[${sourceText}] 当前卡片数: ${currentCardCount}, 每日目标卡片数: ${dailyTargetCardNum}`)
+      
+      // 如果当前卡片数已经达到或超过每日目标卡片数，则不需要添加
+      if (currentCardCount >= dailyTargetCardNum) {
+        logger.info(`[${sourceText}] 当前卡片数已满足每日目标，无需自动添加卡片`)
+        return todayCardList
+      }
+      
+      // 计算需要添加的卡片数
+      let cardsNeeded = dailyTargetCardNum - currentCardCount
+      
+      // 限制一次最多添加的卡片数量，避免一次性添加过多
+      const MAX_AUTO_ADD_CARDS = 10
+      if (cardsNeeded > MAX_AUTO_ADD_CARDS) {
+        logger.warn(`需要添加${cardsNeeded}张卡片，但限制为最多${MAX_AUTO_ADD_CARDS}张`)
+        cardsNeeded = MAX_AUTO_ADD_CARDS
+      }
+      
+      logger.info(`[${sourceText}] 需要添加 ${cardsNeeded} 张卡片来满足每日目标`)
+      
+      // 检查每日限制（如果有的话）
+      const check = dailyLimits.canCreateCard()
+      if (!check.allowed) {
+        logger.warn(`[${sourceText}] 达到每日卡片创建限制，无法自动添加卡片`)
+        return todayCardList
+      }
+      
+      // 显示添加提示
+      Toast.loading({
+        message: `添加${cardsNeeded}张卡片`,
+        forbidClick: true
+      })
+      
+      // 先添加loading卡片到页面显示
+      const currentCardList = [...this.data.todayCardList]
+      for (let i = 0; i < cardsNeeded; i++) {
+        currentCardList.push({
+          _type: 'loading'
+        })
+      }
+      this.setData({
+        todayCardList: currentCardList
+      })
+      
+      // 批量添加卡片
+      const addedCards = []
+      for (let i = 0; i < cardsNeeded; i++) {
+        try {
+          const wordCard = await common.request({
+            url: '/wordcard',
+            method: 'POST'
+          })
+          addedCards.push(wordCard)
+          
+          // 立即替换对应的loading卡片
+          const updatedWordCard = this._updateWordCardList([wordCard])[0]
+          const currentList = [...this.data.todayCardList]
+          // 找到第一个loading卡片的位置并替换
+          const loadingIndex = currentList.findIndex(card => card._type === 'loading')
+          if (loadingIndex !== -1) {
+            currentList[loadingIndex] = updatedWordCard
+            this.setData({
+              todayCardList: currentList
+            })
+          }
+          
+          logger.info(`[${sourceText}] 成功添加第${i + 1}张卡片`)
+        } catch (error) {
+          logger.error(`[${sourceText}] 添加第${i + 1}张卡片失败:`, error)
+          
+          // 移除对应的loading卡片
+          const currentList = [...this.data.todayCardList]
+          const loadingIndex = currentList.findIndex(card => card._type === 'loading')
+          if (loadingIndex !== -1) {
+            currentList.splice(loadingIndex, 1)
+            this.setData({
+              todayCardList: currentList
+            })
+          }
+          
+          // 如果是词书已背完的错误，停止继续添加
+          if (error.errcode === 412) {
+            logger.info(`[${sourceText}] 词书已背完，停止自动添加卡片`)
+            break
+          }
+          
+          // 如果是达到限制的错误，停止继续添加
+          if (error.errcode === 410) {
+            logger.info(`[${sourceText}] 达到每日限制，停止自动添加卡片`)
+            break
+          }
+          
+          // 其他错误也停止添加，避免无限重试
+          break
+        }
+      }
+      
+      Toast.clear()
+      
+      // 清理剩余的loading卡片（如果有的话）
+      let finalCardList = [...this.data.todayCardList]
+      finalCardList = finalCardList.filter(card => card._type !== 'loading')
+      this.setData({
+        todayCardList: finalCardList
+      })
+      
+      if (addedCards.length > 0) {
+        // 更新进度信息
+        const newProgressNum = this.data.wordBookMyInfo.userProgressNum + (addedCards.length * 5)
+        this.setData({
+          [`wordBookMyInfo.userProgressNum`]: newProgressNum
+        })
+        
+        // 更新本地存储
+        wx.setStorageSync('todayCardList', finalCardList)
+        
+        // 刷新按钮文案
+        this._refreshAddCardButtonText()
+        
+        const addedWordsCount = addedCards.length * 5
+        const successMessage = source === 'onLoad' 
+          ? `已为您添加${addedCards.length}张卡片(${addedWordsCount}个单词)` 
+          : `已自动添加${addedCards.length}张卡片(${addedWordsCount}个单词)`
+        // Toast.success(successMessage)
+        logger.info(`[${sourceText}] 自动添加卡片完成，共添加${addedCards.length}张卡片，${addedWordsCount}个单词`)
+        
+        // 返回更新后的卡片列表，供后续全选使用
+        return finalCardList
+      } else {
+        logger.warn(`[${sourceText}] 未能添加任何卡片`)
+        return finalCardList
+      }
+      
+    } catch (error) {
+      logger.error(`[${sourceText}] 自动添加卡片过程中发生错误:`, error)
+      Toast.clear()
+      
+      // 清理所有loading卡片
+      let cleanCardList = [...this.data.todayCardList]
+      cleanCardList = cleanCardList.filter(card => card._type !== 'loading')
+      this.setData({
+        todayCardList: cleanCardList
+      })
+      
+      // 不显示错误提示，避免影响用户体验
+      return cleanCardList
+    }
+  },
+
+  /**
+   * 词书切换后自动全选卡片
+   * @param {Array} cardList 要选择的卡片列表，如果不传则使用当前页面的卡片列表
+   */
+  _autoSelectAllCardsAfterSwitch: function(cardList) {
+    try {
+      const todayCardList = cardList || this.data.todayCardList
+      
+      // 过滤出有效的卡片（排除loading、blank、error等类型）
+      const validCards = todayCardList.filter(card => 
+        card._type !== 'loading' && 
+        card._type !== 'blank' && 
+        card._type !== 'error' &&
+        card.wordCardID && 
+        card.wordList && 
+        card.wordList.length > 0
+      )
+      
+      if (validCards.length === 0) {
+        logger.info('[词书切换] 没有有效卡片可选择')
+        return
+      }
+      
+      // 获取所有有效卡片的ID
+      const wordCardIDCheckedList = validCards.map(card => card.wordCardID)
+      
+      logger.info(`[词书切换] 自动选中${validCards.length}张卡片`)
+      
+      // 更新选中状态
+      this.setData({
+        wordCardIDCheckedList: wordCardIDCheckedList,
+        showPracticeBtn: wordCardIDCheckedList.length > 0
+      })
+      
+      // 显示提示
+      Toast({
+        message: `已为您选中${validCards.length}张卡片，可直接开始练习`,
+        duration: 2000
+      })
+      
+    } catch (error) {
+      logger.error('[词书切换] 自动全选卡片失败:', error)
+      // 不显示错误提示，避免影响用户体验
+    }
+  },
+
+  /**
+   * 检查新用户练习引导（在onShow中调用）
+   */
+  _checkNewUserPracticeGuide: function() {
+    // 检查是否是从词书选择页面返回的新用户
+    const fromNewUserGuide = wx.getStorageSync('fromNewUserGuide')
+    const hasShownGuide = wx.getStorageSync('hasShownNewUserGuide')
+    
+    if (fromNewUserGuide && !hasShownGuide) {
+      // 清除标记
+      wx.removeStorageSync('fromNewUserGuide')
+      
+      // 延迟显示练习引导，确保页面数据已更新
+      setTimeout(() => {
+        this._showNewUserPracticeGuide()
+      }, 1500)
     }
   },
 
@@ -1040,7 +1535,7 @@ Page({
     } else if (actionSheetType == 'wordbookType') {
 
       this._onSelectActionSheetWordbookType(e)
-
+      
     } else if (actionSheetType == 'examWordbook') {
 
       this._onSelectActionSheetExamWordbook(e)
@@ -1104,13 +1599,18 @@ Page({
 
     const selectedAction = this.data.actions.find(action => action.name === e.detail.name)
     
+    // 检查是否是新用户引导状态
+    const isNewUserGuide = this.data.showNewUserGuide
+    
     if (selectedAction && selectedAction.categoryCode) {
       // 跳转到词书广场页面，传递分类信息
-      wx.navigateTo({
-        url: `/pages/wordbook-all/wordbook-all?categoryCode=${selectedAction.categoryCode}&categoryName=${encodeURIComponent(selectedAction.name)}`
-      })
+      const url = isNewUserGuide 
+        ? `/pages/wordbook-all/wordbook-all?categoryCode=${selectedAction.categoryCode}&categoryName=${encodeURIComponent(selectedAction.name)}&fromNewUserGuide=true`
+        : `/pages/wordbook-all/wordbook-all?categoryCode=${selectedAction.categoryCode}&categoryName=${encodeURIComponent(selectedAction.name)}`
+      wx.navigateTo({ url })
     }
   },
+
 
   /**
    * 处理词书类型选择
@@ -1313,6 +1813,12 @@ Page({
       hasUnfinishedTask,
       scrollViewHeight: wx.getSystemInfoSync().windowHeight - (wx.getMenuButtonBoundingClientRect().bottom + 6) - 48 - (app.globalData.isIOS ? 30 : 0),
     })
+    
+    // 检查是否需要刷新首页数据（词书切换后）
+    this._checkAndRefreshHomeData()
+    
+    // 检查是否需要显示新用户练习引导
+    this._checkNewUserPracticeGuide()
   },
 
   onScroll: function (e) {

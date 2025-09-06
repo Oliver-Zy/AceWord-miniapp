@@ -55,5 +55,8 @@
   
   "darkmode": true,
   "themeLocation": "theme.json",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "privacyConfig": {
+    "privacyConfigLocation": "privacy-config.json"
+  }
 }

@@ -9,7 +9,7 @@
     <view class="avatar-group">
       <image class="avatar-img" src="{{avatarUrl == null ? '/pages/mine/images/avatar.png' : avatarUrl}}"></image>
       <view class="right-avatar-group">
-        <text class="right-avatar-group-text">{{nickName == '' ? '点击登录' : nickName}}</text>
+        <text class="right-avatar-group-text">{{nickName == '' ? '修改昵称' : nickName}}</text>
         <view class="down-right-avatar-group">
           <text class="down-right-avatar-group-text">{{vipExpireDate == '00000000' ? '尚未开通会员' : '有效期至' + tools.formatCreateDate(vipExpireDate)}}</text>
         </view>
