@@ -59,11 +59,11 @@ Page({
     showProficiencySheet: false,
     currentEditingWord: null, // 当前编辑的单词信息
     proficiencyActions: [
-      { name: '掌握', opacity: 10 },   // familiar = 90
-      { name: '熟练', opacity: 30 },   // familiar = 70
-      { name: '了解', opacity: 50 },   // familiar = 50
-      { name: '陌生', opacity: 80 },   // familiar = 20
-      { name: '未学习', opacity: 100 } // familiar = 0
+      { name: '掌握', opacity: 10 },   // opacity = 10 (高掌握度)
+      { name: '熟练', opacity: 30 },   // opacity = 30 (较高掌握度)
+      { name: '了解', opacity: 50 },   // opacity = 50 (中等掌握度)
+      { name: '陌生', opacity: 80 },   // opacity = 80 (较低掌握度)
+      { name: '未学习', opacity: 100 } // opacity = 100 (未学习)
     ],
     
     // 自定义释义编辑相关
@@ -335,7 +335,7 @@ Page({
         method: 'PUT',
         data: [{
           word: currentEditingWord.wordName,
-          familiar: newOpacity, // 直接使用opacity作为familiar值
+          opacity: newOpacity, // 使用正确的参数名opacity
           cardID: currentEditingWord.wordCardID
         }]
       })

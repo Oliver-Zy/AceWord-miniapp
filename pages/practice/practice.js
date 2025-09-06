@@ -497,18 +497,18 @@ Page({
         }
       })
       
-      // 删除单词时，将其熟练度设置为0，表示已掌握（opacity=0表示完全掌握）
+      // 删除单词时，将其熟练度设置为1，表示已掌握（避免opacity=0与未学习状态混淆）
       try {
         await common.request({
           url: `/word/familiar/batch`,
           method: 'PUT',
           data: [{
             word: word[0].word,
-            familiar: 0, // 设置为0表示已掌握（opacity=0）
+            opacity: 1, // 设置为1表示已掌握（避免0值与未学习状态混淆）
             cardID: wordCardIDCheckedList[0].toString() // 使用第一个卡片ID
           }]
         })
-        console.log(`已将删除的单词 ${word[0].word} 熟练度设置为0（已掌握）`)
+        console.log(`已将删除的单词 ${word[0].word} 熟练度设置为1（已掌握）`)
       } catch (familiarError) {
         console.warn(`设置删除单词熟练度失败:`, familiarError)
         // 熟练度设置失败不影响删除操作
@@ -1349,9 +1349,12 @@ Page({
           }
           
           if (cardID) {
+            // 计算opacity值：100 - familiar，由于familiar最大为99，所以opacity最小为1
+            const opacity = 100 - familiar
+            
             familiarityUpdateList.push({
               word: word,
-              familiar: 100 - familiar, // 转换为opacity值：100表示未学过，0表示掌握
+              opacity: opacity,
               cardID: cardID.toString() // 确保cardID是字符串
             })
           } else {
@@ -1428,9 +1431,9 @@ Page({
         baseScore = Math.max(baseScore, 20) // 全部模糊也给20分，表示练习过
       }
     } else if (totalCount >= 3) {
-      // 练习了三次或以上，可以达到满分
+      // 练习了三次或以上，可以达到高分
       if (rememberCount === totalCount) {
-        baseScore = 100 // 全部记住，满分
+        baseScore = 99 // 全部记住，最高99分（避免opacity=0）
       } else if (rememberRate >= 0.8) {
         baseScore = Math.min(baseScore, 90) // 80%以上记住率，最高90分
       } else if (rememberRate >= 0.6) {
@@ -1440,8 +1443,8 @@ Page({
       }
     }
     
-    // 确保分数在10-100范围内，练习过的单词最低10分
-    return Math.max(10, Math.min(100, baseScore))
+    // 确保分数在10-99范围内，练习过的单词最低10分，最高99分（避免opacity=0）
+    return Math.max(10, Math.min(99, baseScore))
   },
 
 

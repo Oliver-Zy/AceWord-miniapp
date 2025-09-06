@@ -248,6 +248,11 @@ Component({
         let hours = Math.floor((timeDiff % (24 * 3600)) / (3600))
         let minutes = Math.floor((timeDiff % (3600)) / (60))
 
+        // 确保分钟数至少为1，避免显示0分钟后
+        if (days == 0 && hours == 0 && minutes == 0) {
+          minutes = 1
+        }
+
         return days != 0 ? days + '天后' : hours != 0 ? hours + '小时后' : minutes + '分钟后'
       }
     },
