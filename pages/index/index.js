@@ -568,16 +568,16 @@ Page({
       })
       
       // 重新加载首页数据
-      this._refreshHomeData()
+      this._refreshHomeDataAfterWordbookSwitch()
     } else {
       logger.info('未检测到词书切换标记，不执行自动添加卡片')
     }
   },
 
   /**
-   * 刷新首页数据
+   * 刷新首页数据（词书切换后）
    */
-  _refreshHomeData: async function() {
+  _refreshHomeDataAfterWordbookSwitch: async function() {
     logger.info('开始执行词书切换后的数据刷新和自动添加卡片逻辑')
     try {
       const homeData = await common.request({
@@ -1923,8 +1923,96 @@ Page({
   },
 
   onScrollViewRefresh: function () {
-    Toast.loading()
-    this.onLoad()
+    this._refreshHomeData()
+  },
+
+  /**
+   * 下拉刷新数据（区别于初始加载）
+   */
+  _refreshHomeData: async function() {
+    try {
+      console.log('开始下拉刷新首页数据')
+      
+      // 显示刷新状态，但不显示Toast，避免干扰用户体验
+      this.setData({
+        isRefresherTriggered: true
+      })
+      
+      // 获取最新的首页数据
+      const homeData = await common.request({
+        url: `/homedata`
+      })
+      
+      logger.info('下拉刷新数据获取成功:', homeData)
+      
+      // 更新全局设置
+      let settings = homeData.settings
+      app.globalData.settings = settings
+      
+      // 更新按钮文案
+      this._updateAddCardButtonText(homeData.todayCardList)
+
+      // 更新页面数据
+      let senCard = homeData.sentence
+      let wordBookCodeToName = homeData.bookMap
+      let currentWordBook = settings.currentWordBook
+      let wordBookMyInfo = {
+        currentWordBookName: currentWordBook.wordBookName,
+        dailyTargetNum: settings.dailyTargetNum,
+        totalWordNum: currentWordBook.totalWordNum,
+        userProgressNum: currentWordBook.userProgressNum
+      }
+      let reviewCard = homeData.reviewData
+      let pageInfo = homeData.todayCardList
+
+      this.setData({
+        isVipExpired: settings.isVipExpired,
+        showGuideOfAddToMyMiniApp: settings.showGuideOfAddToMyMiniApp,
+        senCard,
+        wordBookMyInfo,
+        wordBookCodeToName,
+        reviewCard: reviewCard,
+      })
+      
+      let todayCardList = this._updateWordCardList(pageInfo.data)
+      
+      // 下拉刷新时的处理逻辑：
+      // 1. 如果有卡片数据，直接显示
+      // 2. 如果没有卡片数据，显示空白卡片，但不自动添加
+      if (todayCardList.length > 0) {
+        this.setData({
+          todayCardList: todayCardList
+        })
+        console.log(`下拉刷新完成，显示${todayCardList.length}张卡片`)
+      } else {
+        // 下拉刷新时如果没有卡片，显示提示用户添加卡片的状态
+        this.setData({
+          todayCardList: [{
+            _type: 'refresh-empty',
+            message: '当前没有学习卡片，点击下方"添加卡片"开始学习吧！'
+          }]
+        })
+        console.log('下拉刷新完成，当前无卡片，显示添加提示状态')
+      }
+
+      wx.setStorageSync('todayCardList', todayCardList)
+      
+      // 同步卡片数量到 dailyLimits
+      this._syncTodayCardCount(todayCardList)
+      
+      // 更新按钮状态
+      this._updateAddCardButtonText()
+      
+    } catch (e) {
+      logger.error('下拉刷新失败:', e)
+      // 刷新失败时不显示Toast，避免干扰用户
+      console.error('下拉刷新失败，保持当前状态')
+    } finally {
+      // 确保刷新状态被清除
+      this.setData({
+        isRefresherTriggered: false
+      })
+    }
   },
 
   /**

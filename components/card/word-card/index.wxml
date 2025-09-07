@@ -69,3 +69,14 @@
   <text class="english">Please try again later.</text>
 </view>
 <!-- E container _type == 'error' -->
+
+<!-- S container _type == 'refresh-empty' -->
+<view wx:if="{{wordCard._type == 'refresh-empty'}}" class="refresh-empty-container">
+  <image src="./images/refresh-empty-icon.png"></image>
+  <view class="refresh-empty-text-container">
+    <text class="chinese">{{wordCard.message || '刷新完成，暂无学习卡片'}}</text>
+  </view>
+  <view style="height:4px;"></view>
+  <text class="english">Pull to refresh completed.</text>
+</view>
+<!-- E container _type == 'refresh-empty' -->

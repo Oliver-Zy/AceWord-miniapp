@@ -605,8 +605,9 @@ Page({
   onScrollViewRefresh: function () {
     this.setData({
       pageIndex: 1,
-      wordGroupsByDate: []
+      isRefresherTriggered: true
     })
+    // 不清空 wordGroupsByDate，避免显示空状态
     this._loadWordList()
   },
 

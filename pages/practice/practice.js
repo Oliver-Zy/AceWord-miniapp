@@ -1311,6 +1311,7 @@ Page({
     try {
       console.log('开始更新单词熟练度，练习记录:', wordPracticeRecordDict)
       console.log('当前状态 - isVagueMode:', this.data.isVagueMode, 'practiceMode:', this.data.practiceMode)
+      
       // 构建熟练度更新数据
       const familiarityUpdateList = []
       
@@ -1318,45 +1319,106 @@ Page({
       const wordCardIDCheckedList = this.data.entryPage === 'quickReview'
         ? app.globalData.practiceInfo.cardIDList
         : app.globalData.practiceInfo.wordCardIDCheckedList
+      
+      console.log('wordCardIDCheckedList:', wordCardIDCheckedList)
+      console.log('wordInfoList长度:', this.data.wordInfoList.length)
+      
+      // 获取上一个页面的卡片数据，从中提取opacity
+      let pages = getCurrentPages()
+      let prevPage = pages[pages.length - 2]
+      let originalCardData = null
+      
+      if (this.data.entryPage === 'index') {
+        originalCardData = prevPage.data.todayCardList
+      } else if (this.data.entryPage === 'review') {
+        // 复习页面的数据结构更复杂，需要遍历reviewCardDateList
+        originalCardData = []
+        if (prevPage.data.reviewCardDateList) {
+          prevPage.data.reviewCardDateList.forEach(dateGroup => {
+            if (dateGroup.wordCardList) {
+              originalCardData = originalCardData.concat(dateGroup.wordCardList)
+            }
+          })
+        }
+      } else if (this.data.entryPage === 'calendar') {
+        originalCardData = prevPage.data.wordCardList
+      }
+      
+      console.log('原始卡片数据:', originalCardData)
 
       // 为每个练习过的单词计算熟练度
       for (let word in wordPracticeRecordDict) {
         if (wordPracticeRecordDict.hasOwnProperty(word)) {
           const record = wordPracticeRecordDict[word]
-          const familiar = this._calculateFamiliarity(record.remember, record.vague)
           
-          // 找到对应的单词信息
+          // 找到对应的单词信息，获取当前opacity
           const wordInfo = this.data.wordInfoList.find(item => item.word === word)
           let cardID = null
+          let currentOpacity = 100 // 默认为未学习状态
           
-          // 尝试多种方式获取cardID
-          if (wordInfo) {
-            // 方式1: 直接从wordInfo获取
-            cardID = wordInfo.cardID || wordInfo.wordCardID
-            
-            // 方式2: 如果没有cardID，尝试从wordCardIDCheckedList获取
-            if (!cardID) {
-              const wordIndex = this.data.wordInfoList.findIndex(item => item.word === word)
-              if (wordIndex >= 0 && wordIndex < wordCardIDCheckedList.length) {
-                cardID = wordCardIDCheckedList[wordIndex]
+          // 从原始卡片数据中查找单词的opacity
+          if (originalCardData && originalCardData.length > 0) {
+            for (let card of originalCardData) {
+              if (card.wordList && card.wordInfoList) {
+                const wordIndex = card.wordList.findIndex(w => w === word)
+                if (wordIndex >= 0 && card.wordInfoList[wordIndex]) {
+                  currentOpacity = card.wordInfoList[wordIndex].opacity || 100
+                  cardID = card.wordCardID
+                  console.log(`单词 ${word} 从原始卡片获取: cardID=${cardID}, opacity=${currentOpacity}`)
+                  break
+                }
               }
             }
           }
           
-          // 方式3: 如果还是没有cardID，使用第一个可用的cardID（适用于单卡片多单词的情况）
+          // 如果没有从卡片中找到，尝试从wordInfo获取
+          if (!cardID && wordInfo) {
+            cardID = wordInfo.cardID || wordInfo.wordCardID || wordInfo.dictCode
+            if (!currentOpacity || currentOpacity === 100) {
+              currentOpacity = wordInfo.opacity || wordInfo.proficiency || wordInfo.familiarity || 100
+            }
+            console.log(`单词 ${word} 从wordInfo获取: cardID=${cardID}, opacity=${currentOpacity}`)
+          }
+          
+          // 方式2: 如果没有cardID，使用wordCardIDCheckedList中的ID
+          if (!cardID) {
+            const wordIndex = this.data.wordInfoList.findIndex(item => item.word === word)
+            if (wordIndex >= 0 && wordCardIDCheckedList.length > 0) {
+              // 简单策略：将单词按顺序分配到卡片
+              // 如果只有一张卡片，所有单词都属于这张卡片
+              if (wordCardIDCheckedList.length === 1) {
+                cardID = wordCardIDCheckedList[0]
+                console.log(`单词 ${word} 来自唯一卡片: ${cardID}`)
+              } else {
+                // 如果有多张卡片，按单词索引轮询分配
+                const cardIndex = wordIndex % wordCardIDCheckedList.length
+                cardID = wordCardIDCheckedList[cardIndex]
+                console.log(`单词 ${word} (索引${wordIndex}) 轮询分配到卡片${cardIndex}: ${cardID}`)
+              }
+            }
+          }
+          
+          // 方式3: 最后的备用方案
           if (!cardID && wordCardIDCheckedList.length > 0) {
             cardID = wordCardIDCheckedList[0]
+            console.warn(`单词 ${word} 无法找到对应cardID，使用备用cardID: ${cardID}`)
           }
           
           if (cardID) {
-            // 计算opacity值：100 - familiar，由于familiar最大为99，所以opacity最小为1
-            const opacity = 100 - familiar
+            // 基于历史练习的累积式更新
+            const newOpacity = this._calculateIncrementalOpacity(
+              record.remember, 
+              record.vague, 
+              currentOpacity
+            )
             
             familiarityUpdateList.push({
               word: word,
-              opacity: opacity,
+              opacity: newOpacity,
               cardID: cardID.toString() // 确保cardID是字符串
             })
+            
+            console.log(`单词 ${word}: 当前opacity=${currentOpacity} (熟练度=${100-currentOpacity}), 本次练习(记住:${record.remember}, 模糊:${record.vague}), 新opacity=${newOpacity} (熟练度=${100-newOpacity})`)
           } else {
             console.warn(`无法获取单词 ${word} 的cardID，跳过熟练度更新`)
           }
@@ -1393,7 +1455,101 @@ Page({
   },
 
   /**
-   * 计算单词熟练度
+   * 基于历史练习的累积式opacity更新
+   * 
+   * @inner
+   * @param {number} rememberCount 本次练习记住次数
+   * @param {number} vagueCount 本次练习模糊次数
+   * @param {number} currentOpacity 当前opacity值 (1-100)
+   * @returns {number} 新的opacity值 (1-100)
+   * 
+   * 重要：熟练度 + opacity = 100
+   * - opacity = 100: 未学习 (熟练度 = 0)
+   * - opacity = 1: 非常熟练 (熟练度 = 99)
+   */
+  _calculateIncrementalOpacity: function (rememberCount, vagueCount, currentOpacity) {
+    const totalCount = rememberCount + vagueCount
+    
+    if (totalCount === 0) {
+      // 没有练习记录，保持原有opacity
+      return currentOpacity
+    }
+    
+    // 计算当前熟练度 (0-99)
+    const currentFamiliarity = 100 - currentOpacity
+    
+    // 计算本次练习的记住率
+    const rememberRate = rememberCount / totalCount
+    
+    // 根据练习次数调整影响权重
+    let weight = 0.3 // 基础权重30%
+    if (totalCount === 1) {
+      weight = 0.2 // 单次练习权重较低
+    } else if (totalCount === 2) {
+      weight = 0.25 // 两次练习权重适中
+    } else if (totalCount >= 3) {
+      weight = 0.35 // 多次练习权重较高
+    }
+    
+    // 计算本次练习的表现分数 (0-99)
+    let practiceScore = 0
+    
+    if (rememberRate === 1.0) {
+      // 100%记住率，表现完美
+      practiceScore = 95 // 给予很高的分数
+    } else if (rememberRate >= 0.9) {
+      // 90-99%记住率，表现优秀
+      practiceScore = 80 + (rememberRate - 0.9) * 150 // 80-95分
+    } else if (rememberRate >= 0.8) {
+      // 80-90%记住率，表现良好
+      practiceScore = 65 + (rememberRate - 0.8) * 150 // 65-80分
+    } else if (rememberRate >= 0.6) {
+      // 60-80%记住率，表现中等
+      practiceScore = 45 + (rememberRate - 0.6) * 100 // 45-65分
+    } else if (rememberRate >= 0.4) {
+      // 40-60%记住率，表现一般
+      practiceScore = 25 + (rememberRate - 0.4) * 100 // 25-45分
+    } else if (rememberRate >= 0.2) {
+      // 20-40%记住率，表现较差
+      practiceScore = 10 + (rememberRate - 0.2) * 75 // 10-25分
+    } else {
+      // 20%以下记住率，表现很差
+      practiceScore = 5 + rememberRate * 25 // 5-10分
+    }
+    
+    // 累积式更新：新熟练度 = 当前熟练度 * (1-权重) + 本次表现 * 权重
+    let newFamiliarity = currentFamiliarity * (1 - weight) + practiceScore * weight
+    
+    // 特殊奖励：根据表现给予额外奖励
+    if (rememberRate === 1.0) {
+      // 100%记住率，给予更大奖励
+      if (totalCount >= 3) {
+        newFamiliarity = Math.min(99, newFamiliarity + 8) // 更大的奖励
+      } else {
+        newFamiliarity = Math.min(99, newFamiliarity + 5) // 适中的奖励
+      }
+    } else if (rememberRate >= 0.9 && totalCount >= 3) {
+      // 90%以上记住率且练习次数多
+      newFamiliarity = Math.min(99, newFamiliarity + 3)
+    }
+    
+    // 特殊处理：如果本次表现很差，适度降低熟练度，但不要过度惩罚
+    if (rememberRate <= 0.2 && totalCount >= 2) {
+      newFamiliarity = Math.max(5, newFamiliarity - 6) // 减少惩罚力度
+    }
+    
+    // 确保熟练度在合理范围内 (5-99)
+    newFamiliarity = Math.max(5, Math.min(99, newFamiliarity))
+    
+    // 转换回opacity值：opacity = 100 - 熟练度
+    const newOpacity = Math.round(100 - newFamiliarity)
+    
+    // 确保opacity在合理范围内 (1-95)
+    return Math.max(1, Math.min(95, newOpacity))
+  },
+
+  /**
+   * 计算单词熟练度（旧版本，保留作为备用）
    * 
    * @inner
    * @param {number} rememberCount 记住次数

@@ -10,7 +10,7 @@
 }
 
 .section {
-  margin: 24px 16px 0 16px;
+  margin: 16px;
   padding: 20px;
   background: #FFFFFF;
   border: 1px solid #F1F3F4;
