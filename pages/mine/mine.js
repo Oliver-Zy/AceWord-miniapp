@@ -818,9 +818,7 @@ Page({
    * @event
    */
   onOpenVip: function () {
-    // 注释掉VIP页面跳转，改为显示客服联系弹窗
-    /*
-    // 检查当前系统是否为iOS - 暂时注释掉限制
+    // 检查当前系统是否为iOS
     if (app.globalData.isIOS) {
       // iOS系统显示限制提示
       wx.showModal({
@@ -850,40 +848,6 @@ Page({
         url: '/pages/vip/vip?event=vip_mine'
       })
     }
-    
-    // 暂时允许所有系统都能跳转到VIP页面
-    wx.navigateTo({
-      url: '/pages/vip/vip?event=vip_mine'
-    })
-    */
-    
-    // 显示客服联系弹窗
-    wx.showModal({
-      title: '联系客服',
-      content: '如需升级会员，请联系客服\n客服微信：MiddleRain_',
-      confirmText: '复制',
-      cancelText: '知道了',
-      success: (res) => {
-        if (res.confirm) {
-          wx.setClipboardData({
-            data: 'MiddleRain_',
-            success: () => {
-              wx.showToast({
-                title: '客服微信号已复制',
-                icon: 'success'
-              })
-            },
-            fail: () => {
-              wx.showToast({
-                title: '复制失败，请手动复制：MiddleRain_',
-                icon: 'none',
-                duration: 3000
-              })
-            }
-          })
-        }
-      }
-    })
   },
 
   /**

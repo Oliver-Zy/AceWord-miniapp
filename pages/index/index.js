@@ -1418,38 +1418,34 @@ Page({
           showCancel: false,
           confirmText: '立即开通',
           success: () => {
-            // 注释掉VIP页面跳转，改为显示客服联系弹窗
-            /*
-            wx.navigateTo({
-              url: `/pages/vip/vip?event=${'vip_wordgroup'}`
-            })
-            */
-            wx.showModal({
-              title: '联系客服',
-              content: '如需升级会员，请联系客服\n客服微信：MiddleRain_',
-              confirmText: '复制',
-              cancelText: '我知道了',
-              success: (res) => {
-                if (res.confirm) {
-                  wx.setClipboardData({
-                    data: 'MiddleRain_',
-                    success: () => {
-                      wx.showToast({
-                        title: '客服微信号已复制',
-                        icon: 'success'
-                      })
-                    },
-                    fail: () => {
-                      wx.showToast({
-                        title: '复制失败，请手动复制：MiddleRain_',
-                        icon: 'none',
-                        duration: 3000
-                      })
-                    }
-                  })
+            // 检查设备类型
+            if (app.globalData.isIOS) {
+              // iOS显示客服联系信息
+              wx.showModal({
+                title: '联系客服',
+                content: '由于苹果应用商店政策限制，iOS用户暂时无法在小程序内购买会员。请联系客服获取其他开通方式\n\n客服微信：MiddleRain_',
+                confirmText: '复制',
+                cancelText: '我知道了',
+                success: (res) => {
+                  if (res.confirm) {
+                    wx.setClipboardData({
+                      data: 'MiddleRain_',
+                      success: () => {
+                        wx.showToast({
+                          title: '客服微信号已复制',
+                          icon: 'success'
+                        })
+                      }
+                    })
+                  }
                 }
-              }
-            })
+              })
+            } else {
+              // 安卓跳转到VIP页面
+              wx.navigateTo({
+                url: `/pages/vip/vip?event=${'vip_wordgroup'}`
+              })
+            }
           }
         })
       }
@@ -1533,38 +1529,34 @@ Page({
           showCancel: false,
           confirmText: '立即开通',
           success: () => {
-            // 注释掉VIP页面跳转，改为显示客服联系弹窗
-            /*
-            wx.navigateTo({
-              url: `/pages/vip/vip?event=${'vip_wordcard'}`
-            })
-            */
-            wx.showModal({
-              title: '联系客服',
-              content: '如需升级会员，请联系客服\n客服微信：MiddleRain_',
-              confirmText: '复制',
-              cancelText: '我知道了',
-              success: (res) => {
-                if (res.confirm) {
-                  wx.setClipboardData({
-                    data: 'MiddleRain_',
-                    success: () => {
-                      wx.showToast({
-                        title: '客服微信号已复制',
-                        icon: 'success'
-                      })
-                    },
-                    fail: () => {
-                      wx.showToast({
-                        title: '复制失败，请手动复制：MiddleRain_',
-                        icon: 'none',
-                        duration: 3000
-                      })
-                    }
-                  })
+            // 检查设备类型
+            if (app.globalData.isIOS) {
+              // iOS显示客服联系信息
+              wx.showModal({
+                title: '联系客服',
+                content: '由于苹果应用商店政策限制，iOS用户暂时无法在小程序内购买会员。请联系客服获取其他开通方式\n\n客服微信：MiddleRain_',
+                confirmText: '复制',
+                cancelText: '我知道了',
+                success: (res) => {
+                  if (res.confirm) {
+                    wx.setClipboardData({
+                      data: 'MiddleRain_',
+                      success: () => {
+                        wx.showToast({
+                          title: '客服微信号已复制',
+                          icon: 'success'
+                        })
+                      }
+                    })
+                  }
                 }
-              }
-            })
+              })
+            } else {
+              // 安卓跳转到VIP页面
+              wx.navigateTo({
+                url: `/pages/vip/vip?event=${'vip_wordcard'}`
+              })
+            }
           }
         })
 
@@ -1848,40 +1840,34 @@ Page({
    * 处理VIP按钮点击事件
    */
   onShowVip: function() {
-    // 注释掉VIP页面跳转，改为显示客服联系弹窗
-    /*
-    wx.navigateTo({
-      url: '/pages/vip/vip?event=vip_wordcard'
-    })
-    */
-    
-    // 显示客服联系弹窗
-    wx.showModal({
-      title: '联系客服',
-      content: '如需升级会员，请联系客服\n客服微信：MiddleRain_',
-      confirmText: '复制',
-      cancelText: '我知道了',
-      success: (res) => {
-        if (res.confirm) {
-          wx.setClipboardData({
-            data: 'MiddleRain_',
-            success: () => {
-              wx.showToast({
-                title: '客服微信号已复制',
-                icon: 'success'
-              })
-            },
-            fail: () => {
-              wx.showToast({
-                title: '复制失败，请手动复制：MiddleRain_',
-                icon: 'none',
-                duration: 3000
-              })
-            }
-          })
+    // 检查设备类型
+    if (app.globalData.isIOS) {
+      // iOS显示客服联系信息
+      wx.showModal({
+        title: '联系客服',
+        content: '由于苹果应用商店政策限制，iOS用户暂时无法在小程序内购买会员。请联系客服获取其他开通方式\n\n客服微信：MiddleRain_',
+        confirmText: '复制',
+        cancelText: '我知道了',
+        success: (res) => {
+          if (res.confirm) {
+            wx.setClipboardData({
+              data: 'MiddleRain_',
+              success: () => {
+                wx.showToast({
+                  title: '客服微信号已复制',
+                  icon: 'success'
+                })
+              }
+            })
+          }
         }
-      }
-    })
+      })
+    } else {
+      // 安卓跳转到VIP页面
+      wx.navigateTo({
+        url: '/pages/vip/vip?event=vip_wordcard'
+      })
+    }
   },
 
   /**
