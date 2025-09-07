@@ -46,6 +46,9 @@ Page({
     showNewUserGuide: false,
     newUserGuideStep: 0, // 0: 选择词书, 1: 开始练习
     isNewUser: false,
+    // 布局相关 - 设置合理的初始值，避免undefined导致的布局问题
+    scrollViewHeight: 600, // 默认高度，会在_setInitInfo中被正确计算的值覆盖
+    naviBarHeight: 88, // 默认导航栏高度，会在_setInitInfo中被正确计算的值覆盖
   },
   onChangeRate(e) {
     let colorList = [
@@ -122,6 +125,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    // 首先设置初始布局信息，确保页面有正确的初始尺寸
+    this._setInitInfo()
 
     // !!! Test Only !!!
     // let token = await common.request({ url: `/tokenFromOpenid?openid=o4nOp5Kn8M67yz1Oc7m9BBe5Cn4A` })
@@ -150,8 +155,6 @@ Page({
     //   console.error('账户注销失败:', error)
     //   Toast.fail('账户注销失败: ' + (error.message || error))
     // }
-    
-    this._setInitInfo()
     // 获取首页数据
     try {
       const homeData = await common.request({
@@ -1902,7 +1905,6 @@ Page({
     let hasUnfinishedTask = wx.getStorageSync('hasUnfinishedTask')
     this.setData({
       hasUnfinishedTask,
-      scrollViewHeight: wx.getSystemInfoSync().windowHeight - (wx.getMenuButtonBoundingClientRect().bottom + 6) - 48 - (app.globalData.isIOS ? 30 : 0),
     })
     
     // 检查是否需要刷新首页数据（词书切换后）
@@ -1923,6 +1925,36 @@ Page({
   onScrollViewRefresh: function () {
     Toast.loading()
     this.onLoad()
+  },
+
+  /**
+   * 导航栏准备就绪事件
+   */
+  onNaviBarReady: function(e) {
+    const naviBarHeight = e.detail.naviBarHeight
+    const systemInfo = wx.getSystemInfoSync()
+    const newScrollViewHeight = systemInfo.windowHeight - naviBarHeight - 48 - (app.globalData.isIOS ? 30 : 0)
+    
+    console.log('导航栏组件准备就绪:', { 
+      currentScrollViewHeight: this.data.scrollViewHeight, 
+      newScrollViewHeight: newScrollViewHeight,
+      naviBarHeight: naviBarHeight,
+      windowHeight: systemInfo.windowHeight
+    })
+    
+    // 只有当高度发生变化时才更新，避免不必要的重渲染
+    if (this.data.scrollViewHeight !== newScrollViewHeight) {
+      console.log('导航栏高度确定，更新scroll-view高度:', { 
+        oldHeight: this.data.scrollViewHeight, 
+        newHeight: newScrollViewHeight,
+        naviBarHeight: naviBarHeight
+      })
+      this.setData({
+        scrollViewHeight: newScrollViewHeight
+      })
+    } else {
+      console.log('导航栏高度无变化，无需更新scroll-view高度')
+    }
   },
 
   onShareAppMessage(options) {
@@ -2011,17 +2043,43 @@ Page({
    * @inner
    */
   _setInitInfo: function () {
-    this.setData({
-      naviBarHeight: wx.getMenuButtonBoundingClientRect().bottom + 6,
+    try {
+      const capsuleInfo = wx.getMenuButtonBoundingClientRect()
+      const systemInfo = wx.getSystemInfoSync()
+      const naviBarHeight = capsuleInfo.bottom + 6
+      const scrollViewHeight = systemInfo.windowHeight - naviBarHeight - 48 - (app.globalData.isIOS ? 30 : 0)
+      
+      console.log('_setInitInfo 计算布局参数:', {
+        windowHeight: systemInfo.windowHeight,
+        naviBarHeight: naviBarHeight,
+        scrollViewHeight: scrollViewHeight,
+        capsuleInfo: capsuleInfo
+      })
+      
+      this.setData({
+        naviBarHeight: naviBarHeight,
+        // 立即计算并设置scrollView高度，避免内容重叠
+        scrollViewHeight: scrollViewHeight,
 
-      canvasWidth: wx.getSystemInfoSync().windowWidth - 64,
-      canvasHeight: parseInt(((wx.getSystemInfoSync().windowWidth - 64) * 311) / 311) + 78,
+        canvasWidth: systemInfo.windowWidth - 64,
+        canvasHeight: parseInt(((systemInfo.windowWidth - 64) * 311) / 311) + 78,
 
-      capsuleInfo: wx.getMenuButtonBoundingClientRect(),
-      windowWidth: wx.getSystemInfoSync().windowWidth,
+        capsuleInfo: capsuleInfo,
+        windowWidth: systemInfo.windowWidth,
 
-      isIOS: app.globalData.isIOS,
-    })
+        isIOS: app.globalData.isIOS,
+      })
+      
+      console.log('_setInitInfo 完成，当前scrollViewHeight:', this.data.scrollViewHeight)
+    } catch (error) {
+      console.error('_setInitInfo 执行失败:', error)
+      // 如果获取系统信息失败，使用默认值
+      this.setData({
+        naviBarHeight: 88,
+        scrollViewHeight: 600,
+        isIOS: app.globalData.isIOS || false,
+      })
+    }
   },
 
   /**

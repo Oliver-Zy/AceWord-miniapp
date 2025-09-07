@@ -9,7 +9,7 @@
 <view class="container">
 
   <!-- S scroll-view -->
-  <scroll-view scroll-y="true" refresher-enabled="true" refresher-triggered="{{isRefresherTriggered}}" scroll-into-view="{{toView}}" scroll-with-animation="true" style="height:{{scrollViewHeight}}px;position:fixed;top:{{naviBarHeight}}px;" bind:scroll="onScroll" bind:refresherrefresh="onScrollViewRefresh">
+  <scroll-view scroll-y="true" refresher-enabled="true" refresher-triggered="{{isRefresherTriggered}}" scroll-into-view="{{toView}}" scroll-with-animation="true" style="height:{{scrollViewHeight || 600}}px;min-height:400px;position:fixed;top:{{naviBarHeight}}px;" bind:scroll="onScroll" bind:refresherrefresh="onScrollViewRefresh">
     <wordbook-my-info wordBookMyInfo="{{wordBookMyInfo}}" bind:changeDic="onChangeDic" />
     <sen-card senCard="{{senCard}}" bind:senCardEvent="onSenCardEvent" />
 
@@ -74,7 +74,7 @@
 <!-- E shareCard-container -->
 
 <!-- S ace components -->
-<ace-navi-bar type="search" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
+<ace-navi-bar type="search" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" bind:navibarready="onNaviBarReady" />
 <ace-search-bar wx:if="{{showSearchBar}}" style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" placeholder="开始查询单词" confirmtype="search" bind:focus="onSearchBarFocus" bind:cancel="onSearchBarCancel" bind:confirm="onSearchBarConfirm" />
 <ace-search-bar wx:if="{{showSearchBarSelfDef}}" style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" placeholder="添加单词的自定义释义" confirmtype="done" bind:focus="onSearchBarFocus" bind:cancel="onClickHideOverlayZIndex" bind:confirm="onSearchBarConfirmSelfDef" />
 <ace-popup wx:if="{{showPopup}}" type="wordGroup" wordGroupList="{{wordGroupList}}" style="width:100%;position:fixed;bottom:0;z-index:100;" bind:addWordGroup="onAddWordGroup" bind:collectToWordGroup="onCollectToWordGroup" bind:cancel="onClickHideOverlayZIndex" />
