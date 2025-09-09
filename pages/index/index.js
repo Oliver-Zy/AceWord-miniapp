@@ -155,6 +155,7 @@ Page({
     //   console.error('账户注销失败:', error)
     //   Toast.fail('账户注销失败: ' + (error.message || error))
     // }
+
     // 获取首页数据
     try {
       const homeData = await common.request({

@@ -23,6 +23,7 @@
   isFinished: Boolean,
   pronType: String,
   ipa: String,
+  showPhonetic: Boolean,
 -->
 <template name="wordAndipa-container">
 
@@ -36,7 +37,7 @@
     <view wx:if="{{isWordBlur && !isFinished}}" class="word-container-blur"></view>
 
     <view style="width:100%;height:24px;"></view>
-    <view wx:if="{{!isFinished}}" class="ipa-container" catchtap="_pronounce">
+    <view wx:if="{{!isFinished && showPhonetic !== false}}" class="ipa-container" catchtap="_pronounce">
       <text>[{{pronType == 'US' ? '美' : '英'}}]</text>
       <image src="/images/icons/{{isDarkMode ? 'sound-dark' : 'sound'}}.png"></image>
       <text>/{{isFinished ? 'kənˌɡrætʃ.əˈleɪ.ʃən' : tools.ipaHandler(ipa)}}/</text>

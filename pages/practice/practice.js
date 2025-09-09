@@ -32,7 +32,9 @@ Page({
     }],
     deleteWordInCardOption: false,
     // 单词顺序设置：true为乱序，false为顺序
-    isWordOrderRandom: true
+    isWordOrderRandom: true,
+    // 音标显示设置：默认显示
+    showPhonetic: true
   },
 
   /**
@@ -57,7 +59,8 @@ Page({
         showProgress: unSaveData.showProgress,
         wordIndex: unSaveData.wordIndex,
         wordInfoList: unSaveData.wordInfoList,
-        wordInfoVagueList: unSaveData.wordInfoVagueList
+        wordInfoVagueList: unSaveData.wordInfoVagueList,
+        showPhonetic: app.globalData.settings.showPhonetic !== false
       })
     } else {
       console.log(app.globalData.practiceInfo)
@@ -84,6 +87,7 @@ Page({
         showProgress: true,
         isDarkMode: getApp().globalData.isDarkMode,
         isWordOrderRandom: isWordOrderRandom,
+        showPhonetic: app.globalData.settings.showPhonetic !== false,
       })
       if (this.data.practiceMode == 'spell') this.onSpell()
       if (this.data.practiceMode == 'memorize') this._showGuideOfTapToCancelCountDown()
@@ -600,6 +604,8 @@ Page({
         name: `${app.globalData.settings.isResultShownWhenTapRemember ? '点击记得不显示释义' : '点击记得显示释义'}`
       }, {
         name: `${this.data.isWordOrderRandom ? '切换为顺序练习' : '切换为乱序练习'}`
+      }, {
+        name: `${app.globalData.settings.showPhonetic !== false ? '隐藏音标' : '显示音标'}`
       }]
     })
   },
@@ -669,6 +675,33 @@ Page({
       this._reorderWordList(newOrderRandom)
       
       Toast.success(newOrderRandom ? '切换为乱序' : '切换为顺序')
+
+    } else if (e.detail.name.indexOf('音标') != -1) {
+
+      this.onCancelActionSheet()
+      const showPhonetic = e.detail.name == '显示音标' ? true : false
+      
+      // 更新本地状态
+      this.setData({
+        showPhonetic: showPhonetic
+      })
+      
+      // 更新全局设置
+      if (!app.globalData.settings) {
+        app.globalData.settings = {}
+      }
+      app.globalData.settings.showPhonetic = showPhonetic
+      
+      // 保存到服务器
+      common.request({
+        url: `/settings`,
+        method: 'PUT',
+        data: {
+          showPhonetic: showPhonetic
+        }
+      })
+      
+      Toast.success(showPhonetic ? '已显示音标' : '已隐藏音标')
 
     }
 
