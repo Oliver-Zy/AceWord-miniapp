@@ -21,14 +21,17 @@
 
     <!-- S right-footer -->
     <view class="right-footer">
+      <!-- 点赞功能已注释
       <view class="icon-group" bind:tap="onLike">
         <image src="/images/icons/{{senCard.isLike ? 'like-fill' : isDarkMode ? 'like-dark' : 'like'}}.png"></image>
         <text class="icon-group-text">{{senCard.likeNum}}</text>
       </view>
+      -->
       <view class="icon-group" bind:tap="onShare">
         <image src="/images/icons/{{isDarkMode ? 'share-dark' : 'share'}}.png"></image>
+        <!-- 分享数量已注释
         <text class="icon-group-text">{{senCard.shareNum}}</text>
-      </view>
+        -->
     </view>
     <!-- E right-footer -->
 

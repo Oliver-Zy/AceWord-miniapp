@@ -36,11 +36,12 @@ Component({
    */
   methods: {
     /**
-     * 监听点赞事件
+     * 监听点赞事件 - 已注释
      *
      * @event
      * @param { Object } e 事件参数
      */
+    /*
     onLike: async function () {
       let currentPageList = getCurrentPages()
       let currentPage = currentPageList[currentPageList.length - 1]
@@ -69,6 +70,7 @@ Component({
 
       }
     },
+    */
 
     /**
      * 监听分享事件
