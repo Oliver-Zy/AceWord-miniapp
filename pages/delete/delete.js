@@ -216,7 +216,8 @@ Page({
       // 检查服务端返回的换词次数（已使用次数）
       if (response.replaceCountDaily !== undefined) {
         dailyLimits.updateServerReplaceCount(response.replaceCountDaily)
-        if (response.replaceCountDaily >= 15) {
+        const check = dailyLimits.canReplaceWord()
+        if (!check.allowed) {
           Toast.clear()
           dailyLimits.showLimitReached('replaces')
           return
@@ -224,6 +225,12 @@ Page({
       }
       
       const word = response.newWord
+      if (!word) {
+        Toast.clear()
+        wx.showToast({ title: '换词失败，请重试', icon: 'none' })
+        return
+      }
+      
       let wordInfo = await common.request({ url: `/wordinfo/search?word=${word}` })
       Toast.clear()
 

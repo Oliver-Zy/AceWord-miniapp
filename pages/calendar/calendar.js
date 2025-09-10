@@ -537,8 +537,9 @@ Page({
           // 更新本地的换词次数记录（replaceCountDaily是已使用次数）
           dailyLimits.updateServerReplaceCount(response.replaceCountDaily)
           
-          // 检查是否已达上限（15次）
-          if (response.replaceCountDaily >= 15) {
+          // 检查是否已达上限（15次），但VIP用户无限制
+          const check = dailyLimits.canReplaceWord()
+          if (!check.allowed) {
             Toast.clear()
             dailyLimits.showLimitReached('replaces')
             return
@@ -546,6 +547,10 @@ Page({
         }
         
         const word = response.newWord
+        if (!word) {
+          throw new Error('服务端未返回新单词')
+        }
+        
         let wordInfo = await common.request({
           url: `/wordinfo/search?word=${word}`
         })

@@ -139,19 +139,25 @@ class DailyLimits {
       const app = getApp()
       const isVip = app && app.globalData && app.globalData.settings && !app.globalData.settings.isVipExpired
       
-      if (isVip) {
-        return { allowed: true, remaining: -1, limit: -1 }
-      }
-      
-      // 优先使用服务端返回的换词限制
+      // 优先使用服务端返回的换词限制（包括VIP用户）
       const serverReplaceData = this.getServerReplaceCount()
       if (serverReplaceData !== null) {
+        // VIP用户即使有服务端数据，也应该显示无限制
+        if (isVip) {
+          return { allowed: true, remaining: -1, limit: -1, used: serverReplaceData.used }
+        }
+        
         return {
           allowed: serverReplaceData.remaining > 0,
           used: serverReplaceData.used,
           limit: serverReplaceData.limit,
           remaining: serverReplaceData.remaining
         }
+      }
+      
+      // 如果没有服务端数据，VIP用户无限制
+      if (isVip) {
+        return { allowed: true, remaining: -1, limit: -1 }
       }
       
       // 如果没有服务端数据，使用本地限制（向后兼容）
@@ -367,6 +373,26 @@ class DailyLimits {
       const isVip = app && app.globalData && app.globalData.settings && !app.globalData.settings.isVipExpired
       const usage = this.getTodayUsage()
       
+      // 获取服务端换词数据
+      const serverReplaceData = this.getServerReplaceCount()
+      let replaceStats
+      
+      if (serverReplaceData !== null) {
+        // 使用服务端数据
+        replaceStats = {
+          used: serverReplaceData.used,
+          limit: isVip ? -1 : serverReplaceData.limit,
+          percentage: isVip ? 0 : Math.min(100, (serverReplaceData.used / serverReplaceData.limit) * 100)
+        }
+      } else {
+        // 使用本地数据（向后兼容）
+        replaceStats = {
+          used: usage.replaces,
+          limit: isVip ? -1 : this.LIMITS.free.dailyReplaces,
+          percentage: isVip ? 0 : Math.min(100, (usage.replaces / this.LIMITS.free.dailyReplaces) * 100)
+        }
+      }
+      
       return {
         isVip,
         cards: {
@@ -374,11 +400,7 @@ class DailyLimits {
           limit: isVip ? -1 : this.LIMITS.free.dailyCards,
           percentage: isVip ? 0 : Math.min(100, (usage.cards / this.LIMITS.free.dailyCards) * 100)
         },
-        replaces: {
-          used: usage.replaces,
-          limit: isVip ? -1 : this.LIMITS.free.dailyReplaces,
-          percentage: isVip ? 0 : Math.min(100, (usage.replaces / this.LIMITS.free.dailyReplaces) * 100)
-        }
+        replaces: replaceStats
       }
     } catch (error) {
       logger.error('Error in getUsageStats:', error)
