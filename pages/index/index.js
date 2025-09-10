@@ -1175,42 +1175,63 @@ Page({
       this._pronounce(e.detail.word)
 
     } else if (e.detail.type == 'replace') {
-      // 恢复换词每日限制
-      if (!dailyLimits.recordWordReplace()) {
-        return
-      }
-
       Toast.loading({
         forbidClick: true
       })
-      let word = await common.request({
-        url: `/wordcard/word`,
-        method: 'PUT',
-        data: {
-          word: e.detail.word,
-          wordBookCode: this.data.currentWordCard.wordBookCode,
-          wordCardID: this.data.currentWordCard.wordCardID
-        }
-      })
-      let wordInfo = await common.request({
-        url: `/wordinfo/search?word=${word}`
-      })
-      Toast.clear()
-
-      this._pronounce(word)
-      wordInfo.isActive = true
-      this.setData({
-        [`dicCardList[${currentSwiperIndex}]`]: wordInfo,
-        [`todayCardList[${currentWordCardIndex}].wordInfoList[${currentSwiperIndex}]`]: {
-          wordName: word,
-          opacity: 100
-        },
-        [`todayCardList[${currentWordCardIndex}].wordList[${currentSwiperIndex}]`]: word,
-        [`todayCardList[${currentWordCardIndex}]._relatedAction`]: 'replaceWord',
-      })
       
-      // 更新换词按钮文案
-      this._updateReplaceButtonText()
+      try {
+        // 使用新的v2接口
+        const response = await common.request({
+          url: `/wordcard/word/v2`,
+          method: 'PUT',
+          data: {
+            word: e.detail.word,
+            wordBookCode: this.data.currentWordCard.wordBookCode,
+            wordCardID: this.data.currentWordCard.wordCardID
+          }
+        })
+        
+        // 检查服务端返回的换词次数（已使用次数）
+        if (response.replaceCountDaily !== undefined) {
+          // 更新本地的换词次数记录（replaceCountDaily是已使用次数）
+          dailyLimits.updateServerReplaceCount(response.replaceCountDaily)
+          
+          // 检查是否已达上限（15次）
+          if (response.replaceCountDaily >= 15) {
+            Toast.clear()
+            dailyLimits.showLimitReached('replaces')
+            return
+          }
+        }
+        
+        const word = response.newWord
+        let wordInfo = await common.request({
+          url: `/wordinfo/search?word=${word}`
+        })
+        Toast.clear()
+
+        this._pronounce(word)
+        wordInfo.isActive = true
+        this.setData({
+          [`dicCardList[${currentSwiperIndex}]`]: wordInfo,
+          [`todayCardList[${currentWordCardIndex}].wordInfoList[${currentSwiperIndex}]`]: {
+            wordName: word,
+            opacity: 100
+          },
+          [`todayCardList[${currentWordCardIndex}].wordList[${currentSwiperIndex}]`]: word,
+          [`todayCardList[${currentWordCardIndex}]._relatedAction`]: 'replaceWord',
+        })
+        
+        // 更新换词按钮文案
+        this._updateReplaceButtonText()
+      } catch (error) {
+        Toast.clear()
+        console.error('换词失败:', error)
+        wx.showToast({
+          title: '换词失败，请重试',
+          icon: 'none'
+        })
+      }
 
     } else if (e.detail.type == 'showStyleCard') {
 
@@ -1224,6 +1245,13 @@ Page({
         showStyleCard: true,
         showOverlay: true,
         wordInfo
+      })
+
+    } else if (e.detail.type == 'showVip') {
+
+      // 引导用户升级会员
+      wx.navigateTo({
+        url: '/pages/vip/vip'
       })
 
     }

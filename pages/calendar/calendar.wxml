@@ -12,7 +12,7 @@
     <calendar-card dateInfo="{{dateInfo}}" calendarInfoList="{{calendarInfoList}}" bind:calendarCardEvent="onCalendarCardEvent" />
 
     <view style="height:22px;"></view>
-    <ace-header titleType="calendar" date="{{dateInfo.currentDate}}" arrLen="{{totalCount}}" iconType="options" filterType="{{filterType}}" bind:headerEvent="onHeaderEvent" />
+    <ace-header titleType="calendar" date="{{dateInfo.currentDate}}" arrLen="{{totalCount}}" iconType="options" filterType="{{filterType}}" continuousDays="{{learningInfo.continuousLearningDayNum}}" bind:headerEvent="onHeaderEvent" />
     <block wx:for="{{wordCardList}}">
       <word-card wordCard="{{item}}" isChecked="{{tools.isChecked(item.wordCardID, wordCardIDCheckedList)}}" bind:wordCardEvent="onWordCardEvent" data-index="{{index}}" />
     </block>
@@ -47,7 +47,7 @@
 <!-- E practice-btn -->
 
 <!-- S ace-components -->
-<ace-navi-bar type="calendar" title="学习日历" showDivider="{{showNaviBarDivider}}" style="width:100%;position:fixed;top:0;" />
+<ace-navi-bar type="calendar" title="学习日历" showDivider="{{showNaviBarDivider}}" continuousDays="{{learningInfo.continuousLearningDayNum}}" style="width:100%;position:fixed;top:0;" />
 <ace-search-bar wx:if="{{showSearchBarSelfDef}}" style="position:fixed;z-index:100;width:100%;bottom:{{keyboardHeight}}px;" placeholder="添加单词的自定义释义" bind:focus="onSearchBarFocus" bind:cancel="onSearchBarCancelSelfDef" bind:confirm="onSearchBarConfirmSelfDef" />
 <ace-popup wx:if="{{showPopup}}" type="wordGroup" wordGroupList="{{wordGroupList}}" style="width:100%;position:fixed;bottom:0;z-index:100;" bind:addWordGroup="onAddWordGroup" bind:collectToWordGroup="onCollectToWordGroup" bind:cancel="onClickHideOverlayZIndex" />
 <!-- E ace-components -->

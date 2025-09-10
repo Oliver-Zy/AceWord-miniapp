@@ -16,8 +16,9 @@
           <text>{{pronType == 'US' ? '美' : '英'}} {{pronType == 'US' ? tools.ipaHandler(wordInfo.ipaUS) : tools.ipaHandler(wordInfo.ipaUK)}}</text>
         </view>
       </view>
-      <view wx:if="{{!hiddenCollectBtn}}" class="collect-container" catch:tap="onCollect" catch:longpress="onWordGroup" style="border:{{wordInfo.isCollected ? '1px solid rgba(255, 154, 46, 0.1)' : isDarkMode ? '1px solid #C9CDD4' : '1px solid rgba(29, 33, 41, 0.04)'}};background:{{wordInfo.isCollected ? 'rgba(255, 154, 46, 0.04)' : ''}};">
-        <image src="/images/icons/{{wordInfo.isCollected ? 'star-fill' : 'star-grey'}}.png" class="star-img"></image>
+      <view wx:if="{{!hiddenCollectBtn}}" class="icon-container">
+        <image src="/images/icons/{{wordInfo.isCollected ? 'star-fill' : 'star-grey'}}.png" class="star-icon" catch:tap="onCollect"></image>
+        <image src="/images/icons/more_horiz.png" class="more-icon" catch:tap="onShowActionSheet"></image>
       </view>
     </view>
     <!-- E down-header -->
@@ -115,3 +116,9 @@
 
 </view>
 <!-- E container -->
+
+<!-- S vant components -->
+<van-popup show="{{ showPopupVant }}" position="bottom" overlay="{{ false }}" duration="0">
+  <van-action-sheet show="{{ showActionSheet }}" description="{{ actionSheetDesc }}" actions="{{ actions }}" cancel-text="取消" bind:select="onSelectActionSheet" bind:cancel="onCancelActionSheet" bind:click-overlay="onCancelActionSheet" />
+</van-popup>
+<!-- E vant components -->

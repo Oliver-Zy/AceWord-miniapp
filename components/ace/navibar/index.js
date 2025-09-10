@@ -11,13 +11,18 @@ Component({
     title: String,
     showDivider: Boolean,
     showVantDivider: Boolean,
+    continuousDays: Number, // [type == 'calendar'] 连续打卡天数
   },
 
   /**
    * 组件的初始数据
    */
   data: {
-
+    isDarkMode: false,
+    naviBarHeight: 0,
+    searchBarWidth: 0,
+    searchBarWithBackWidth: 0,
+    searchBarHeight: 0
   },
 
   /**
@@ -25,6 +30,9 @@ Component({
    */
   lifetimes: {
     attached: function () {
+      this.setData({
+        isDarkMode: getApp().globalData.isDarkMode
+      })
       this._initNaviBarHeight()
     },
     ready: function () {
@@ -32,6 +40,7 @@ Component({
       this._initNaviBarHeight()
     }
   },
+
 
   /**
    * 组件的方法列表

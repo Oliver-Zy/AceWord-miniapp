@@ -135,10 +135,6 @@ class DailyLimits {
    * 检查是否可以换词
    */
   canReplaceWord() {
-    // 内测阶段暂时注释VIP限制，所有用户都可以无限使用
-    return { allowed: true, remaining: -1, limit: -1 }
-    
-    /* 原VIP限制逻辑，内测期间暂时注释
     try {
       const app = getApp()
       const isVip = app && app.globalData && app.globalData.settings && !app.globalData.settings.isVipExpired
@@ -147,6 +143,18 @@ class DailyLimits {
         return { allowed: true, remaining: -1, limit: -1 }
       }
       
+      // 优先使用服务端返回的换词限制
+      const serverReplaceData = this.getServerReplaceCount()
+      if (serverReplaceData !== null) {
+        return {
+          allowed: serverReplaceData.remaining > 0,
+          used: serverReplaceData.used,
+          limit: serverReplaceData.limit,
+          remaining: serverReplaceData.remaining
+        }
+      }
+      
+      // 如果没有服务端数据，使用本地限制（向后兼容）
       const usage = this.getTodayUsage()
       const limit = this.LIMITS.free.dailyReplaces
       const remaining = Math.max(0, limit - usage.replaces)
@@ -171,7 +179,6 @@ class DailyLimits {
         remaining: remaining
       }
     }
-    */
   }
 
   /**
@@ -280,10 +287,6 @@ class DailyLimits {
    * 记录换词操作
    */
   recordWordReplace() {
-    // 内测阶段暂时注释VIP限制，直接返回成功
-    return true
-    
-    /* 原VIP限制逻辑，内测期间暂时注释
     const check = this.canReplaceWord()
     if (!check.allowed) {
       this.showLimitReached('replaces')
@@ -299,7 +302,60 @@ class DailyLimits {
     }
     
     return true
-    */
+  }
+
+  /**
+   * 更新服务端返回的换词次数
+   * @param {number} serverUsedCount - 服务端返回的已使用换词次数
+   */
+  updateServerReplaceCount(serverUsedCount) {
+    try {
+      const todayKey = this.getTodayKey()
+      const storageKey = `serverReplaceCount_${todayKey}`
+      const dailyLimit = 15 // 每日换词限制15次
+      const remaining = Math.max(0, dailyLimit - serverUsedCount)
+      
+      wx.setStorageSync(storageKey, {
+        used: serverUsedCount,
+        remaining: remaining,
+        limit: dailyLimit,
+        date: todayKey,
+        lastUpdate: Date.now()
+      })
+      
+      logger.debug('Server replace count updated:', { 
+        used: serverUsedCount, 
+        remaining: remaining, 
+        limit: dailyLimit,
+        date: todayKey 
+      })
+    } catch (error) {
+      logger.error('Failed to update server replace count:', error)
+    }
+  }
+
+  /**
+   * 获取服务端返回的换词次数限制信息
+   */
+  getServerReplaceCount() {
+    try {
+      const todayKey = this.getTodayKey()
+      const storageKey = `serverReplaceCount_${todayKey}`
+      
+      const data = wx.getStorageSync(storageKey)
+      if (data && data.date === todayKey) {
+        return {
+          used: data.used,
+          remaining: data.remaining,
+          limit: data.limit
+        }
+      }
+      
+      return null
+    } catch (error) {
+      logger.error('Failed to get server replace count:', error)
+      return null
+    }
   }
 
   /**

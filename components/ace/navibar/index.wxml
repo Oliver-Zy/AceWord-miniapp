@@ -54,10 +54,14 @@
 
 <!-- S container type == 'calendar' -->
 <view wx:if="{{type == 'calendar'}}" class="container" style="height:{{naviBarHeight}}px;box-shadow:{{showDivider && !isDarkMode ? '0px 4px 14px rgba(31, 32, 34, 0.08)'  :''}};">
-  <view class="inner-container" style="height:{{searchBarHeight}}px;">
-    <view style="width:54px;height:{{searchBarHeight}}px;"></view>
+  <view class="calendar-inner-container" style="height:{{searchBarHeight}}px;">
+    <view class="calendar-left-container">
+      <view wx:if="{{title == '学习日历' && continuousDays >= 0}}" class="streak-badge">
+        <text class="streak-number">{{continuousDays}}</text>
+        <text class="streak-emoji">🔥</text>
+      </view>
+    </view>
     <text class="navi-text">{{title}}</text>
-    <view style="width:54px;height:{{searchBarHeight}}px;"></view>
   </view>
 </view>
 <!-- E container type == 'calendar' -->

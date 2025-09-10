@@ -7,6 +7,7 @@ import {
 import {
   HTTP
 } from '../../utils/http.js'
+const { dailyLimits } = require('../../utils/dailyLimits.js')
 const common = new Common()
 const reviewPageHandler = new ReviewPageHandler()
 const http = new HTTP()
@@ -395,35 +396,60 @@ Page({
       this._pronounce(e.detail.word)
 
     } else if (e.detail.type == 'replace') {
-
       Toast.loading({
         forbidClick: true
       })
-      let word = await common.request({
-        url: `/wordcard/word`,
-        method: 'PUT',
-        data: {
-          word: e.detail.word,
-          wordBookCode: this.data.currentWordCard.wordBookCode,
-          wordCardID: this.data.currentWordCard.wordCardID
+      
+      try {
+        // 使用新的v2接口
+        const response = await common.request({
+          url: `/wordcard/word/v2`,
+          method: 'PUT',
+          data: {
+            word: e.detail.word,
+            wordBookCode: this.data.currentWordCard.wordBookCode,
+            wordCardID: this.data.currentWordCard.wordCardID
+          }
+        })
+        
+        // 检查服务端返回的换词次数（已使用次数）
+        if (response.replaceCountDaily !== undefined) {
+          // 更新本地的换词次数记录（replaceCountDaily是已使用次数）
+          dailyLimits.updateServerReplaceCount(response.replaceCountDaily)
+          
+          // 检查是否已达上限（15次）
+          if (response.replaceCountDaily >= 15) {
+            Toast.clear()
+            dailyLimits.showLimitReached('replaces')
+            return
+          }
         }
-      })
-      let wordInfo = await common.request({
-        url: `/wordinfo/search?word=${word}`
-      })
-      Toast.clear()
+        
+        const word = response.newWord
+        let wordInfo = await common.request({
+          url: `/wordinfo/search?word=${word}`
+        })
+        Toast.clear()
 
-      this._pronounce(word)
-      wordInfo.isActive = true
-      this.setData({
-        [`dicCardList[${currentSwiperIndex}]`]: wordInfo,
-        [`reviewCardDateList[${currentWordCardOuterIndex}].wordCardList[${currentWordCardIndex}].wordInfoList[${currentSwiperIndex}]`]: {
-          wordName: word,
-          opacity: 100
-        },
-        [`reviewCardDateList[${currentWordCardOuterIndex}].wordCardList[${currentWordCardIndex}].wordList[${currentSwiperIndex}]`]: word,
-        [`reviewCardDateList[${currentWordCardOuterIndex}].wordCardList[${currentWordCardIndex}]._relatedAction`]: 'replaceWord',
-      })
+        this._pronounce(word)
+        wordInfo.isActive = true
+        this.setData({
+          [`dicCardList[${currentSwiperIndex}]`]: wordInfo,
+          [`reviewCardDateList[${currentWordCardOuterIndex}].wordCardList[${currentWordCardIndex}].wordInfoList[${currentSwiperIndex}]`]: {
+            wordName: word,
+            opacity: 100
+          },
+          [`reviewCardDateList[${currentWordCardOuterIndex}].wordCardList[${currentWordCardIndex}].wordList[${currentSwiperIndex}]`]: word,
+          [`reviewCardDateList[${currentWordCardOuterIndex}].wordCardList[${currentWordCardIndex}]._relatedAction`]: 'replaceWord',
+        })
+      } catch (error) {
+        Toast.clear()
+        console.error('换词失败:', error)
+        wx.showToast({
+          title: '换词失败，请重试',
+          icon: 'none'
+        })
+      }
     } else if (e.detail.type == 'showStyleCard') {
 
       this.setData({

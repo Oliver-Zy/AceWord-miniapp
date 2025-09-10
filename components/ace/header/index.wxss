@@ -32,6 +32,7 @@
   color: #6366F1;
 }
 
+
 .btn {
   width: 58px;
   height: 22px;
@@ -81,6 +82,7 @@
     font-size: 16px;
     color: #D5D9E0;
   }
+
   
   .btn {
     width: 58px;

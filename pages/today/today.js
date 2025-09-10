@@ -1,5 +1,6 @@
 import { Common } from '../../models/common.js'
 import { HTTP } from '../../utils/http.js'
+const { dailyLimits } = require('../../utils/dailyLimits.js')
 const common = new Common()
 const http = new HTTP()
 
@@ -226,7 +227,19 @@ Page({
     } else if (e.detail.type == 'replace') {
 
       Toast.loading({ forbidClick: true })
-      let word = await common.request({ url: `/wordcard/word`, method: 'PUT', data: { word: e.detail.word, wordBookCode: this.data.currentWordCard.wordBookCode, wordCardID: this.data.currentWordCard.wordCardID } })
+      const response = await common.request({ url: `/wordcard/word/v2`, method: 'PUT', data: { word: e.detail.word, wordBookCode: this.data.currentWordCard.wordBookCode, wordCardID: this.data.currentWordCard.wordCardID } })
+      
+      // 检查服务端返回的换词次数（已使用次数）
+      if (response.replaceCountDaily !== undefined) {
+        dailyLimits.updateServerReplaceCount(response.replaceCountDaily)
+        if (response.replaceCountDaily >= 15) {
+          Toast.clear()
+          dailyLimits.showLimitReached('replaces')
+          return
+        }
+      }
+      
+      const word = response.newWord
       let wordInfo = await common.request({ url: `/wordinfo/search?word=${word}` })
       Toast.clear()
 

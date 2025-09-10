@@ -79,6 +79,44 @@
   color: #181A1D;
 }
 
+.calendar-inner-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 6px;
+}
+
+.calendar-left-container {
+  position: absolute;
+  left: 16px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px;
+  background: rgba(255, 154, 70, 0.15);
+  border-radius: 100px;
+}
+
+.streak-number {
+  font-family: var(--simHei);
+  font-weight: 700;
+  font-size: 13px;
+  color: #FF9A46;
+}
+
+.streak-emoji {
+  font-size: 13px;
+}
+
 @media (prefers-color-scheme: dark) {
 
   /* DarkMode 下的样式 start */
@@ -105,6 +143,15 @@
     font-size: 16px;
     display: flex;
     color: #D5D9E0;
+  }
+
+  .streak-badge {
+    background: rgba(255, 154, 70, 0.25);
+  }
+
+  .streak-number {
+    color: #FFB366;
+    font-weight: 700;
   }
 
   /* DarkMode 下的样式 end */

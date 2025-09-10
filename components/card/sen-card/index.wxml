@@ -32,6 +32,7 @@
         <!-- 分享数量已注释
         <text class="icon-group-text">{{senCard.shareNum}}</text>
         -->
+      </view>
     </view>
     <!-- E right-footer -->
 
