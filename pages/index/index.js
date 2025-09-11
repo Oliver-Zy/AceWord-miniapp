@@ -927,6 +927,11 @@ Page({
         name: '分类词书', 
         subname: '按学习阶段和考试类型分类',
         type: 'category'
+      },
+      { 
+        name: '自定义词书', 
+        subname: '创建和管理自己的专属词书',
+        type: 'custom'
       }
       // { 
       //   name: '真题词书', 
@@ -1729,6 +1734,13 @@ Page({
         // 选择了分类词书，显示原来的分类选择
         setTimeout(() => {
           this._showCategorySelection()
+        }, 500)
+      } else if (selectedAction.type === 'custom') {
+        // 选择了自定义词书，跳转到自定义词书页面
+        setTimeout(() => {
+          wx.navigateTo({
+            url: `/pages/wordbook-custom-app/wordbook-custom-app`
+          })
         }, 500)
       }
       // else if (selectedAction.type === 'exam') {

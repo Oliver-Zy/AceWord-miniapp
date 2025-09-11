@@ -29,71 +29,74 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    this.setData({
-      token: options.token
-    })
-    wx.request({
-      url: config.api_base_url + '/settings',
-      method: 'GET',
-      header: {
-        'content-type': 'application/json',
-        'Authorization': this.data.token
-      },
-      success: res => {
-        console.log(res)
-
-        const code = res.statusCode.toString()
-        if (code.startsWith('2')) {
-          if (res.data.errcode == 0) {
-
-            app.globalData.settings = res.data.data
-            // console.log(app.globalData.settings)
-            this.setData({
-              currentWordBookCode: app.globalData.settings.currentWordBookCode
-            })
-
-            wx.request({
-              url: config.api_base_url + `/wordbooks-custom?token=${this.data.token}`,
-              method: 'GET',
-              header: {
-                'content-type': 'application/json',
-                'Authorization': this.data.token
-              },
-              success: res => {
-                console.log(res)
-
-                const code = res.statusCode.toString()
-                if (code.startsWith('2')) {
-                  if (res.data.errcode == 0) {
-
-                    let wordBookListCustom = res.data.data
-                    this.setData({
-                      isCustom: true,
-                      wordBookListCustom,
-                      showGuideOfCustomWordBook: true,
-                      showGuideOfCustomWordBookVip: true
-                    })
-
-                  }
-                }
-
-              },
-              fail: err => {
-                console.error(err)
-              },
-            })
-
-          }
-        }
-
-      },
-      fail: err => {
-        console.error(err)
-      },
-    })
+    // 支持从外部传入token（如H5页面），也支持内部使用
+    const externalToken = options.token
+    if (externalToken) {
+      this.setData({
+        token: externalToken
+      })
+    }
 
     this._setInitPosiInfo()
+    
+    // 加载用户设置和自定义词书数据
+    await this._loadUserData()
+  },
 
+  /**
+   * 加载用户数据
+   */
+  _loadUserData: async function() {
+    try {
+      // 获取用户设置
+      const settings = await common.request({
+        url: '/settings',
+        method: 'GET'
+      })
+      
+      app.globalData.settings = settings
+      this.setData({
+        currentWordBookCode: settings.currentWordBookCode
+      })
+
+      // 获取自定义词书列表
+      const wordBookListCustom = await common.request({
+        url: '/wordbooks-custom',
+        method: 'GET'
+      })
+
+      this.setData({
+        isCustom: true,
+        wordBookListCustom: wordBookListCustom || [],
+        showGuideOfCustomWordBook: true, // 始终显示基础引导
+        showGuideOfCustomWordBookVip: true // 始终显示VIP功能说明
+      })
+
+    } catch (err) {
+      console.error('加载用户数据失败:', err)
+      
+      // 如果是token问题，显示空状态但不报错
+      if (err.errcode === -1) {
+        this.setData({
+          isCustom: true,
+          wordBookListCustom: [],
+          showGuideOfCustomWordBook: true,
+          showGuideOfCustomWordBookVip: true // 登录失败时也显示功能说明
+        })
+      } else {
+        // 其他错误显示提示
+        wx.showToast({
+          title: '加载失败，请重试',
+          icon: 'none'
+        })
+        this.setData({
+          isCustom: true,
+          wordBookListCustom: [],
+          showGuideOfCustomWordBook: true,
+          showGuideOfCustomWordBookVip: true // 其他错误时也显示功能说明
+        })
+      }
+    }
   },
 
   /**
@@ -435,26 +438,38 @@ Page({
    *
    * @event
    */
-  uploadWordBookCustom: function () {
-    wx.chooseMessageFile({
-      count: 1,
-      type: 'file',
-      extension: ["txt", "text", "xls", "xlsx"],
-      success: res => {
-        const tempFilePaths = res.tempFiles
+  uploadWordBookCustom: async function () {
+    try {
+      // 获取当前token
+      const token = this.data.token || wx.getStorageSync('token')
+      if (!token) {
+        wx.showToast({
+          title: '请先登录',
+          icon: 'none'
+        })
+        return
+      }
 
-        Toast.loading('上传中...')
-        wx.uploadFile({
-          url: config.api_base_url + '/wordbook',
-          filePath: tempFilePaths[0].path,
-          name: 'file',
-          formData: {
-            'wordBookName': tempFilePaths[0].name
-          },
-          header: {
-            'content-type': 'multipart/form-data',
-            'Authorization': this.options.token
-          },
+      wx.chooseMessageFile({
+        count: 1,
+        type: 'file',
+        extension: ["txt", "text", "xls", "xlsx"],
+        success: res => {
+          const tempFilePaths = res.tempFiles
+
+          Toast.loading('上传中...')
+          wx.uploadFile({
+            url: config.api_base_url + '/wordbook',
+            filePath: tempFilePaths[0].path,
+            name: 'file',
+            formData: {
+              'wordBookName': tempFilePaths[0].name,
+              'token': token
+            },
+            header: {
+              'content-type': 'multipart/form-data',
+              'Authorization': token
+            },
           success: (res) => {
             // console.log(res)
 
@@ -500,50 +515,103 @@ Page({
 
             } else {
 
-              let wordBook = JSON.parse(res.data).data
-              let wordBookListCustom = this.data.wordBookListCustom
-              wordBookListCustom.unshift(wordBook)
-              this.setData({
-                wordBookListCustom,
-                isBackReLoad: true,
-                currentWordBookCode: wordBook.wordBookCode
-              })
-
-              Toast.loading()
-              wx.request({
-                url: config.api_base_url + '/settings',
-                method: 'PUT',
-                data: {
-                  "currentWordBookCode": wordBook.wordBookCode
-                },
-                header: {
-                  'content-type': 'application/json',
-                  'Authorization': this.data.token
-                },
-                success: res => {
-                  // console.log(res)
-
-                  const code = res.statusCode.toString()
-                  if (code.startsWith('2')) {
-                    if (res.data.errcode == 0) {
-                      Toast.success('重进App生效')
+              try {
+                const responseData = JSON.parse(res.data)
+                console.log('上传响应数据:', responseData)
+                
+                if (responseData.errcode === 0) {
+                  // 检查返回的数据结构
+                  if (responseData.data && typeof responseData.data === 'object') {
+                    // 构造词书对象，API返回的字段名可能不同
+                    let wordBook = {
+                      wordBookCode: responseData.data.code || responseData.data.wordBookCode,
+                      wordBookName: responseData.data.bookName || responseData.data.wordBookName,
+                      totalWordNum: responseData.data.totalWordNum || 0,
+                      realWordNum: responseData.data.realWordNum || 0,
+                      userProgressNum: 0 // 新上传的词书进度为0
                     }
-                  }
+                    
+                    // 验证必要字段
+                    if (!wordBook.wordBookCode) {
+                      console.error('词书代码缺失:', responseData.data)
+                      Toast.fail('上传失败：词书数据异常')
+                      return
+                    }
+                    
+                    let wordBookListCustom = this.data.wordBookListCustom
+                    wordBookListCustom.unshift(wordBook)
+                    this.setData({
+                      wordBookListCustom,
+                      isBackReLoad: true,
+                      currentWordBookCode: wordBook.wordBookCode
+                    })
 
-                },
-                fail: err => {
-                  console.error(err)
-                },
-              })
+                    Toast.loading({
+                      message: '设置为当前学习...',
+                      duration: 0
+                    })
+                    
+                    wx.request({
+                      url: config.api_base_url + '/settings',
+                      method: 'PUT',
+                      data: {
+                        "currentWordBookCode": wordBook.wordBookCode
+                      },
+                      header: {
+                        'content-type': 'application/json',
+                        'Authorization': token
+                      },
+                      success: res => {
+                        Toast.clear()
+                        const code = res.statusCode.toString()
+                        if (code.startsWith('2') && res.data.errcode == 0) {
+                          Toast.success({
+                            message: `上传成功！\n词书：${wordBook.wordBookName}\n单词数：${wordBook.totalWordNum}`,
+                            duration: 2000
+                          })
+                        } else {
+                          Toast.fail('设置当前学习失败')
+                        }
+                      },
+                      fail: err => {
+                        Toast.clear()
+                        console.error('设置当前学习失败:', err)
+                        Toast.fail('设置失败，但词书已上传')
+                      },
+                    })
+                  } else {
+                    console.error('词书数据格式异常:', responseData)
+                    Toast.fail('上传失败：数据格式异常')
+                  }
+                } else {
+                  // 服务器返回业务错误
+                  const errorMsg = responseData.errmsg || responseData.message || '上传失败'
+                  console.error('上传业务错误:', responseData)
+                  Toast.fail(errorMsg)
+                }
+              } catch (error) {
+                console.error('解析上传响应失败:', error, '原始数据:', res.data)
+                Toast.fail('上传失败：响应解析错误')
+              }
 
             }
 
           },
-          fail: (err) => console.log(err)
+          fail: (err) => {
+            console.log(err)
+            Toast.fail('上传失败')
+          }
         })
       },
-      fail: (err) => console.log(err)
+      fail: (err) => {
+        console.log(err)
+        Toast.fail('文件选择失败')
+      }
     })
+    } catch (err) {
+      console.error('上传词书失败:', err)
+      Toast.fail('上传失败')
+    }
   },
 
   /**

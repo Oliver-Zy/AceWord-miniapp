@@ -6,9 +6,6 @@
   <!-- S header -->
   <view class="header">
     <text class="title-text">导入词表说明</text>
-    <view class="notif-btn" bind:tap="onCancelGuide">
-      <text class="cancal-text">不再显示</text>
-    </view>
   </view>
   <!-- E header -->
 
