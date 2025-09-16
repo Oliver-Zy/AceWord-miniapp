@@ -298,6 +298,12 @@ Page({
           confirmText: '好的'
         }).then(res => {
           if (res.confirm) {
+            // 获取当前token
+            const token = this.data.token || wx.getStorageSync('token')
+            if (!token) {
+              Toast.fail('请先登录')
+              return
+            }
 
             app.globalData.settings.currentWordBookCode = wordBook.wordBookCode
             this.setData({
@@ -305,9 +311,8 @@ Page({
               isBackReLoad: true,
               currentWordBookCode: wordBook.wordBookCode
             })
-            Toast.loading()
+            Toast.loading('设置中...')
 
-            // console.log({ "wordBookCode": wordBook.wordBookCode })
             wx.request({
               url: config.api_base_url + '/settings',
               method: 'PUT',
@@ -316,10 +321,11 @@ Page({
               },
               header: {
                 'content-type': 'application/json',
-                'Authorization': this.data.token
+                'Authorization': token
               },
               success: res => {
-                console.log(res)
+                Toast.clear()
+                console.log('设置当前学习响应:', res)
 
                 const code = res.statusCode.toString()
                 if (code.startsWith('2')) {
@@ -327,12 +333,17 @@ Page({
                     // 设置标记，通知首页需要刷新数据
                     wx.setStorageSync('needRefreshHomeData', true)
                     Toast.success('切换成功')
+                  } else {
+                    Toast.fail(res.data.errmsg || '设置失败')
                   }
+                } else {
+                  Toast.fail('设置失败')
                 }
-
               },
               fail: err => {
-                console.error(err)
+                Toast.clear()
+                console.error('设置当前学习失败:', err)
+                Toast.fail('设置失败，请重试')
               },
             })
 
@@ -348,13 +359,19 @@ Page({
           confirmText: '确认'
         }).then(res => {
           if (res.confirm) {
+            // 获取当前token
+            const token = this.data.token || wx.getStorageSync('token')
+            if (!token) {
+              Toast.fail('请先登录')
+              return
+            }
 
             wordBook.userProgressNum = 0
             this.setData({
               [`wordBookListCustom[${wordBookListIndex}]`]: wordBook,
               isBackReLoad: true
             })
-            Toast.loading()
+            Toast.loading('重置中...')
             wx.request({
               url: config.api_base_url + '/wordbook/reset',
               method: 'PUT',
@@ -363,21 +380,27 @@ Page({
               },
               header: {
                 'content-type': 'application/json',
-                'Authorization': this.data.token
+                'Authorization': token
               },
               success: res => {
-                console.log(res)
+                Toast.clear()
+                console.log('重置进度响应:', res)
 
                 const code = res.statusCode.toString()
                 if (code.startsWith('2')) {
                   if (res.data.errcode == 0) {
-                    Toast.success('重进App生效')
+                    Toast.success('重置成功')
+                  } else {
+                    Toast.fail(res.data.errmsg || '重置失败')
                   }
+                } else {
+                  Toast.fail('重置失败')
                 }
-
               },
               fail: err => {
-                console.error(err)
+                Toast.clear()
+                console.error('重置进度失败:', err)
+                Toast.fail('重置失败，请重试')
               },
             })
 
@@ -393,12 +416,20 @@ Page({
           confirmText: '确认'
         }).then(res => {
           if (res.confirm) {
+            // 获取当前token
+            const token = this.data.token || wx.getStorageSync('token')
+            if (!token) {
+              Toast.fail('请先登录')
+              return
+            }
 
             this.data.wordBookListCustom.splice(wordBookListIndex, 1)
             this.setData({
               wordBookListCustom: this.data.wordBookListCustom,
               isBackReLoad: true
             })
+            
+            Toast.loading('删除中...')
             wx.request({
               url: config.api_base_url + '/wordbook',
               method: 'DELETE',
@@ -407,22 +438,27 @@ Page({
               },
               header: {
                 'content-type': 'application/json',
-                'Authorization': this.data.token
+                'Authorization': token
               },
               success: res => {
-                // console.log(res)
+                Toast.clear()
+                console.log('删除词书响应:', res)
 
                 const code = res.statusCode.toString()
                 if (code.startsWith('2')) {
                   if (res.data.errcode == 0) {
                     Toast.success('删除成功')
+                  } else {
+                    Toast.fail(res.data.errmsg || '删除失败')
                   }
+                } else {
+                  Toast.fail('删除失败')
                 }
-
               },
               fail: err => {
-                console.error(err)
-                Toast.fail(err)
+                Toast.clear()
+                console.error('删除词书失败:', err)
+                Toast.fail('删除失败，请重试')
               },
             })
 
