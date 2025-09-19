@@ -161,6 +161,7 @@
 <van-dialog id="van-dialog" />
 <van-action-sheet 
   show="{{ showBottomSheet }}" 
+  description="{{ bottomSheetTitle }}"
   actions="{{ bottomSheetActions }}" 
   cancel-text="取消" 
   bind:select="onSelectBottomSheet" 
