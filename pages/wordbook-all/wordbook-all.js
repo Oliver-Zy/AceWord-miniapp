@@ -28,7 +28,14 @@ Page({
     // 搜索结果
     searchResults: [],
     isSearching: false,
-    searchKeyword: ''
+    searchKeyword: '',
+    // bottomsheet相关
+    showBottomSheet: false,
+    bottomSheetActions: [],
+    bottomSheetTitle: '',
+    selectedBook: null,
+    // 确认弹窗相关
+    showResetConfirmDialog: false
   },
 
   /**
@@ -404,27 +411,211 @@ Page({
 
 
   /**
-   * 选择词书
+   * 选择词书 - 显示bottomsheet
    */
   onSelectWordBook: function (e) {
     const book = e.currentTarget.dataset.book
     
-    if (book.wordBookCode === this.data.currentWordBookCode) {
-      Toast('当前已是学习词书')
+    // 保存选中的词书信息
+    this.setData({
+      selectedBook: book
+    })
+    
+    // 构建bottomsheet选项
+    const actions = []
+    
+    // 如果不是当前词书，显示切换选项
+    if (book.wordBookCode !== this.data.currentWordBookCode) {
+      actions.push({
+        name: '切换词书',
+        subname: `切换到「${book.wordBookName}」`
+      })
+    }
+    
+    // 如果有学习进度且不是当前词书，显示移除选项
+    if (book.userProgressNum > 0 && book.wordBookCode !== this.data.currentWordBookCode) {
+      actions.push({
+        name: '移除词书',
+        subname: '清空学习进度，从我的词书中移除',
+        color: '#FF4444'
+      })
+    }
+    
+    // 如果没有可用操作，直接提示
+    if (actions.length === 0) {
+      if (book.wordBookCode === this.data.currentWordBookCode) {
+        Toast('当前已是学习词书，暂无可用操作')
+      } else {
+        Toast('该词书暂无可用操作')
+      }
       return
     }
+    
+    // 显示bottomsheet
+    this.setData({
+      bottomSheetActions: actions,
+      bottomSheetTitle: book.wordBookName,
+      showBottomSheet: true
+    })
+  },
 
-    wx.showModal({
-      title: '切换词书',
-      content: `确定要切换到「${book.wordBookName}」吗？`,
-      confirmText: '确定切换',
-      cancelText: '取消',
-      success: (res) => {
-        if (res.confirm) {
-          this._switchWordBook(book)
+  /**
+   * 处理bottomsheet选择
+   */
+  onSelectBottomSheet: function (e) {
+    const selectedAction = e.detail.name
+    const book = this.data.selectedBook
+    
+    this.setData({
+      showBottomSheet: false
+    })
+    
+    if (selectedAction === '切换词书') {
+      // 切换词书确认
+      wx.showModal({
+        title: '切换词书',
+        content: `确定要切换到「${book.wordBookName}」吗？`,
+        confirmText: '确定切换',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            this._switchWordBook(book)
+          }
+        }
+      })
+    } else if (selectedAction === '移除词书') {
+      // 移除词书确认
+      wx.showModal({
+        title: '移除词书',
+        content: `确定要移除「${book.wordBookName}」的学习进度吗？\n\n移除后将清空所有学习记录，此操作不可恢复。`,
+        confirmText: '确定移除',
+        cancelText: '取消',
+        confirmColor: '#FF4444',
+        success: (res) => {
+          if (res.confirm) {
+            this._resetWordBook(book)
+          }
+        }
+      })
+    }
+  },
+
+  /**
+   * 取消bottomsheet
+   */
+  onCancelBottomSheet: function () {
+    this.setData({
+      showBottomSheet: false,
+      bottomSheetTitle: '',
+      selectedBook: null
+    })
+  },
+
+  /**
+   * 重置词书
+   */
+  _resetWordBook: async function (book) {
+    try {
+      Toast.loading('移除中...')
+      
+      // 获取token
+      const token = wx.getStorageSync('token')
+      if (!token) {
+        Toast.clear()
+        Toast.fail('请先登录')
+        return
+      }
+      
+      // 调用重置API
+      const response = await common.request({
+        url: '/wordbook/reset',
+        method: 'PUT',
+        data: {
+          wordBookCode: book.wordBookCode
+        }
+      })
+      
+      Toast.clear()
+      
+      // 由于common.request在成功时返回data字段（可能为null），
+      // 所以如果没有抛出异常，就说明请求成功了
+      Toast.success('移除成功')
+      
+      // 移除成功后，从我的词书列表中移除该词书
+      this._removeBookFromMyList(book.wordBookCode)
+      
+      // 如果当前显示的是"我的词书"分类，需要刷新列表
+      if (this.data.selectedCategoryCode === '99') {
+        this._loadWordBookData()
+      }
+      
+    } catch (error) {
+      Toast.clear()
+      console.error('重置词书失败:', error)
+      Toast.fail('移除失败，请重试')
+    }
+  },
+
+  /**
+   * 更新词书进度
+   */
+  _updateBookProgress: function (wordBookCode, newProgress) {
+    // 更新分类中的词书数据
+    const categories = this.data.wordBookCategories
+    let updated = false
+    
+    categories.forEach(category => {
+      category.wordBooks.forEach(book => {
+        if (book.wordBookCode === wordBookCode) {
+          book.userProgressNum = newProgress
+          updated = true
+        }
+      })
+    })
+    
+    // 更新搜索结果中的词书数据
+    const searchResults = this.data.searchResults
+    searchResults.forEach(book => {
+      if (book.wordBookCode === wordBookCode) {
+        book.userProgressNum = newProgress
+      }
+    })
+    
+    if (updated) {
+      this.setData({
+        wordBookCategories: categories,
+        searchResults: searchResults
+      })
+    }
+  },
+
+  /**
+   * 从我的词书列表中移除词书
+   */
+  _removeBookFromMyList: function (wordBookCode) {
+    // 更新分类中的词书数据 - 从我的词书中移除
+    const categories = this.data.wordBookCategories
+    let updated = false
+    
+    categories.forEach(category => {
+      if (category.categoryCode === '99') { // 我的词书分类
+        const originalLength = category.wordBooks.length
+        category.wordBooks = category.wordBooks.filter(book => book.wordBookCode !== wordBookCode)
+        if (category.wordBooks.length !== originalLength) {
+          updated = true
         }
       }
     })
+    
+    // 更新搜索结果中的词书数据 - 如果在搜索结果中也移除
+    const searchResults = this.data.searchResults.filter(book => book.wordBookCode !== wordBookCode)
+    
+    if (updated) {
+      this.setData({
+        wordBookCategories: categories,
+        searchResults: searchResults
+      })
+    }
   },
 
   /**

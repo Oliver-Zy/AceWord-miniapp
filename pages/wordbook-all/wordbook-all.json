@@ -13,7 +13,8 @@
     "van-empty": "../../miniprogram_npm/@vant/weapp/empty/index",
     "van-toast": "../../miniprogram_npm/@vant/weapp/toast/index",
     "van-dialog": "../../miniprogram_npm/@vant/weapp/dialog/index",
-    "van-overlay": "../../miniprogram_npm/@vant/weapp/overlay/index"
+    "van-overlay": "../../miniprogram_npm/@vant/weapp/overlay/index",
+    "van-action-sheet": "../../miniprogram_npm/@vant/weapp/action-sheet/index"
   },
   "navigationBarTitleText": "选择词书",
   "backgroundColor": "#F8FAFC"

@@ -159,4 +159,11 @@
 <!-- S vant components -->
 <van-toast id="van-toast" />
 <van-dialog id="van-dialog" />
+<van-action-sheet 
+  show="{{ showBottomSheet }}" 
+  actions="{{ bottomSheetActions }}" 
+  cancel-text="取消" 
+  bind:select="onSelectBottomSheet" 
+  bind:cancel="onCancelBottomSheet" 
+  bind:click-overlay="onCancelBottomSheet" />
 <!-- E vant components -->
