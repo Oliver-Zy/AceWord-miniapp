@@ -6,9 +6,12 @@
 
     <!-- S-cell-folder -->
     <block wx:for="{{wordGroupList}}" wx:key="id">
-      <van-swipe-cell right-width="{{ 65 }}" bind:click="onDeleteWordGroup" data-index="{{index}}">
+      <van-swipe-cell right-width="{{ 130 }}" data-index="{{index}}">
         <ace-cell type="wordGroupFolder" wordGroup="{{item}}" catch:tap="onCellFolder"  data-index="{{index}}" />
-        <view slot="right" class="van-swipe-cell__right">删除</view>
+        <view slot="right" class="van-swipe-cell__right swipe-actions">
+          <view class="swipe-action export" catch:tap="onExportWordGroup" data-index="{{index}}">导出</view>
+          <view class="swipe-action delete" catch:tap="onDeleteWordGroup" data-index="{{index}}">删除</view>
+        </view>
       </van-swipe-cell>
     </block>
     <!-- E-cell-folder -->
