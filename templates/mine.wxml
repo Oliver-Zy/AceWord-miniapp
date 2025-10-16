@@ -1,3 +1,5 @@
+<wxs module="tools" src="./mine.wxs"></wxs>
+
 <template name="avatar-bar">
 
   <view class="avatar-bar">
@@ -23,11 +25,11 @@
   <view class="vip-card" bindtap="onOpenVip">
     <view class="vip-card-content">
       <view class="vip-text-content">
-        <text class="vip-title">开通AceWord VIP</text>
-        <text class="vip-subtitle">无限卡片额度｜自定义复习节奏</text>
+        <text class="vip-title">{{isVipExpired === false ? 'AceWord VIP 会员' : '开通AceWord VIP'}}</text>
+        <text class="vip-subtitle">{{isVipExpired === false ? '有效期至 ' + tools.formatVipDate(vipExpireDate) : '无限卡片额度｜自定义复习节奏'}}</text>
       </view>
-      <view class="vip-btn">
-        <text>立即开通</text>
+      <view class="vip-btn {{isVipExpired === false ? 'vip-btn-active' : ''}}">
+        <text>{{isVipExpired === false ? '已开通' : '立即开通'}}</text>
       </view>
     </view>
   </view>

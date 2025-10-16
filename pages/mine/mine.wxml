@@ -10,7 +10,7 @@
     <view style="height:14px;"></view>
     <view class="up-container">
       <template is="avatar-bar" data="{{avatarUrl, nickName, vipExpireDate}}" />
-      <template is="vip-card" />
+      <template is="vip-card" data="{{vipExpireDate, isVipExpired}}" />
     </view>
     <view class="down-container">
 

@@ -145,6 +145,11 @@
   line-height: 18px;
 }
 
+/* 已开通会员时的按钮样式 */
+.vip-btn-active {
+  background: linear-gradient(0deg, #10B981 0%, #10B981 100%);
+}
+
 .vip-bg-effects {
   position: absolute;
   top: 0;
