@@ -136,7 +136,8 @@ Page({
     this.setData({
       nickName: settings.nickName,
       avatarUrl: settings.avatarUrl,
-      vipExpireDate: settings.vipExpireDate
+      vipExpireDate: settings.vipExpireDate,
+      isVipExpired: settings.isVipExpired
     })
 
       // setData: learningInfo
@@ -895,12 +896,24 @@ Page({
     // 头像信息已加载
     console.log("==================")
 
+    // 🔥 刷新会员状态（从VIP页面返回后更新显示）
+    const settings = app.globalData.settings
+    console.log('[Mine onShow] 刷新会员状态:', { 
+      isVipExpired: settings.isVipExpired, 
+      vipExpireDate: settings.vipExpireDate 
+    })
+
     this.setData({
       triggerCondition,
       triggerTime,
       openNotification: triggerCondition != 'never',
       currentTime: triggerTime.hour + ":" + this.zeroPadding(triggerTime.minute),
       tempTime: triggerTime.hour + ":" + this.zeroPadding(triggerTime.minute),
+      // 同步会员状态
+      vipExpireDate: settings.vipExpireDate,
+      isVipExpired: settings.isVipExpired,
+      nickName: settings.nickName,
+      avatarUrl: settings.avatarUrl
     })
 
 

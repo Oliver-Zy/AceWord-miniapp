@@ -199,6 +199,107 @@ Page({
   },
 
   /**
+   * 监听点击导出事件
+   *
+   * @event
+   * @param { Object } e 事件参数
+   */
+  onExportWordGroup: async function (e) {
+    const index = e.currentTarget.dataset.index
+    const wordGroup = this.data.wordGroupList[index]
+    
+    // 检查单词本是否为空
+    if (wordGroup.count == 0) {
+      Toast.fail('该单词本无单词')
+      return
+    }
+
+    // 今日卡片单词列表不支持导出
+    if (wordGroup.id == -1) {
+      Toast.fail('今日卡片单词列表不支持导出')
+      return
+    }
+
+    try {
+      Toast.loading({ message: '正在导出...', forbidClick: true })
+      
+      // 获取单词列表
+      const pageInfo = await common.request({
+        url: `/wordgroup/wordlist?wordgroupid=${wordGroup.id}`
+      })
+      
+      // 收集所有单词
+      let allWords = []
+      if (pageInfo && pageInfo.data) {
+        pageInfo.data.forEach(dateGroup => {
+          if (dateGroup.wordList) {
+            allWords = allWords.concat(dateGroup.wordList)
+          }
+        })
+      }
+      
+      if (allWords.length === 0) {
+        Toast.fail('该单词本无单词')
+        return
+      }
+      
+      // 生成 TXT 内容 - 纯单词列表
+      let txtContent = allWords.join('\n')
+      
+      // 保存文件
+      const displayName = wordGroup.groupName == '默认单词本' ? '我的收藏' : wordGroup.groupName
+      const fs = wx.getFileSystemManager()
+      const timestamp = Date.now()
+      const fileName = `${displayName}_${timestamp}.txt`
+      const filePath = `${wx.env.USER_DATA_PATH}/${fileName}`
+      
+      fs.writeFile({
+        filePath: filePath,
+        data: txtContent,
+        encoding: 'utf8',
+        success: () => {
+          Toast.clear()
+          
+          // 分享文件到微信
+          wx.showModal({
+            title: '导出成功',
+            content: `已导出 ${allWords.length} 个单词，是否分享到微信？`,
+            confirmText: '分享',
+            cancelText: '取消',
+            success: (res) => {
+              if (res.confirm) {
+                wx.shareFileMessage({
+                  filePath: filePath,
+                  fileName: fileName,
+                  success: () => {
+                    Toast.success('分享成功')
+                  },
+                  fail: (err) => {
+                    console.error('分享失败:', err)
+                    Toast.fail('分享失败，请重试')
+                  }
+                })
+              } else {
+                Toast.success('导出成功')
+              }
+            }
+          })
+        },
+        fail: (err) => {
+          Toast.clear()
+          console.error('导出失败:', err)
+          Toast.fail('导出失败，请重试')
+        }
+      })
+      
+    } catch (error) {
+      Toast.clear()
+      console.error('导出单词本失败:', error)
+      Toast.fail('导出失败，请重试')
+    }
+  },
+
+  /**
    * 监听点击删除事件
    *
    * @event
@@ -230,6 +331,23 @@ Page({
         Toast.success('删除成功')
         break
     }
+  },
+
+  /**
+   * 格式化日期时间
+   *
+   * @inner
+   * @param {Date} date 日期对象
+   * @return {string} 格式化后的日期时间字符串
+   */
+  _formatDateTime: function (date) {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    const seconds = String(date.getSeconds()).padStart(2, '0')
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
   },
 
   /**
